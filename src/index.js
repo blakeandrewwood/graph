@@ -17,18 +17,25 @@ graphLine.setIncrement(50);
 graphLine.setPoints(pointsLine);
 graphLine.render();
 
-var labelsBar = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
+var labelsBar = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 var pointsBar = [
 	[1],
 	[2],
 	[3],
+	[4],
+	[3],
+	[6],
+	[4],
+	[3],
+	[6],
+	[6],
 	[4],
 	[3]
 ];
 var containerBar = document.getElementById('graph-bar');
 var graphBar = new Graph(containerBar);
 graphBar.setType('bar');
-graphBar.setSize(300, 150);
+graphBar.setSize(350, 150);
 graphBar.setLabels(labelsBar);
 graphBar.setIncrement(1);
 graphBar.setPoints(pointsBar);
@@ -69,13 +76,12 @@ graphBarMultiStack.setIncrement(500);
 graphBarMultiStack.setPoints(pointsBarMultiStack);
 graphBarMultiStack.render();
 
-var labelsBarMultiStackHorizontal = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
+var labelsBarMultiStackHorizontal = ['Tom', 'Kelly', 'Rob', 'Owen'];
 var pointsBarMultiStackHorizontal = [
-	[450, 1000, 1350],
-	[700, 500, 600],
-	[200, 800],
-	[450],
-	[2400]
+	[450, 1000, 1350, 200],
+	[700, 500, 1000, 300],
+	[200, 800, 700],
+	[450, 100]
 ];
 var containerBarMultiStackHorizontal = document.getElementById('graph-bar-multi-stack-horizontal');
 var graphBarMultiStackHorizontal = new Graph(containerBarMultiStackHorizontal);
