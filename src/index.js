@@ -11,7 +11,7 @@ var pointsLine = [
 var containerLine = document.getElementById('graph-line');
 var graphLine = new Graph(containerLine);
 graphLine.setType('line');
-graphLine.setSize(400, 200);
+graphLine.setSize(300, 150);
 graphLine.setLabels(labelsLine);
 graphLine.setIncrement(50);
 graphLine.setPoints(pointsLine);
@@ -23,12 +23,12 @@ var pointsBar = [
 	[2],
 	[3],
 	[4],
-	[5]
+	[3]
 ];
 var containerBar = document.getElementById('graph-bar');
 var graphBar = new Graph(containerBar);
 graphBar.setType('bar');
-graphBar.setSize(400, 200);
+graphBar.setSize(300, 150);
 graphBar.setLabels(labelsBar);
 graphBar.setIncrement(1);
 graphBar.setPoints(pointsBar);
@@ -45,7 +45,7 @@ var pointsBarMulti = [
 var containerBarMulti = document.getElementById('graph-bar-multi');
 var graphBarMulti = new Graph(containerBarMulti);
 graphBarMulti.setType('bar');
-graphBarMulti.setSize(400, 200);
+graphBarMulti.setSize(300, 150);
 graphBarMulti.setLabels(labelsBarMulti);
 graphBarMulti.setIncrement(500);
 graphBarMulti.setPoints(pointsBarMulti);
@@ -53,17 +53,17 @@ graphBarMulti.render();
 
 var labelsBarMultiStack = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
 var pointsBarMultiStack = [
-	[450, 1000, 1350],
+	[500, 1000, 1300],
 	[700, 500, 600],
 	[200, 800],
 	[450],
-	[1800]
+	[1200]
 ];
 var containerBarMultiStack = document.getElementById('graph-bar-multi-stack');
 var graphBarMultiStack = new Graph(containerBarMultiStack);
 graphBarMultiStack.setType('bar');
 graphBarMultiStack.setStack(true);
-graphBarMultiStack.setSize(400, 200);
+graphBarMultiStack.setSize(300, 150);
 graphBarMultiStack.setLabels(labelsBarMultiStack);
 graphBarMultiStack.setIncrement(500);
 graphBarMultiStack.setPoints(pointsBarMultiStack);
@@ -75,14 +75,14 @@ var pointsBarMultiStackHorizontal = [
 	[700, 500, 600],
 	[200, 800],
 	[450],
-	[1800]
+	[2400]
 ];
 var containerBarMultiStackHorizontal = document.getElementById('graph-bar-multi-stack-horizontal');
 var graphBarMultiStackHorizontal = new Graph(containerBarMultiStackHorizontal);
 graphBarMultiStackHorizontal.setType('bar');
 graphBarMultiStackHorizontal.setStack(true);
 graphBarMultiStackHorizontal.setHorizontal(true);
-graphBarMultiStackHorizontal.setSize(400, 200);
+graphBarMultiStackHorizontal.setSize(300, 150);
 graphBarMultiStackHorizontal.setLabels(labelsBarMultiStackHorizontal);
 graphBarMultiStackHorizontal.setIncrement(500);
 graphBarMultiStackHorizontal.setPoints(pointsBarMultiStackHorizontal);

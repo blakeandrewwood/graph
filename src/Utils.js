@@ -43,10 +43,11 @@ Utils.prototype.calculateColumnPositions = function(labels, width) {
 	return positions;
 };
 
-Utils.prototype.calculateRowPositions = function(pointIncrements, height) {
+Utils.prototype.calculateRowPositions = function(labels, height) {
 	var positions = [];
-	pointIncrements.forEach(function(item, index, array) {
-		var y = this.calculateY(item, pointIncrements[0], height);
+	var size = 	height / (labels.length - 1);
+	labels.forEach(function(label, index, array) {
+		var y = Math.round((size * index));
 		positions.push(y);
 	}, this);
 	return positions;
@@ -55,6 +56,10 @@ Utils.prototype.calculateRowPositions = function(pointIncrements, height) {
 Utils.prototype.calculateY = function(y, yMax, height) {
 	var calculatedY = this.normalizeY(y, yMax, height);
 	return this.reversePosY(calculatedY, 0, height);
+}
+
+Utils.prototype.calculateX = function(x, xMax, width) {
+	return this.normalizeX(x, xMax, width);
 }
 
 Utils.prototype.normalizeY = function(y, yMax, height) {
