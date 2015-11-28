@@ -102,16 +102,17 @@ Render.prototype.barSetsHorizontal = function(columnPositions, sets, xMax, width
 };
 
 Render.prototype.svg = function(graph, sets, pointText, labelText, textSize, width, height) {
-	var offset = (textSize / 2) + 50;
-	var width = width + offset;
-	var height = height + offset;
+	var widthOffset = (textSize / 2) + 120;
+	var heightOffset = (textSize / 2) + 50;
+	var width = width + widthOffset;
+	var height = height + heightOffset;
 	var attributes = Utils.attributesToString({ width: width, height: height });
 	var svg = [
 		'<svg style="border: 1px solid #ccc;" ' + attributes + '>',
-			'<g transform="translate(' + (offset/2) + ',' + (offset/2) + ')">' + graph + '</g>',
-			'<g transform="translate(' + (offset/2) + ',' + (offset/2) + ')">' + sets + '</g>',
-			'<g transform="translate(' + 0 + ',' + (offset/2) + ')">' + pointText + '</g>',
-			'<g transform="translate(' + (offset/2) + ',' + (offset) + ')">' + labelText + '</g>',
+			'<g transform="translate('+(widthOffset/2)+','+(heightOffset/2)+')">'+graph+'</g>',
+			'<g transform="translate('+(widthOffset/2)+','+(heightOffset/2)+')">'+sets+'</g>',
+			'<g transform="translate('+0+','+(heightOffset/2)+')">'+pointText+'</g>',
+			'<g transform="translate('+(widthOffset/2)+','+(heightOffset)+')">'+labelText+'</g>',
 		'</svg>'
 	];
 	return svg;
