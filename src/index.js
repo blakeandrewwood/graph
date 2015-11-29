@@ -46,8 +46,8 @@ var pointsBarMulti = [
 	[1350, 1000, 800],
 	[700, 500, 600],
 	[200, 800],
-	[450],
-	[1800]
+	[1650, [500, 100]],
+	[[1500, 1000, 500]],
 ];
 var containerBarMulti = document.getElementById('graph-bar-multi');
 var graphBarMulti = new Graph(containerBarMulti);
@@ -60,16 +60,15 @@ graphBarMulti.render();
 
 var labelsBarMultiStack = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
 var pointsBarMultiStack = [
-	[500, 1000, 1300],
-	[700, 500, 600],
-	[200, 800],
-	[450],
-	[1200]
+	[[500, 1000, 1300]],
+	[[700, 500, 600]],
+	[[200, 800]],
+	[[450]],
+	[[1200]]
 ];
 var containerBarMultiStack = document.getElementById('graph-bar-multi-stack');
 var graphBarMultiStack = new Graph(containerBarMultiStack);
 graphBarMultiStack.setType('bar');
-graphBarMultiStack.setStack(true);
 graphBarMultiStack.setSize(300, 150);
 graphBarMultiStack.setLabels(labelsBarMultiStack);
 graphBarMultiStack.setIncrement(500);
@@ -78,15 +77,14 @@ graphBarMultiStack.render();
 
 var labelsBarMultiStackHorizontal = ['Tom', 'Kelly', 'Rob', 'Owen'];
 var pointsBarMultiStackHorizontal = [
-	[450, 1000, 1350, 200],
-	[700, 500, 1000, 300],
-	[200, 800, 700],
-	[450, 100]
+	[[450, 1000, 1350, 200]],
+	[[700, 500, 1000, 300]],
+	[[200, 800, 700]],
+	[[450, 100]]
 ];
 var containerBarMultiStackHorizontal = document.getElementById('graph-bar-multi-stack-horizontal');
 var graphBarMultiStackHorizontal = new Graph(containerBarMultiStackHorizontal);
 graphBarMultiStackHorizontal.setType('bar');
-graphBarMultiStackHorizontal.setStack(true);
 graphBarMultiStackHorizontal.setHorizontal(true);
 graphBarMultiStackHorizontal.setSize(300, 150);
 graphBarMultiStackHorizontal.setLabels(labelsBarMultiStackHorizontal);

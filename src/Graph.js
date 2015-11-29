@@ -21,7 +21,6 @@ var Graph = function(container) {
 	this.columnLabelPositions = [];
 	this.rowLabelPositions = [];
 
-	this.stack = false;
 	this.horizontal = false;
 	this.svg = '';
 	
@@ -49,29 +48,34 @@ var Graph = function(container) {
 	}
 
 	this.barMakeSvg = function() {
-		var columnLabelText;
-		var rowLabelText;
-		var sets;
-		var graphLines;
 		if(!this.horizontal) {
-			// Calculate grid positions
-			this.columnLabelPositions = Utils.calculateColumnPositions(this.labels, this.size.width);
-			this.rowLabelPositions = Utils.calculateRowPositions(this.pointIncrements, this.size.height);
-			// Render text and set
-			columnLabelText = Render.columnLabelText(this.labels, this.columnLabelPositions, this.textSize, this.size.width, this.size.height);
-			rowLabelText = Render.rowLabelText(this.pointIncrements, this.rowLabelPositions, this.textSize, this.size.width, this.size.height);
-			sets = Render.barSets(this.columnLabelPositions, this.points, this.pointIncrements[0], this.size.height, this.stack);
-			graphLines = Render.graphLines(this.columnLabelPositions, this.rowLabelPositions, this.size.width, this.size.height);
+			this.barVerticalSvg();
 		} else {
-			// Calculate grid positions
-			this.columnLabelPositions = Utils.calculateColumnPositions(this.pointIncrements, this.size.width);
-			this.rowLabelPositions = Utils.calculateRowPositions(this.labels, this.size.height);
-			// Render text and set
-			columnLabelText = Render.columnLabelText(this.pointIncrements.reverse(), this.columnLabelPositions, this.textSize, this.size.width, this.size.height);
-			rowLabelText = Render.rowLabelText(this.labels, this.rowLabelPositions, this.textSize, this.size.width, this.size.height);
-			sets = Render.barSetsHorizontal(this.rowLabelPositions, this.points, this.pointIncrements[this.pointIncrements.length - 1], this.size.width, this.stack);
-			graphLines = Render.graphLines(this.columnLabelPositions, this.rowLabelPositions, this.size.width, this.size.height);
+			this.barHorizontalSvg();
 		}
+	}
+
+	this.barVerticalSvg = function() {
+		// Calculate grid positions
+		this.columnLabelPositions = Utils.calculateColumnPositions(this.labels, this.size.width);
+		this.rowLabelPositions = Utils.calculateRowPositions(this.pointIncrements, this.size.height);
+		// Render text and set
+		var columnLabelText = Render.columnLabelText(this.labels, this.columnLabelPositions, this.textSize, this.size.width, this.size.height);
+		var rowLabelText = Render.rowLabelText(this.pointIncrements, this.rowLabelPositions, this.textSize, this.size.width, this.size.height);
+		var sets = Render.barSets(this.columnLabelPositions, this.points, this.pointIncrements[0], this.size.height);
+		var graphLines = Render.graphLines(this.columnLabelPositions, this.rowLabelPositions, this.size.width, this.size.height);
+		this.svg = Render.svg(graphLines, sets, rowLabelText, columnLabelText, this.textSize, this.size.width, this.size.height);
+	}
+
+	this.barHorizontalSvg = function() {
+		// Calculate grid positions
+		this.columnLabelPositions = Utils.calculateColumnPositions(this.pointIncrements, this.size.width);
+		this.rowLabelPositions = Utils.calculateRowPositions(this.labels, this.size.height);
+		// Render text and set
+		var columnLabelText = Render.columnLabelText(this.pointIncrements.reverse(), this.columnLabelPositions, this.textSize, this.size.width, this.size.height);
+		var rowLabelText = Render.rowLabelText(this.labels, this.rowLabelPositions, this.textSize, this.size.width, this.size.height);
+		var sets = Render.barSetsHorizontal(this.rowLabelPositions, this.points, this.pointIncrements[this.pointIncrements.length - 1], this.size.width);
+		var graphLines = Render.graphLines(this.columnLabelPositions, this.rowLabelPositions, this.size.width, this.size.height);
 		this.svg = Render.svg(graphLines, sets, rowLabelText, columnLabelText, this.textSize, this.size.width, this.size.height);
 	}
 
@@ -115,10 +119,6 @@ var Graph = function(container) {
 	
 	this.setIncrement = function(increment) {
 		this.increment = increment;
-	};
-
-	this.setStack = function(bool) {
-		this.stack = bool;
 	};
 
 	this.setHorizontal = function(bool) {

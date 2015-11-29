@@ -53,49 +53,89 @@ Render.prototype.lineSets = function(columnPositions, sets, yMax, height) {
 	return paths;
 };
 
-Render.prototype.barSets = function(columnPositions, sets, yMax, height, stack) {
+Render.prototype.barSets = function(columnPositions, sets, yMax, height) {
 	var colors = ['#2388F2', '#F65237', '#0DEFA5', '#9B7CF3'];
 	var paths = [];
 	sets.forEach(function(set, i, array) {
-		var sortedSet = set.sort(function(a, b){return b-a});
-		sortedSet.forEach(function(y, j, array) {
-			var newSet = [];
+		var index = 0;
+		set.sort(Utils.sortDesc);
+		set.forEach(function(y, j, array) {
 			var strokeWidth = 16;
 			var gutter = -(strokeWidth / 4);
 			var shadowOffset = -(strokeWidth / 3);
 			var offset = ((strokeWidth + gutter) * (set.length - 1)) / 2;
-			var x = (stack) ? columnPositions[i] : (columnPositions[i] + (j * (strokeWidth + gutter))) - offset;
-			newSet.push([x, Utils.calculateY(0, yMax, height)]);
-			newSet.push([x, Utils.calculateY(set[j], yMax, height) + (strokeWidth / 2)]);
-			var shadow = Draw.path({ transform: 'translate(' + shadowOffset + ', 0)', opacity: '0.15', fill: 'transparent', stroke: '#000', strokeWidth: strokeWidth, strokeLinecap: 'round' }, newSet);
-			var path = Draw.path({ fill: 'transparent', stroke: colors[j], strokeWidth: strokeWidth, strokeLinecap: 'round' }, newSet);
-			paths.push(shadow);
-			paths.push(path);
+			var shadowAttributes = {transform: 'translate(' + shadowOffset + ', 0)', opacity: '0.15', fill: 'transparent', stroke: '#000', strokeWidth: strokeWidth, strokeLinecap: 'round'};
+			var attributes = {fill: 'transparent', stroke: colors[index], strokeWidth: strokeWidth, strokeLinecap: 'round'};
+			var x = (columnPositions[i] + (j * (strokeWidth + gutter))) - offset;
+			// Normal
+			if(typeof y === 'number') {
+				var newSet = [
+					[x, Utils.calculateY(0, yMax, height)],
+					[x, Utils.calculateY(y, yMax, height) + (strokeWidth / 2)]
+				];
+				paths.push(Draw.path(shadowAttributes, newSet));
+				paths.push(Draw.path(attributes, newSet));
+				index++;
+			}
+			// Stacked
+			else if(typeof y === 'object') {
+				y.sort(Utils.sortDesc);
+				y.map(function(y1) {
+					// Update stroke color since index increases
+					attributes.stroke = colors[index];
+					var newSet = [
+						[x, Utils.calculateY(0, yMax, height)],
+						[x, Utils.calculateY(y1, yMax, height) + (strokeWidth / 2)]
+					];
+					paths.push(Draw.path(shadowAttributes, newSet));
+					paths.push(Draw.path(attributes, newSet));
+					index++;
+				});
+			}
 		});
 	});
 	return paths;
 };
 
-Render.prototype.barSetsHorizontal = function(columnPositions, sets, xMax, width, stack) {
+Render.prototype.barSetsHorizontal = function(columnPositions, sets, xMax, width) {
 	var colors = ['#2388F2', '#F65237', '#0DEFA5', '#9B7CF3'];
 	var paths = [];
 	sets.forEach(function(set, i, array) {
-		var sortedSet = set.sort(function(a, b){return b-a});
-		sortedSet.forEach(function(y, j, array) {
-			var newSet = [];
+		var index = 0;
+		set.sort(Utils.sortDesc);
+		set.forEach(function(x, j, array) {
 			var strokeWidth = 16;
 			var gutter = -(strokeWidth / 4);
 			var shadowOffset = (strokeWidth / 3);
 			var offset = ((strokeWidth + gutter) * (set.length - 1)) / 2;
-			var y = (stack) ? columnPositions[i] : (columnPositions[i] + (j * (strokeWidth + gutter))) - offset;
-
-			newSet.push([Utils.calculateX(0, xMax, width), y]);
-			newSet.push([Utils.calculateX(set[j], xMax, width) - (strokeWidth / 2), y]);
-			
-			var shadow = Draw.path({ transform: 'translate(' + shadowOffset + ', 0)', opacity: '0.15', fill: 'transparent', stroke: '#000', strokeWidth: strokeWidth, strokeLinecap: 'round' }, newSet);
-			var path = Draw.path({ fill: 'transparent', stroke: colors[j], strokeWidth: strokeWidth, strokeLinecap: 'round' }, newSet);
-			paths.push(shadow);
-			paths.push(path);
+			var shadowAttributes = {transform: 'translate(' + shadowOffset + ', 0)', opacity: '0.15', fill: 'transparent', stroke: '#000', strokeWidth: strokeWidth, strokeLinecap: 'round'};
+			var attributes = {fill: 'transparent', stroke: colors[index], strokeWidth: strokeWidth, strokeLinecap: 'round'};
+			var y = (columnPositions[i] + (j * (strokeWidth + gutter))) - offset;
+			// Normal
+			if(typeof x === 'number') {
+				var newSet = [
+					[Utils.calculateX(0, xMax, width), y],
+					[Utils.calculateX(x, xMax, width) - (strokeWidth / 2), y]
+				];
+				paths.push(Draw.path(shadowAttributes, newSet));
+				paths.push(Draw.path(attributes, newSet));
+				index++;
+			}
+			// Stacked
+			else if(typeof x === 'object') {
+				x.sort(Utils.sortDesc);
+				x.map(function(x1) {
+					// Update stroke color since index increases
+					attributes.stroke = colors[index];
+					var newSet = [
+						[Utils.calculateX(0, xMax, width), y],
+						[Utils.calculateX(x1, xMax, width) - (strokeWidth / 2), y]
+					];
+					paths.push(Draw.path(shadowAttributes, newSet));
+					paths.push(Draw.path(attributes, newSet));
+					index++;
+				});
+			}
 		});
 	});
 	return paths;

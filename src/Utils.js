@@ -15,9 +15,18 @@ Utils.prototype.attributesToString = function(attributes) {
 
 Utils.prototype.flattenPoints = function(points) {
 	var yArray = [];
-	points.forEach(function(point, index, array) {
-		point.forEach(function(y, index, array) {
-			yArray.push(y);
+	points.map(function(point) {
+		point.map(function(y) {
+			// If stacked point
+			if(typeof y === 'object') {
+				y.map(function(y1) {
+					yArray.push(y1);
+				});
+			}
+			// If single point
+			else {
+				yArray.push(y);
+			}
 		});
 	});
 	return yArray;
@@ -76,6 +85,10 @@ Utils.prototype.reversePosY = function(x, xMin, xMax) {
 
 Utils.prototype.reversePosX = function(y, yMin, yMax) {
 	return (yMax + yMin) - y;
+}
+
+Utils.prototype.sortDesc = function(a, b) {
+	return b-a;
 }
 
 module.exports = new Utils();
