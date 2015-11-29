@@ -92,6 +92,21 @@ graphBarMultiStackHorizontal.setIncrement(500);
 graphBarMultiStackHorizontal.setPoints(pointsBarMultiStackHorizontal);
 graphBarMultiStackHorizontal.render();
 
+var labelsPie = ['Oracle', 'Azure', 'Joyent', 'IBM'];
+var pointsPie = [
+	[450],
+	[700],
+	[200],
+	[450]
+];
+var containerPie = document.getElementById('graph-pie');
+var graphPie = new Graph(containerPie);
+graphPie.setType('pie');
+graphPie.setSize(300, 150);
+graphPie.setLabels(labelsPie);
+graphPie.setPoints(pointsPie);
+graphPie.render();
+
 /*
 window.addEventListener('resize', function(event) {
 	var width = window.innerWidth;

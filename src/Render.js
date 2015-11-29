@@ -141,6 +141,16 @@ Render.prototype.barSetsHorizontal = function(columnPositions, sets, xMax, width
 	return paths;
 };
 
+Render.prototype.pieSets = function(sets, width, height) {
+	var colors = ['#2388F2', '#F65237', '#0DEFA5', '#9B7CF3'];
+	var circles = [];
+	sets.forEach(function(set, index, array) {
+		var attributes = { cx: (width / 2), cy: (height / 2), r: 50, fill: colors[index] };
+		circles.push(Draw.circle(attributes));
+	});
+	return circles;
+};
+
 Render.prototype.svg = function(graph, sets, pointText, labelText, textSize, width, height) {
 	var widthOffset = (textSize / 2) + 120;
 	var heightOffset = (textSize / 2) + 50;

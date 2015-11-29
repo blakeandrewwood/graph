@@ -11,8 +11,7 @@ var Graph = function(container) {
 	this.size = { width: 400, height: 400 };
 	this.increment = 0;
 	this.textSize = 12;
-	this.max = {x: 0, y: 0};
-	this.min = {x: 0, y: 0};
+	this.range = { min: 0, max: 0 };
 
 	this.labels = [];
 	this.points = [];
@@ -29,20 +28,21 @@ var Graph = function(container) {
 	 *
 	 */
 	this.makeCalculations = function() {
-		var flatten = Utils.flattenPoints(this.points);
-		this.min.y = Array.min(flatten);
-		this.max.y = Array.max(flatten);
-		this.pointIncrements = Utils.getPointIncrements(this.max.y, this.increment);
+		this.range = Utils.getMinMax(this.points);
+		this.pointIncrements = Utils.getPointIncrements(this.range.max, this.increment);
 	}
 
 	this.lineMakeSvg = function() {
+		this.makeCalculations();
 		// Calculate grid positions
 		this.columnLabelPositions = Utils.calculateColumnPositions(this.labels, this.size.width);
 		this.rowLabelPositions = Utils.calculateRowPositions(this.pointIncrements, this.size.height);
-		// Render text and set
+		// Render text
 		var columnLabelText = Render.columnLabelText(this.labels, this.columnLabelPositions, this.textSize, this.size.width, this.size.height);
 		var rowLabelText = Render.rowLabelText(this.pointIncrements, this.rowLabelPositions, this.textSize, this.size.width, this.size.height);
-		var sets = Render.lineSets(this.columnLabelPositions, this.points, this.max.y, this.size.height);
+		// Render sets
+		var sets = Render.lineSets(this.columnLabelPositions, this.points, this.range.max, this.size.height);
+		// Render graph
 		var graphLines = Render.graphLines(this.columnLabelPositions, this.rowLabelPositions, this.size.width, this.size.height);
 		this.svg = Render.svg(graphLines, sets, rowLabelText, columnLabelText, this.textSize, this.size.width, this.size.height);
 	}
@@ -56,27 +56,40 @@ var Graph = function(container) {
 	}
 
 	this.barVerticalSvg = function() {
+		this.makeCalculations();
 		// Calculate grid positions
 		this.columnLabelPositions = Utils.calculateColumnPositions(this.labels, this.size.width);
 		this.rowLabelPositions = Utils.calculateRowPositions(this.pointIncrements, this.size.height);
-		// Render text and set
+		// Render text
 		var columnLabelText = Render.columnLabelText(this.labels, this.columnLabelPositions, this.textSize, this.size.width, this.size.height);
 		var rowLabelText = Render.rowLabelText(this.pointIncrements, this.rowLabelPositions, this.textSize, this.size.width, this.size.height);
+		// Render sets
 		var sets = Render.barSets(this.columnLabelPositions, this.points, this.pointIncrements[0], this.size.height);
+		// Render graph
 		var graphLines = Render.graphLines(this.columnLabelPositions, this.rowLabelPositions, this.size.width, this.size.height);
 		this.svg = Render.svg(graphLines, sets, rowLabelText, columnLabelText, this.textSize, this.size.width, this.size.height);
 	}
 
 	this.barHorizontalSvg = function() {
+		this.makeCalculations();
 		// Calculate grid positions
 		this.columnLabelPositions = Utils.calculateColumnPositions(this.pointIncrements, this.size.width);
 		this.rowLabelPositions = Utils.calculateRowPositions(this.labels, this.size.height);
-		// Render text and set
+		// Render text
 		var columnLabelText = Render.columnLabelText(this.pointIncrements.reverse(), this.columnLabelPositions, this.textSize, this.size.width, this.size.height);
 		var rowLabelText = Render.rowLabelText(this.labels, this.rowLabelPositions, this.textSize, this.size.width, this.size.height);
+		// Render sets
 		var sets = Render.barSetsHorizontal(this.rowLabelPositions, this.points, this.pointIncrements[this.pointIncrements.length - 1], this.size.width);
+		// Render graph
 		var graphLines = Render.graphLines(this.columnLabelPositions, this.rowLabelPositions, this.size.width, this.size.height);
 		this.svg = Render.svg(graphLines, sets, rowLabelText, columnLabelText, this.textSize, this.size.width, this.size.height);
+	}
+
+	this.pieMakeSvg = function() {
+		this.range = Utils.getMinMax(this.points);
+		var sets = Render.pieSets(this.points, this.size.width, this.size.height);
+		this.svg = Render.svg(null, sets, null, null, this.textSize, this.size.width, this.size.height);
+		console.log(this.range);
 	}
 
 	/**
@@ -84,13 +97,15 @@ var Graph = function(container) {
 	 *
 	 */
 	this.render = function() {
-		this.makeCalculations();
 		switch(this.type) {
 			case 'line':
 				this.lineMakeSvg();
 				break;
 			case 'bar':
 				this.barMakeSvg();
+				break;
+			case 'pie':
+				this.pieMakeSvg();
 				break;
 		}
 		this.container.innerHTML = this.svg;

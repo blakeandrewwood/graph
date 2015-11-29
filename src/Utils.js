@@ -42,6 +42,14 @@ Utils.prototype.getPointIncrements = function(yMax, increment) {
 	return items;
 }
 
+Utils.prototype.getMinMax = function(points) {
+	var range = {};
+	var flatten = this.flattenPoints(points);
+	range.min = Array.min(flatten);
+	range.max = Array.max(flatten);
+	return range;
+}
+
 Utils.prototype.calculateColumnPositions = function(labels, width) {
 	var positions = [];
 	var size = 	width / (labels.length - 1);
