@@ -39,8 +39,14 @@ var Graph = function() {
 
 	this.makePieDoughnutCalculations = function() {
 		this.range = Utils.getMinMax(this.points);
+		this.percentages = Utils.getSetPercentages(this.points);
+		this.degrees = Utils.getDegrees(this.percentages, 360);
+	}
+
+	this.makeDialCalculations = function() {
+		this.range = Utils.getMinMax(this.points);
 		this.percentages = Utils.getPercentages(this.points);
-		this.degrees = Utils.getDegrees(this.percentages);
+		this.degrees = Utils.getDegrees(this.percentages, 260);
 	}
 
 	this.lineMakeSvg = function() {
@@ -108,6 +114,12 @@ var Graph = function() {
 		this.svg = Render.svg(null, sets, null, null, this.textSize, this.size.width, this.size.height);
 	}
 
+	this.dialMakeSvg = function() {
+		this.makeDialCalculations();
+		var sets = Render.dialSets(this.degrees, this.percentages, this.size.width, this.size.height, this.colors, this.shadow);
+		this.svg = Render.svg(null, sets, null, null, this.textSize, this.size.width, this.size.height);
+	}
+
 	/**
 	 * Render
 	 *
@@ -125,6 +137,9 @@ var Graph = function() {
 				break;
 			case 'doughnut':
 				this.doughnutMakeSvg();
+				break;
+			case 'dial':
+				this.dialMakeSvg();
 				break;
 		}
 		this.container.innerHTML = this.svg;

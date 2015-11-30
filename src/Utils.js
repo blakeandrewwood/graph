@@ -42,7 +42,7 @@ Utils.prototype.getPointIncrements = function(yMax, increment) {
 	return items;
 }
 
-Utils.prototype.getPercentages = function(points) {
+Utils.prototype.getSetPercentages = function(points) {
 	var percentages = [];
 	var flatten = this.flattenPoints(points);
 	var sum = flatten.reduce(function(pv, cv) {
@@ -54,10 +54,17 @@ Utils.prototype.getPercentages = function(points) {
 	return percentages;
 }
 
-Utils.prototype.getDegrees = function(percentages) {
+Utils.prototype.getPercentages = function(points) {
+	var percentages = [];
+	var flatten = this.flattenPoints(points);
+	percentages.push(flatten[0] / flatten[1]);
+	return percentages;
+}
+
+Utils.prototype.getDegrees = function(percentages, angle) {
 	var degrees = [];
 	percentages.map(function(percent) {
-		degrees.push(percent * 360);
+		degrees.push(percent * angle);
 	});
 	return degrees;
 }

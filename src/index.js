@@ -1,5 +1,6 @@
 var Graph = require('./Graph');
 
+/*
 var labelsLine = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
 var pointsLine = [
 	[10, 50, 150, 175, 130],
@@ -92,6 +93,7 @@ graphBarMultiStackHorizontal.setLabels(labelsBarMultiStackHorizontal);
 graphBarMultiStackHorizontal.setIncrement(500);
 graphBarMultiStackHorizontal.setPoints(pointsBarMultiStackHorizontal);
 graphBarMultiStackHorizontal.render();
+*/
 
 var labelsPie = ['Oracle', 'Azure', 'Joyent', 'IBM'];
 var pointsPie = [
@@ -124,6 +126,17 @@ graphDoughnut.setLabels(labelsDoughnut);
 graphDoughnut.setPoints(pointsDoughnut);
 graphDoughnut.setColors(['#1CB8F1', '#08ECEF', '#6CF1B2', '#2388F2']);
 graphDoughnut.render();
+
+var labelsDial = ['Oracle', 'Azure', 'Joyent', 'IBM'];
+var pointsDial = [[50, 100]];
+var graphDial = new Graph();
+graphDial.setContainer(document.getElementById('graph-dial'));
+graphDial.setType('dial');
+graphDial.setSize(300, 150);
+graphDial.setLabels(labelsDial);
+graphDial.setPoints(pointsDial);
+graphDial.setColors(['#1CB8F1', '#08ECEF', '#6CF1B2', '#2388F2']);
+graphDial.render();
 
 /*
 window.addEventListener('resize', function(event) {

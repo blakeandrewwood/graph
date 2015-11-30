@@ -181,7 +181,7 @@ Render.prototype.pieSets = function(sets, width, height, colors, shadow) {
 	var paths = []
 	var group = Draw.group({}, slices);
 	if(shadow) paths.push(Draw.filterShadow('pie-shadow', 8));
-	paths.push(Draw.group({filter: 'url(#pie-shadow)', opacity: 0.2}, group));
+	paths.push(Draw.group({filter: 'url(#pie-shadow)', opacity: 0.15}, group));
 	paths.push(group);
 
 	// Return
@@ -194,7 +194,6 @@ Render.prototype.doughnutSets = function(sets, width, height, colors, shadow) {
 	var center = { x: (width / 2), y: (height / 2) };
 	var radius1 = (height / 2);
 	var radius2 = radius1 - 40;
-	var attributes = { fill: 'yellow', stroke: 'yellow', strokeWidth: '2' };
 	var x1 = Utils.calculateAngleX(center.x, radius1, 0);
 	var y1 = Utils.calculateAngleY(center.y, radius1, 0);
 	var x2 = Utils.calculateAngleX(center.x, radius1, 180);
@@ -222,16 +221,57 @@ Render.prototype.doughnutSets = function(sets, width, height, colors, shadow) {
 
 	// Compose
 	var paths = [];
-	var doughnut = Draw.path(attributes, vectors);
+	var doughnut = Draw.path({}, vectors);
 	paths.push(Draw.clipPath('doughnut-clip', doughnut));
 	paths.push(Draw.filterShadow('doughnut-shadow', 8));
 	var pie = this.pieSets(sets, width, height, colors, false);
 	var group = Draw.group({clipPath: 'url(#doughnut-clip)'}, pie);
 	
-	if(shadow) paths.push(Draw.group({filter: 'url(#doughnut-shadow)', opacity: 0.2}, group));
+	if(shadow) paths.push(Draw.group({filter: 'url(#doughnut-shadow)', opacity: 0.15}, group));
 	paths.push(group);
 
 	// Return
+	return paths;
+};
+
+Render.prototype.dialSets = function(sets, percentage, width, height, colors, shadow) {
+
+	// Basic Calculation
+	var center = { x: (width / 2), y: (height / 2) };
+	var radius = (height / 3);
+
+	// Create dot
+	var degree = (sets) - 220;
+	var dotRadius = radius - 15;
+	var cx = Utils.calculateAngleX(center.x, dotRadius, degree);
+	var cy = Utils.calculateAngleY(center.y, dotRadius, degree);
+	var dot = Draw.circle({cx: cx, cy: cy, r: 5, fill: '#fff'});
+
+	// Create dash
+	var dashes = [];
+	var dashRadius = radius + 15;
+	var rotation = -150;
+	for(var i = 0; i < 260; i += 20) {
+		var opacity = ((i / 260) > percentage) ? 0.2 : 1.0;
+		var x = Utils.calculateAngleX(center.x, dashRadius, i - rotation);
+		var y = Utils.calculateAngleY(center.y, dashRadius, i - rotation);
+		var dash = Draw.dash({
+			transform: 'translate(' + x + ', ' + y + ') rotate(' + (i - 120) + ', 0, 0)',
+			fill: colors[0],
+			opacity: opacity
+		});
+		dashes.push(dash);
+	}
+
+	// Compose
+	var paths = [];
+	paths.push(Draw.filterShadow('dial-shadow', 6));
+	var dial = Draw.circle({ cx: center.x, cy: center.y, r: radius, fill: colors[0] });
+	if(shadow) paths.push(Draw.group({filter: 'url(#doughnut-shadow)', opacity: 0.15}, dial));
+	paths.push(dial);
+	paths.push(dot);
+	paths.push(dashes);
+
 	return paths;
 };
 

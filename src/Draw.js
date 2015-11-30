@@ -3,6 +3,10 @@ var Utils = require('./Utils');
 
 function Draw() {}
 
+/**
+ * Basics
+ *
+ */
 Draw.prototype.text = function(attributes, children) {
 	attributes = Utils.attributesToString(attributes);
 	var text = '<text ' + attributes + '>' + children + '</text>';
@@ -36,6 +40,27 @@ Draw.prototype.path = function(attributes, vectors) {
 	return path;
 };
 
+/**
+ * Assets 
+ *
+ */
+Draw.prototype.dash = function(attributes) {
+	var vectors = [
+		{type: 'M', values: [0, 0]},
+		{type: '', values: [-2.6, 0]},
+		{type: '', values: [-3.8, -20]},
+		{type: '', values: [3.8, -20]},
+		{type: '', values: [2.6, 0]},
+		{type: 'Z'},
+	];
+	var dash = this.path(attributes, vectors);
+	return dash;
+};
+
+/**
+ * Definitions 
+ *
+ */
 Draw.prototype.filterShadow = function(id, stdDeviation) {
 	var filterAttributes = Utils.attributesToString({
 		id: id, width: '200%', height: '200%'
