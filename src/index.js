@@ -78,7 +78,7 @@ graphBarMultiStack.render();
 
 var labelsBarMultiStackHorizontal = ['Tom', 'Kelly', 'Rob', 'Owen'];
 var pointsBarMultiStackHorizontal = [
-	[[450, 1000, 1350, 200]],
+	[[450, 1000, 1400, 200]],
 	[[700, 500, 1000, 300]],
 	[[200, 800, 700]],
 	[[450, 100]]

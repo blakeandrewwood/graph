@@ -9,6 +9,7 @@ module.exports = {
 		filename: "client.js"
 	},
 	plugins : [
+		new webpack.optimize.UglifyJsPlugin(),
 		new BrowserSyncPlugin({
 			host: 'localhost',
 			port: 3000,

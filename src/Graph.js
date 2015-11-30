@@ -75,7 +75,7 @@ var Graph = function() {
 		var columnLabelText = Render.columnLabelText(this.labels, this.columnLabelPositions, this.textSize, this.size.width, this.size.height);
 		var rowLabelText = Render.rowLabelText(this.pointIncrements, this.rowLabelPositions, this.textSize, this.size.width, this.size.height);
 		// Render sets
-		var sets = Render.barSets(this.columnLabelPositions, this.points, this.pointIncrements[0], this.size.height, this.colors, this.shadow);
+		var sets = Render.barSets(this.columnLabelPositions, this.points, this.pointIncrements[0], this.size, this.horizontal, this.colors, this.shadow);
 		// Render graph
 		var graphLines = Render.graphLines(this.columnLabelPositions, this.rowLabelPositions, this.size.width, this.size.height);
 		this.svg = Render.svg(graphLines, sets, rowLabelText, columnLabelText, this.textSize, this.size.width, this.size.height);
@@ -90,7 +90,7 @@ var Graph = function() {
 		var columnLabelText = Render.columnLabelText(this.pointIncrements.reverse(), this.columnLabelPositions, this.textSize, this.size.width, this.size.height);
 		var rowLabelText = Render.rowLabelText(this.labels, this.rowLabelPositions, this.textSize, this.size.width, this.size.height);
 		// Render sets
-		var sets = Render.barSetsHorizontal(this.rowLabelPositions, this.points, this.pointIncrements[this.pointIncrements.length - 1], this.size.width, this.colors, this.shadow);
+		var sets = Render.barSets(this.rowLabelPositions, this.points, this.pointIncrements[this.pointIncrements.length - 1], this.size, this.horizontal, this.colors, this.shadow);
 		// Render graph
 		var graphLines = Render.graphLines(this.columnLabelPositions, this.rowLabelPositions, this.size.width, this.size.height);
 		this.svg = Render.svg(graphLines, sets, rowLabelText, columnLabelText, this.textSize, this.size.width, this.size.height);

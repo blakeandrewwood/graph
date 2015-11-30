@@ -53,95 +53,87 @@ Render.prototype.lineSets = function(columnPositions, sets, yMax, height, colors
 	return paths;
 };
 
-Render.prototype.barSets = function(columnPositions, sets, yMax, height, colors, shadow) {
+Render.prototype.barSets = function(columnPositions, sets, max, size, horizontal, colors, shadow) {
 	var paths = [];
 	sets.forEach(function(set, i, array) {
 		var index = 0;
 		set.sort(Utils.sortDesc);
-		set.forEach(function(y, j, array) {
+		set.forEach(function(point, j, array) {
 			var strokeWidth = 16;
 			var gutter = -(strokeWidth / 4);
-			var shadowOffset = -(strokeWidth / 3);
 			var offset = ((strokeWidth + gutter) * (set.length - 1)) / 2;
-			var shadowAttributes = {transform: 'translate(' + shadowOffset + ', 0)', opacity: '0.15', fill: 'transparent', stroke: '#000', strokeWidth: strokeWidth, strokeLinecap: 'round'};
 			var attributes = {fill: 'transparent', stroke: colors[index], strokeWidth: strokeWidth, strokeLinecap: 'round'};
-			var x = (columnPositions[i] + (j * (strokeWidth + gutter))) - offset;
-			// Normal
-			if(typeof y === 'number') {
-				var newSet = [
-					{type: 'M', values: [x, Utils.calculateY(0, yMax, height)]},
-					{type: '', values: [x, Utils.calculateY(y, yMax, height) + (strokeWidth / 2)]}
-				];
-				if(shadow) {
-					paths.push(Draw.path(shadowAttributes, newSet));
-				}
-				paths.push(Draw.path(attributes, newSet));
-				index++;
-			}
-			// Stacked
-			else if(typeof y === 'object') {
-				y.sort(Utils.sortDesc);
-				y.map(function(y1) {
-					// Update stroke color since index increases
-					attributes.stroke = colors[index];
-					var newSet = [
-						{ type: 'M', values: [x, Utils.calculateY(0, yMax, height)] },
-						{ type: '', values: [x, Utils.calculateY(y1, yMax, height) + (strokeWidth / 2)] }
-					];
-					if(shadow) {
-						paths.push(Draw.path(shadowAttributes, newSet));
-					}
-					paths.push(Draw.path(attributes, newSet));
-					index++;
-				});
-			}
-		});
-	});
-	return paths;
-};
 
-Render.prototype.barSetsHorizontal = function(columnPositions, sets, xMax, width, colors, shadow) {
-	var paths = [];
-	sets.forEach(function(set, i, array) {
-		var index = 0;
-		set.sort(Utils.sortDesc);
-		set.forEach(function(x, j, array) {
-			var strokeWidth = 16;
-			var gutter = -(strokeWidth / 4);
-			var shadowOffset = (strokeWidth / 3);
-			var shadowAttributes = {transform: 'translate(' + shadowOffset + ', 0)', opacity: '0.15', fill: 'transparent', stroke: '#000', strokeWidth: strokeWidth, strokeLinecap: 'round'};
-			var offset = ((strokeWidth + gutter) * (set.length - 1)) / 2;
-			var attributes = {fill: 'transparent', stroke: colors[index], strokeWidth: strokeWidth, strokeLinecap: 'round'};
-			var y = (columnPositions[i] + (j * (strokeWidth + gutter))) - offset;
-			// Normal
-			if(typeof x === 'number') {
-				var newSet = [
-					{ type: 'M', values: [Utils.calculateX(0, xMax, width), y] },
-					{ type: '', values: [Utils.calculateX(x, xMax, width) - (strokeWidth / 2), y] }
-				];
-				if(shadow) {
-					paths.push(Draw.path(shadowAttributes, newSet));
-				}
-				paths.push(Draw.path(attributes, newSet));
-				index++;
-			}
-			// Stacked
-			else if(typeof x === 'object') {
-				x.sort(Utils.sortDesc);
-				x.map(function(x1) {
-					// Update stroke color since index increases
-					attributes.stroke = colors[index];
+			//
+			// Vertical 
+			//
+			if(!horizontal) {
+				var shadowOffset = -(strokeWidth / 3);
+				var shadowAttributes = {transform: 'translate(' + shadowOffset + ', 0)', opacity: '0.15', fill: 'transparent', stroke: '#000', strokeWidth: strokeWidth, strokeLinecap: 'round'};
+				var x = (columnPositions[i] + (j * (strokeWidth + gutter))) - offset;
+				// Normal
+				if(typeof point === 'number') {
 					var newSet = [
-						{ type: 'M', values: [Utils.calculateX(0, xMax, width), y] },
-						{ type: '', values: [Utils.calculateX(x1, xMax, width) - (strokeWidth / 2), y] }
+						{type: 'M', values: [x, Utils.calculateY(0, max, size.height)]},
+						{type: '', values: [x, Utils.calculateY(point, max, size.height) + (strokeWidth / 2)]}
 					];
-					if(shadow) {
-						paths.push(Draw.path(shadowAttributes, newSet));
-					}
+					if(shadow) paths.push(Draw.path(shadowAttributes, newSet));
 					paths.push(Draw.path(attributes, newSet));
 					index++;
-				});
+				}
+				// Stacked
+				else if(typeof point === 'object') {
+					point.sort(Utils.sortDesc);
+					point.map(function(y1) {
+						// Update stroke color since index increases
+						attributes.stroke = colors[index];
+						var newSet = [
+							{ type: 'M', values: [x, Utils.calculateY(0, max, size.height)] },
+							{ type: '', values: [x, Utils.calculateY(y1, max, size.height) + (strokeWidth / 2)] }
+						];
+						if(shadow) {
+							paths.push(Draw.path(shadowAttributes, newSet));
+						}
+						paths.push(Draw.path(attributes, newSet));
+						index++;
+					});
+				}
 			}
+
+			//
+			// Horizontal
+			//
+			else {
+				var shadowOffset = (strokeWidth / 3);
+				var shadowAttributes = {transform: 'translate(' + shadowOffset + ', 0)', opacity: '0.15', fill: 'transparent', stroke: '#000', strokeWidth: strokeWidth, strokeLinecap: 'round'};
+				var y = (columnPositions[i] + (j * (strokeWidth + gutter))) - offset;
+				// Normal
+				if(typeof point === 'number') {
+					var newSet = [
+						{ type: 'M', values: [Utils.calculateX(0, max, size.width), y] },
+						{ type: '', values: [Utils.calculateX(point, max, size.width) - (strokeWidth / 2), y] }
+					];
+					if(shadow) paths.push(Draw.path(shadowAttributes, newSet));
+					paths.push(Draw.path(attributes, newSet));
+					index++;
+				}
+				// Stacked
+				else if(typeof point === 'object') {
+					point.sort(Utils.sortDesc);
+					point.map(function(x1) {
+						// Update stroke color since index increases
+						attributes.stroke = colors[index];
+						var newSet = [
+							{ type: 'M', values: [Utils.calculateX(0, max, size.width), y] },
+							{ type: '', values: [Utils.calculateX(x1, max, size.width) - (strokeWidth / 2), y] }
+						];
+						if(shadow) paths.push(Draw.path(shadowAttributes, newSet));
+						paths.push(Draw.path(attributes, newSet));
+						index++;
+					});
+				}
+			}
+
 		});
 	});
 	return paths;
