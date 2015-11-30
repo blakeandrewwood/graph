@@ -174,20 +174,17 @@
 		
 		// Parameters
 		this.container = container;
-
 		this.type = 'line';
 		this.size = { width: 400, height: 400 };
 		this.increment = 0;
 		this.textSize = 12;
 		this.range = { min: 0, max: 0 };
-
 		this.labels = [];
 		this.points = [];
 		this.pointIncrements = [];
-
 		this.columnLabelPositions = [];
 		this.rowLabelPositions = [];
-
+		this.colors = [];
 		this.horizontal = false;
 		this.svg = '';
 		
@@ -209,7 +206,7 @@
 			var columnLabelText = Render.columnLabelText(this.labels, this.columnLabelPositions, this.textSize, this.size.width, this.size.height);
 			var rowLabelText = Render.rowLabelText(this.pointIncrements, this.rowLabelPositions, this.textSize, this.size.width, this.size.height);
 			// Render sets
-			var sets = Render.lineSets(this.columnLabelPositions, this.points, this.range.max, this.size.height);
+			var sets = Render.lineSets(this.columnLabelPositions, this.points, this.range.max, this.size.height, this.colors);
 			// Render graph
 			var graphLines = Render.graphLines(this.columnLabelPositions, this.rowLabelPositions, this.size.width, this.size.height);
 			this.svg = Render.svg(graphLines, sets, rowLabelText, columnLabelText, this.textSize, this.size.width, this.size.height);
@@ -232,7 +229,7 @@
 			var columnLabelText = Render.columnLabelText(this.labels, this.columnLabelPositions, this.textSize, this.size.width, this.size.height);
 			var rowLabelText = Render.rowLabelText(this.pointIncrements, this.rowLabelPositions, this.textSize, this.size.width, this.size.height);
 			// Render sets
-			var sets = Render.barSets(this.columnLabelPositions, this.points, this.pointIncrements[0], this.size.height);
+			var sets = Render.barSets(this.columnLabelPositions, this.points, this.pointIncrements[0], this.size.height, this.colors);
 			// Render graph
 			var graphLines = Render.graphLines(this.columnLabelPositions, this.rowLabelPositions, this.size.width, this.size.height);
 			this.svg = Render.svg(graphLines, sets, rowLabelText, columnLabelText, this.textSize, this.size.width, this.size.height);
@@ -247,7 +244,7 @@
 			var columnLabelText = Render.columnLabelText(this.pointIncrements.reverse(), this.columnLabelPositions, this.textSize, this.size.width, this.size.height);
 			var rowLabelText = Render.rowLabelText(this.labels, this.rowLabelPositions, this.textSize, this.size.width, this.size.height);
 			// Render sets
-			var sets = Render.barSetsHorizontal(this.rowLabelPositions, this.points, this.pointIncrements[this.pointIncrements.length - 1], this.size.width);
+			var sets = Render.barSetsHorizontal(this.rowLabelPositions, this.points, this.pointIncrements[this.pointIncrements.length - 1], this.size.width, this.colors);
 			// Render graph
 			var graphLines = Render.graphLines(this.columnLabelPositions, this.rowLabelPositions, this.size.width, this.size.height);
 			this.svg = Render.svg(graphLines, sets, rowLabelText, columnLabelText, this.textSize, this.size.width, this.size.height);
@@ -255,9 +252,8 @@
 
 		this.pieMakeSvg = function() {
 			this.range = Utils.getMinMax(this.points);
-			var sets = Render.pieSets(this.points, this.range, this.size.width, this.size.height);
+			var sets = Render.pieSets(this.points, this.range, this.size.width, this.size.height, this.colors);
 			this.svg = Render.svg(null, sets, null, null, this.textSize, this.size.width, this.size.height);
-			console.log(this.range);
 		}
 
 		/**
@@ -265,6 +261,7 @@
 		 *
 		 */
 		this.render = function() {
+			this.colors = ['#2388F2', '#F65237', '#0DEFA5', '#9B7CF3'];
 			switch(this.type) {
 				case 'line':
 					this.lineMakeSvg();
@@ -482,13 +479,13 @@
 		return lines;
 	};
 
-	Render.prototype.lineSets = function(columnPositions, sets, yMax, height) {
-		var colors = ['#2388F2', '#F65237', '#0DEFA5', '#9B7CF3'];
+	Render.prototype.lineSets = function(columnPositions, sets, yMax, height, colors) {
 		var paths = [];
 		sets.forEach(function(set, index, array) {
 			var newSet = [];
 			set.forEach(function(y, index, array) {
-				newSet.push([columnPositions[index], Utils.calculateY(y, yMax, height)]);
+				var type = (index > 0) ? '' : 'M';
+				newSet.push({type: type, values: [columnPositions[index], Utils.calculateY(y, yMax, height)]});
 			});
 			var path = Draw.path({ fill: 'transparent', stroke: colors[index], strokeWidth: '6', strokeLinecap: 'round' }, newSet);
 			paths.push(path);
@@ -496,8 +493,7 @@
 		return paths;
 	};
 
-	Render.prototype.barSets = function(columnPositions, sets, yMax, height) {
-		var colors = ['#2388F2', '#F65237', '#0DEFA5', '#9B7CF3'];
+	Render.prototype.barSets = function(columnPositions, sets, yMax, height, colors) {
 		var paths = [];
 		sets.forEach(function(set, i, array) {
 			var index = 0;
@@ -513,8 +509,8 @@
 				// Normal
 				if(typeof y === 'number') {
 					var newSet = [
-						[x, Utils.calculateY(0, yMax, height)],
-						[x, Utils.calculateY(y, yMax, height) + (strokeWidth / 2)]
+						{type: 'M', values: [x, Utils.calculateY(0, yMax, height)]},
+						{type: '', values: [x, Utils.calculateY(y, yMax, height) + (strokeWidth / 2)]}
 					];
 					paths.push(Draw.path(shadowAttributes, newSet));
 					paths.push(Draw.path(attributes, newSet));
@@ -527,8 +523,8 @@
 						// Update stroke color since index increases
 						attributes.stroke = colors[index];
 						var newSet = [
-							[x, Utils.calculateY(0, yMax, height)],
-							[x, Utils.calculateY(y1, yMax, height) + (strokeWidth / 2)]
+							{ type: 'M', values: [x, Utils.calculateY(0, yMax, height)] },
+							{ type: '', values: [x, Utils.calculateY(y1, yMax, height) + (strokeWidth / 2)] }
 						];
 						paths.push(Draw.path(shadowAttributes, newSet));
 						paths.push(Draw.path(attributes, newSet));
@@ -540,8 +536,7 @@
 		return paths;
 	};
 
-	Render.prototype.barSetsHorizontal = function(columnPositions, sets, xMax, width) {
-		var colors = ['#2388F2', '#F65237', '#0DEFA5', '#9B7CF3'];
+	Render.prototype.barSetsHorizontal = function(columnPositions, sets, xMax, width, colors) {
 		var paths = [];
 		sets.forEach(function(set, i, array) {
 			var index = 0;
@@ -557,8 +552,8 @@
 				// Normal
 				if(typeof x === 'number') {
 					var newSet = [
-						[Utils.calculateX(0, xMax, width), y],
-						[Utils.calculateX(x, xMax, width) - (strokeWidth / 2), y]
+						{ type: 'M', values: [Utils.calculateX(0, xMax, width), y] },
+						{ type: '', values: [Utils.calculateX(x, xMax, width) - (strokeWidth / 2), y] }
 					];
 					paths.push(Draw.path(shadowAttributes, newSet));
 					paths.push(Draw.path(attributes, newSet));
@@ -571,8 +566,8 @@
 						// Update stroke color since index increases
 						attributes.stroke = colors[index];
 						var newSet = [
-							[Utils.calculateX(0, xMax, width), y],
-							[Utils.calculateX(x1, xMax, width) - (strokeWidth / 2), y]
+							{ type: 'M', values: [Utils.calculateX(0, xMax, width), y] },
+							{ type: '', values: [Utils.calculateX(x1, xMax, width) - (strokeWidth / 2), y] }
 						];
 						paths.push(Draw.path(shadowAttributes, newSet));
 						paths.push(Draw.path(attributes, newSet));
@@ -584,40 +579,32 @@
 		return paths;
 	};
 
-	Render.prototype.pieSets = function(sets, range, width, height) {
-		var colors = ['#2388F2', '#F65237', '#0DEFA5', '#9B7CF3'];
+	Render.prototype.pieSets = function(sets, range, width, height, colors) {
 		var paths = [];
+		var sets = [180, 90, 45, 45];
+
+		var center = { x: (width / 2), y: (height / 2) };
+		var radius = (height / 2);
+		paths.push(Draw.circle({ cx: center.x, cy: center.y, r: radius, fill: 'red' }));
+
 		sets.forEach(function(set, index, array) {
-
-			var center = { x: (width / 2), y: (height / 2) };
-			var radius = (height / 2);
-
-			var attributes = {
-				stroke: 'red',
-				strokeWidth: '2',
-				fill: colors[index]
-			};
-
-			var rotation = -90;
+			var attributes = { fill: colors[index] };
+			var sliceOffset = ((index > 0) ? sets[index - 1] : 0);
+			var rotation = - (sliceOffset + 90);
 			var startAngle = 0 + rotation;
-			var endAngle = 350 + rotation;
+			var endAngle = set + rotation;
 			var splitAngle = 180 + rotation;
-
 			var x1 = Utils.calculateAngleX(center.x, radius, startAngle);
 			var y1 = Utils.calculateAngleY(center.y, radius, startAngle);
-
 			var vectors = [
 				{type: 'M', values: [center.x, center.y]},
 				{type: '',  values: [x1, y1]}
 			];
-
 			var angles = [];
-
 			// If angle is larger than 180, add a arch at 180 degrees
 			if(endAngle > 180) {
 				angles.push(splitAngle);
 			}
-
 			angles.push(endAngle);
 			angles.map(function(angle) {
 				var x2 = Utils.calculateAngleX(center.x, radius, angle);
@@ -625,9 +612,9 @@
 				vectors.push({type: 'A', values: [radius, radius, 0, 0, 1]});
 				vectors.push({type: '',  values: [x2, y2]});
 			});
+			vectors.push({type: 'Z'});
 
-			paths.push(Draw.pathRaw(attributes, vectors));
-
+			paths.push(Draw.path(attributes, vectors));
 		});
 		return paths;
 	};
@@ -679,31 +666,17 @@
 		return circle;
 	}
 
-	Draw.prototype.path = function(attributes, points) {
-		attributes = Utils.attributesToString(attributes);
-		var d = 'M';
-		points.forEach(function(point, index, array) {
-			if(d === '') {
-				d += 'M ';
-			} else {
-				d += ' ';
-			}
-			d += point[0] + ' ' + point[1];
-		});
-		var path = '<path ' + attributes + ' d="' + d + '" />';
-		return path;
-	}
-
-	Draw.prototype.pathRaw = function(attributes, vectors) {
+	Draw.prototype.path = function(attributes, vectors) {
 		attributes = Utils.attributesToString(attributes);
 		var d = '';
 		vectors.forEach(function(vector, index, array) {
 			d += vector.type;
-			vector.values.map(function(value) {
-				d += value + ' ';
-			});
+			if(vector.values) {
+				vector.values.map(function(value) {
+					d += value + ' ';
+				});
+			}
 		});
-		d += 'Z';
 		var path = '<path ' + attributes + ' d="' + d + '" />';
 		return path;
 	}

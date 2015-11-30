@@ -21,31 +21,17 @@ Draw.prototype.circle = function(attributes) {
 	return circle;
 }
 
-Draw.prototype.path = function(attributes, points) {
-	attributes = Utils.attributesToString(attributes);
-	var d = 'M';
-	points.forEach(function(point, index, array) {
-		if(d === '') {
-			d += 'M ';
-		} else {
-			d += ' ';
-		}
-		d += point[0] + ' ' + point[1];
-	});
-	var path = '<path ' + attributes + ' d="' + d + '" />';
-	return path;
-}
-
-Draw.prototype.pathRaw = function(attributes, vectors) {
+Draw.prototype.path = function(attributes, vectors) {
 	attributes = Utils.attributesToString(attributes);
 	var d = '';
 	vectors.forEach(function(vector, index, array) {
 		d += vector.type;
-		vector.values.map(function(value) {
-			d += value + ' ';
-		});
+		if(vector.values) {
+			vector.values.map(function(value) {
+				d += value + ' ';
+			});
+		}
 	});
-	d += 'Z';
 	var path = '<path ' + attributes + ' d="' + d + '" />';
 	return path;
 }
