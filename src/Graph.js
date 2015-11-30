@@ -2,10 +2,10 @@
 var Utils = require('./Utils');
 var Render = require('./Render');
 
-var Graph = function(container) {
+var Graph = function() {
 	
 	// Parameters
-	this.container = container;
+	this.container = '';
 	this.type = 'line';
 	this.size = { width: 400, height: 400 };
 	this.increment = 0;
@@ -134,6 +134,10 @@ var Graph = function(container) {
 	 * Setters 
 	 *
 	 */
+	this.setContainer = function(container) {
+		this.container = container;
+	};
+
 	this.setType = function(type) {
 		this.type = type;
 	};

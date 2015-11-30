@@ -8,8 +8,8 @@ var pointsLine = [
 	[15, 70,  70,  50,  60],
 	[0,  40,  80,  90,  90]
 ];
-var containerLine = document.getElementById('graph-line');
-var graphLine = new Graph(containerLine);
+var graphLine = new Graph();
+graphLine.setContainer(document.getElementById('graph-line'));
 graphLine.setType('line');
 graphLine.setSize(300, 150);
 graphLine.setLabels(labelsLine);
@@ -32,8 +32,8 @@ var pointsBar = [
 	[4],
 	[3]
 ];
-var containerBar = document.getElementById('graph-bar');
-var graphBar = new Graph(containerBar);
+var graphBar = new Graph();
+graphBar.setContainer(document.getElementById('graph-bar'));
 graphBar.setType('bar');
 graphBar.setSize(350, 150);
 graphBar.setLabels(labelsBar);
@@ -50,8 +50,8 @@ var pointsBarMulti = [
 	[1650, [800, 400]],
 	[[1500, 1000, 500]],
 ];
-var containerBarMulti = document.getElementById('graph-bar-multi');
-var graphBarMulti = new Graph(containerBarMulti);
+var graphBarMulti = new Graph();
+graphBarMulti.setContainer(document.getElementById('graph-bar-multi'));
 graphBarMulti.setType('bar');
 graphBarMulti.setSize(300, 150);
 graphBarMulti.setLabels(labelsBarMulti);
@@ -67,8 +67,8 @@ var pointsBarMultiStack = [
 	[[450]],
 	[[1200]]
 ];
-var containerBarMultiStack = document.getElementById('graph-bar-multi-stack');
-var graphBarMultiStack = new Graph(containerBarMultiStack);
+var graphBarMultiStack = new Graph();
+graphBarMultiStack.setContainer(document.getElementById('graph-bar-multi-stack'));
 graphBarMultiStack.setType('bar');
 graphBarMultiStack.setSize(300, 150);
 graphBarMultiStack.setLabels(labelsBarMultiStack);
@@ -83,8 +83,8 @@ var pointsBarMultiStackHorizontal = [
 	[[200, 800, 700]],
 	[[450, 100]]
 ];
-var containerBarMultiStackHorizontal = document.getElementById('graph-bar-multi-stack-horizontal');
-var graphBarMultiStackHorizontal = new Graph(containerBarMultiStackHorizontal);
+var graphBarMultiStackHorizontal = new Graph();
+graphBarMultiStackHorizontal.setContainer(document.getElementById('graph-bar-multi-stack-horizontal'));
 graphBarMultiStackHorizontal.setType('bar');
 graphBarMultiStackHorizontal.setHorizontal(true);
 graphBarMultiStackHorizontal.setSize(300, 150);
@@ -100,8 +100,8 @@ var pointsPie = [
 	[400],
 	[200]
 ];
-var containerPie = document.getElementById('graph-pie');
-var graphPie = new Graph(containerPie);
+var graphPie = new Graph();
+graphPie.setContainer(document.getElementById('graph-pie'));
 graphPie.setType('pie');
 graphPie.setSize(300, 150);
 graphPie.setLabels(labelsPie);
@@ -116,8 +116,8 @@ var pointsDoughnut = [
 	[400],
 	[200]
 ];
-var containerDoughnut = document.getElementById('graph-doughnut');
-var graphDoughnut = new Graph(containerDoughnut);
+var graphDoughnut = new Graph();
+graphDoughnut.setContainer(document.getElementById('graph-doughnut'));
 graphDoughnut.setType('doughnut');
 graphDoughnut.setSize(300, 150);
 graphDoughnut.setLabels(labelsDoughnut);
@@ -129,7 +129,7 @@ graphDoughnut.render();
 window.addEventListener('resize', function(event) {
 	var width = window.innerWidth;
 	var height = window.innerHeight;
-	g.setSize(width, height);
-	g.render();
+	graphDoughnut.setSize(width, height);
+	graphDoughnut.render();
 });
 */
