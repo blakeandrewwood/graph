@@ -4,14 +4,13 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "webpack-dev-server --progress --colors"
+    "start": "webpack --watch --progress --colors"
   },
   "author": "Blake Wood",
   "license": "MIT",
   "devDependencies": {
-    "express": "^4.13.3",
-    "http-proxy": "^1.12.0",
-    "webpack": "^1.12.9",
-    "webpack-dev-server": "^1.14.0"
+    "browser-sync": "^2.10.0",
+    "browser-sync-webpack-plugin": "^1.0.1",
+    "webpack": "^1.12.9"
   }
 }
