@@ -141,14 +141,52 @@ Render.prototype.barSetsHorizontal = function(columnPositions, sets, xMax, width
 	return paths;
 };
 
-Render.prototype.pieSets = function(sets, width, height) {
+Render.prototype.pieSets = function(sets, range, width, height) {
 	var colors = ['#2388F2', '#F65237', '#0DEFA5', '#9B7CF3'];
-	var circles = [];
+	var paths = [];
 	sets.forEach(function(set, index, array) {
-		var attributes = { cx: (width / 2), cy: (height / 2), r: 50, fill: colors[index] };
-		circles.push(Draw.circle(attributes));
+
+		var center = { x: (width / 2), y: (height / 2) };
+		var radius = (height / 2);
+
+		var attributes = {
+			stroke: 'red',
+			strokeWidth: '2',
+			fill: colors[index]
+		};
+
+		var rotation = -90;
+		var startAngle = 0 + rotation;
+		var endAngle = 350 + rotation;
+		var splitAngle = 180 + rotation;
+
+		var x1 = Utils.calculateAngleX(center.x, radius, startAngle);
+		var y1 = Utils.calculateAngleY(center.y, radius, startAngle);
+
+		var vectors = [
+			{type: 'M', values: [center.x, center.y]},
+			{type: '',  values: [x1, y1]}
+		];
+
+		var angles = [];
+
+		// If angle is larger than 180, add a arch at 180 degrees
+		if(endAngle > 180) {
+			angles.push(splitAngle);
+		}
+
+		angles.push(endAngle);
+		angles.map(function(angle) {
+			var x2 = Utils.calculateAngleX(center.x, radius, angle);
+			var y2 = Utils.calculateAngleY(center.y, radius, angle);
+			vectors.push({type: 'A', values: [radius, radius, 0, 0, 1]});
+			vectors.push({type: '',  values: [x2, y2]});
+		});
+
+		paths.push(Draw.pathRaw(attributes, vectors));
+
 	});
-	return circles;
+	return paths;
 };
 
 Render.prototype.svg = function(graph, sets, pointText, labelText, textSize, width, height) {

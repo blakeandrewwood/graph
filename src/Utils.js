@@ -95,6 +95,14 @@ Utils.prototype.reversePosX = function(y, yMin, yMax) {
 	return (yMax + yMin) - y;
 }
 
+Utils.prototype.calculateAngleX = function(rx, radius, angle) {
+	return rx + (radius * Math.cos(Math.PI * (angle / 180)));
+}
+
+Utils.prototype.calculateAngleY = function(ry, radius, angle) {
+	return ry + (radius * Math.sin(Math.PI * (angle / 180)));
+}
+
 Utils.prototype.sortDesc = function(a, b) {
 	return b-a;
 }

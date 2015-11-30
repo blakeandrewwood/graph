@@ -87,7 +87,7 @@ var Graph = function(container) {
 
 	this.pieMakeSvg = function() {
 		this.range = Utils.getMinMax(this.points);
-		var sets = Render.pieSets(this.points, this.size.width, this.size.height);
+		var sets = Render.pieSets(this.points, this.range, this.size.width, this.size.height);
 		this.svg = Render.svg(null, sets, null, null, this.textSize, this.size.width, this.size.height);
 		console.log(this.range);
 	}

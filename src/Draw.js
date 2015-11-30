@@ -36,4 +36,18 @@ Draw.prototype.path = function(attributes, points) {
 	return path;
 }
 
+Draw.prototype.pathRaw = function(attributes, vectors) {
+	attributes = Utils.attributesToString(attributes);
+	var d = '';
+	vectors.forEach(function(vector, index, array) {
+		d += vector.type;
+		vector.values.map(function(value) {
+			d += value + ' ';
+		});
+	});
+	d += 'Z';
+	var path = '<path ' + attributes + ' d="' + d + '" />';
+	return path;
+}
+
 module.exports = new Draw();
