@@ -140,10 +140,10 @@
 
 	var labelsPie = ['Oracle', 'Azure', 'Joyent', 'IBM'];
 	var pointsPie = [
-		[450],
 		[700],
-		[200],
-		[450]
+		[500],
+		[400],
+		[200]
 	];
 	var containerPie = document.getElementById('graph-pie');
 	var graphPie = new Graph(containerPie);
@@ -181,7 +181,13 @@
 		this.range = { min: 0, max: 0 };
 		this.labels = [];
 		this.points = [];
+
+		// Line, Bar
 		this.pointIncrements = [];
+
+		// Pie
+		this.percentages = [];
+
 		this.columnLabelPositions = [];
 		this.rowLabelPositions = [];
 		this.colors = [];
@@ -252,7 +258,9 @@
 
 		this.pieMakeSvg = function() {
 			this.range = Utils.getMinMax(this.points);
-			var sets = Render.pieSets(this.points, this.range, this.size.width, this.size.height, this.colors);
+			this.percentages = Utils.getPercentages(this.points);
+			this.degrees = Utils.getDegrees(this.percentages);
+			var sets = Render.pieSets(this.degrees, this.size.width, this.size.height, this.colors);
 			this.svg = Render.svg(null, sets, null, null, this.textSize, this.size.width, this.size.height);
 		}
 
@@ -365,6 +373,26 @@
 		}
 		items.reverse();
 		return items;
+	}
+
+	Utils.prototype.getPercentages = function(points) {
+		var percentages = [];
+		var flatten = this.flattenPoints(points);
+		var sum = flatten.reduce(function(pv, cv) {
+			return pv + cv;
+		}, 0);
+		points.map(function(point) {
+			percentages.push((point[0] / sum));
+		});
+		return percentages;
+	}
+
+	Utils.prototype.getDegrees = function(percentages) {
+		var degrees = [];
+		percentages.map(function(percent) {
+			degrees.push(percent * 360);
+		});
+		return degrees;
 	}
 
 	Utils.prototype.getMinMax = function(points) {
@@ -579,20 +607,21 @@
 		return paths;
 	};
 
-	Render.prototype.pieSets = function(sets, range, width, height, colors) {
+	Render.prototype.pieSets = function(sets, width, height, colors) {
 		var paths = [];
-		var sets = [180, 90, 45, 45];
-
 		var center = { x: (width / 2), y: (height / 2) };
 		var radius = (height / 2);
-		paths.push(Draw.circle({ cx: center.x, cy: center.y, r: radius, fill: 'red' }));
-
+		paths.push(Draw.filterShadow('pie-shadow', 8));
+		paths.push(Draw.circle({ id: 'pie-clip', cx: center.x, cy: center.y, r: radius - 1, filter: 'url(#pie-shadow)' }));
+		sets.sort(Utils.sortDesc);
+		var lastEndAngle = 0;
 		sets.forEach(function(set, index, array) {
 			var attributes = { fill: colors[index] };
-			var sliceOffset = ((index > 0) ? sets[index - 1] : 0);
-			var rotation = - (sliceOffset + 90);
+			var sliceOffset = ((index > 0) ? lastEndAngle : 0);
+			var rotation = -90 + sliceOffset;
 			var startAngle = 0 + rotation;
 			var endAngle = set + rotation;
+			lastEndAngle += set;
 			var splitAngle = 180 + rotation;
 			var x1 = Utils.calculateAngleX(center.x, radius, startAngle);
 			var y1 = Utils.calculateAngleY(center.y, radius, startAngle);
@@ -602,7 +631,7 @@
 			];
 			var angles = [];
 			// If angle is larger than 180, add a arch at 180 degrees
-			if(endAngle > 180) {
+			if(set > 180) {
 				angles.push(splitAngle);
 			}
 			angles.push(endAngle);
@@ -613,7 +642,6 @@
 				vectors.push({type: '',  values: [x2, y2]});
 			});
 			vectors.push({type: 'Z'});
-
 			paths.push(Draw.path(attributes, vectors));
 		});
 		return paths;
@@ -680,6 +708,32 @@
 		var path = '<path ' + attributes + ' d="' + d + '" />';
 		return path;
 	}
+
+	Draw.prototype.filterShadow = function(id, stdDeviation) {
+		var filterAttributes = Utils.attributesToString({
+			id: id, width: '200%', height: '200%'
+		});
+		var feOffsetAttributes = Utils.attributesToString({
+			result: 'offOut', in: 'SourceAlpha', dx: 0, dy: 0 
+		});
+		var feGaussianBlurAttributes = Utils.attributesToString({
+			result: 'blurOut', in: 'offOut'
+		});
+		var feBlendAttributes = Utils.attributesToString({
+			in: 'SourceGraphic', in2: 'blurOut', mode: 'normal' 
+		});
+		var filter = [
+			'<defs>',
+				'<filter ' + filterAttributes + '>',
+					'<feOffset ' + feOffsetAttributes + ' />',
+					'<feGaussianBlur ' + feGaussianBlurAttributes + ' stdDeviation="' + stdDeviation + '" />',
+					'<feBlend ' + feBlendAttributes + ' />',
+				'</filter>',
+			'</defs>'
+		]; 
+		return filter;
+	}
+
 
 	module.exports = new Draw();
 

@@ -94,10 +94,10 @@ graphBarMultiStackHorizontal.render();
 
 var labelsPie = ['Oracle', 'Azure', 'Joyent', 'IBM'];
 var pointsPie = [
-	[450],
 	[700],
-	[200],
-	[450]
+	[500],
+	[400],
+	[200]
 ];
 var containerPie = document.getElementById('graph-pie');
 var graphPie = new Graph(containerPie);

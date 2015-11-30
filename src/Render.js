@@ -139,20 +139,21 @@ Render.prototype.barSetsHorizontal = function(columnPositions, sets, xMax, width
 	return paths;
 };
 
-Render.prototype.pieSets = function(sets, range, width, height, colors) {
+Render.prototype.pieSets = function(sets, width, height, colors) {
 	var paths = [];
-	var sets = [180, 90, 45, 45];
-
 	var center = { x: (width / 2), y: (height / 2) };
 	var radius = (height / 2);
-	paths.push(Draw.circle({ cx: center.x, cy: center.y, r: radius, fill: 'red' }));
-
+	paths.push(Draw.filterShadow('pie-shadow', 8));
+	paths.push(Draw.circle({ id: 'pie-clip', cx: center.x, cy: center.y, r: radius - 1, filter: 'url(#pie-shadow)' }));
+	sets.sort(Utils.sortDesc);
+	var lastEndAngle = 0;
 	sets.forEach(function(set, index, array) {
 		var attributes = { fill: colors[index] };
-		var sliceOffset = ((index > 0) ? sets[index - 1] : 0);
-		var rotation = - (sliceOffset + 90);
+		var sliceOffset = ((index > 0) ? lastEndAngle : 0);
+		var rotation = -90 + sliceOffset;
 		var startAngle = 0 + rotation;
 		var endAngle = set + rotation;
+		lastEndAngle += set;
 		var splitAngle = 180 + rotation;
 		var x1 = Utils.calculateAngleX(center.x, radius, startAngle);
 		var y1 = Utils.calculateAngleY(center.y, radius, startAngle);
@@ -162,7 +163,7 @@ Render.prototype.pieSets = function(sets, range, width, height, colors) {
 		];
 		var angles = [];
 		// If angle is larger than 180, add a arch at 180 degrees
-		if(endAngle > 180) {
+		if(set > 180) {
 			angles.push(splitAngle);
 		}
 		angles.push(endAngle);
@@ -173,7 +174,6 @@ Render.prototype.pieSets = function(sets, range, width, height, colors) {
 			vectors.push({type: '',  values: [x2, y2]});
 		});
 		vectors.push({type: 'Z'});
-
 		paths.push(Draw.path(attributes, vectors));
 	});
 	return paths;

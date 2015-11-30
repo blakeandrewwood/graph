@@ -36,4 +36,30 @@ Draw.prototype.path = function(attributes, vectors) {
 	return path;
 }
 
+Draw.prototype.filterShadow = function(id, stdDeviation) {
+	var filterAttributes = Utils.attributesToString({
+		id: id, width: '200%', height: '200%'
+	});
+	var feOffsetAttributes = Utils.attributesToString({
+		result: 'offOut', in: 'SourceAlpha', dx: 0, dy: 0 
+	});
+	var feGaussianBlurAttributes = Utils.attributesToString({
+		result: 'blurOut', in: 'offOut'
+	});
+	var feBlendAttributes = Utils.attributesToString({
+		in: 'SourceGraphic', in2: 'blurOut', mode: 'normal' 
+	});
+	var filter = [
+		'<defs>',
+			'<filter ' + filterAttributes + '>',
+				'<feOffset ' + feOffsetAttributes + ' />',
+				'<feGaussianBlur ' + feGaussianBlurAttributes + ' stdDeviation="' + stdDeviation + '" />',
+				'<feBlend ' + feBlendAttributes + ' />',
+			'</filter>',
+		'</defs>'
+	]; 
+	return filter;
+}
+
+
 module.exports = new Draw();

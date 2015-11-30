@@ -13,7 +13,13 @@ var Graph = function(container) {
 	this.range = { min: 0, max: 0 };
 	this.labels = [];
 	this.points = [];
+
+	// Line, Bar
 	this.pointIncrements = [];
+
+	// Pie
+	this.percentages = [];
+
 	this.columnLabelPositions = [];
 	this.rowLabelPositions = [];
 	this.colors = [];
@@ -84,7 +90,9 @@ var Graph = function(container) {
 
 	this.pieMakeSvg = function() {
 		this.range = Utils.getMinMax(this.points);
-		var sets = Render.pieSets(this.points, this.range, this.size.width, this.size.height, this.colors);
+		this.percentages = Utils.getPercentages(this.points);
+		this.degrees = Utils.getDegrees(this.percentages);
+		var sets = Render.pieSets(this.degrees, this.size.width, this.size.height, this.colors);
 		this.svg = Render.svg(null, sets, null, null, this.textSize, this.size.width, this.size.height);
 	}
 
