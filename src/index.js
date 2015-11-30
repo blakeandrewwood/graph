@@ -1,5 +1,6 @@
 var Graph = require('./Graph');
 
+/*
 var labelsLine = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
 var pointsLine = [
 	[10, 50, 150, 175, 130],
@@ -91,6 +92,7 @@ graphBarMultiStackHorizontal.setLabels(labelsBarMultiStackHorizontal);
 graphBarMultiStackHorizontal.setIncrement(500);
 graphBarMultiStackHorizontal.setPoints(pointsBarMultiStackHorizontal);
 graphBarMultiStackHorizontal.render();
+*/
 
 var labelsPie = ['Oracle', 'Azure', 'Joyent', 'IBM'];
 var pointsPie = [
@@ -106,6 +108,21 @@ graphPie.setSize(300, 150);
 graphPie.setLabels(labelsPie);
 graphPie.setPoints(pointsPie);
 graphPie.render();
+
+var labelsDoughnut = ['Oracle', 'Azure', 'Joyent', 'IBM'];
+var pointsDoughnut = [
+	[700],
+	[500],
+	[400],
+	[200]
+];
+var containerDoughnut = document.getElementById('graph-doughnut');
+var graphDoughnut = new Graph(containerDoughnut);
+graphDoughnut.setType('doughnut');
+graphDoughnut.setSize(300, 150);
+graphDoughnut.setLabels(labelsDoughnut);
+graphDoughnut.setPoints(pointsDoughnut);
+graphDoughnut.render();
 
 /*
 window.addEventListener('resize', function(event) {

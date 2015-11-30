@@ -139,12 +139,10 @@ Render.prototype.barSetsHorizontal = function(columnPositions, sets, xMax, width
 	return paths;
 };
 
-Render.prototype.pieSets = function(sets, width, height, colors) {
-	var paths = [];
+Render.prototype.pieSets = function(sets, width, height, colors, shadow) {
+	var slices = [];
 	var center = { x: (width / 2), y: (height / 2) };
 	var radius = (height / 2);
-	paths.push(Draw.filterShadow('pie-shadow', 8));
-	paths.push(Draw.circle({ id: 'pie-clip', cx: center.x, cy: center.y, r: radius - 1, filter: 'url(#pie-shadow)' }));
 	sets.sort(Utils.sortDesc);
 	var lastEndAngle = 0;
 	sets.forEach(function(set, index, array) {
@@ -174,8 +172,60 @@ Render.prototype.pieSets = function(sets, width, height, colors) {
 			vectors.push({type: '',  values: [x2, y2]});
 		});
 		vectors.push({type: 'Z'});
-		paths.push(Draw.path(attributes, vectors));
+		slices.push(Draw.path(attributes, vectors));
 	});
+
+	// Compose
+	var paths = []
+	var group = Draw.group({}, slices);
+	paths.push(Draw.filterShadow('pie-shadow', 8));
+	paths.push(Draw.group({filter: 'url(#pie-shadow)', opacity: 0.2}, group));
+	paths.push(group);
+
+	// Return
+	return paths;
+};
+
+Render.prototype.doughnutSets = function(sets, width, height, colors) {
+	var center = { x: (width / 2), y: (height / 2) };
+	var radius1 = (height / 2);
+	var radius2 = radius1 - 40;
+	var attributes = { fill: 'yellow', stroke: 'yellow', strokeWidth: '2' };
+	var x1 = Utils.calculateAngleX(center.x, radius1, 0);
+	var y1 = Utils.calculateAngleY(center.y, radius1, 0);
+	var x2 = Utils.calculateAngleX(center.x, radius1, 180);
+	var y2 = Utils.calculateAngleY(center.y, radius1, 180);
+	var x3 = Utils.calculateAngleX(center.x, radius2, 0);
+	var y3 = Utils.calculateAngleY(center.y, radius2, 0);
+	var x4 = Utils.calculateAngleX(center.x, radius2, 180);
+	var y4 = Utils.calculateAngleY(center.y, radius2, 180);
+	var vectors = [
+		{type: 'M', values: [x1, y1]},
+		{type: 'A', values: [radius1, radius1, 0, 0, 1]},
+		{type: '', values: [x2, y2]},
+		{type: 'A', values: [radius1, radius1, 0, 0, 1]},
+		{type: '', values: [x1, y1]},
+		{type: 'Z'},
+		{type: 'M', values: [x3, y3]},
+		{type: 'A', values: [radius2, radius2, 0, 0, 0]},
+		{type: '', values: [x4, y4]},
+		{type: 'A', values: [radius2, radius2, 0, 0, 0]},
+		{type: '', values: [x3, y3]},
+		{type: 'Z'},
+	];
+
+	// Compose
+	var paths = [];
+	var doughnut = Draw.path(attributes, vectors);
+	paths.push(Draw.clipPath('doughnut-clip', doughnut));
+	paths.push(Draw.filterShadow('doughnut-shadow', 8));
+	var pie = this.pieSets(sets, width, height, colors, false);
+	var group = Draw.group({clipPath: 'url(#doughnut-clip)'}, pie);
+	var shadow = Draw.group({filter: 'url(#doughnut-shadow)', opacity: 0.2}, group);
+	paths.push(shadow);
+	paths.push(group);
+
+	// Return
 	return paths;
 };
 

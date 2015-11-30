@@ -7,19 +7,19 @@ Draw.prototype.text = function(attributes, children) {
 	attributes = Utils.attributesToString(attributes);
 	var text = '<text ' + attributes + '>' + children + '</text>';
 	return text;
-}
+};
 
 Draw.prototype.line = function(attributes) {
 	attributes = Utils.attributesToString(attributes);
 	var line = '<line ' + attributes + '/>';
 	return line;
-}
+};
 
 Draw.prototype.circle = function(attributes) {
 	attributes = Utils.attributesToString(attributes);
 	var circle = '<circle ' + attributes + '/>';
 	return circle;
-}
+};
 
 Draw.prototype.path = function(attributes, vectors) {
 	attributes = Utils.attributesToString(attributes);
@@ -32,34 +32,56 @@ Draw.prototype.path = function(attributes, vectors) {
 			});
 		}
 	});
-	var path = '<path ' + attributes + ' d="' + d + '" />';
+	var path = '<path ' + attributes + ' d="' + d.trim() + '" />';
 	return path;
-}
+};
 
 Draw.prototype.filterShadow = function(id, stdDeviation) {
 	var filterAttributes = Utils.attributesToString({
 		id: id, width: '200%', height: '200%'
 	});
-	var feOffsetAttributes = Utils.attributesToString({
-		result: 'offOut', in: 'SourceAlpha', dx: 0, dy: 0 
-	});
 	var feGaussianBlurAttributes = Utils.attributesToString({
-		result: 'blurOut', in: 'offOut'
+		in: 'SourceAlpha', result: 'blurOut'
+	});
+	var feOffsetAttributes = Utils.attributesToString({
+		in: 'blurOut', result: 'offOut', dx: 0, dy: 0
 	});
 	var feBlendAttributes = Utils.attributesToString({
-		in: 'SourceGraphic', in2: 'blurOut', mode: 'normal' 
+		in: 'offOut', mode: 'normal' 
 	});
 	var filter = [
 		'<defs>',
 			'<filter ' + filterAttributes + '>',
-				'<feOffset ' + feOffsetAttributes + ' />',
 				'<feGaussianBlur ' + feGaussianBlurAttributes + ' stdDeviation="' + stdDeviation + '" />',
+				'<feOffset ' + feOffsetAttributes + ' />',
 				'<feBlend ' + feBlendAttributes + ' />',
 			'</filter>',
 		'</defs>'
 	]; 
 	return filter;
-}
+};
+
+Draw.prototype.clipPath = function(id, path) {
+	var clipPathAttributes = Utils.attributesToString({ id: id });
+	var clipPath = [
+		'<defs>',
+			'<clipPath ' + clipPathAttributes + '>',
+				path,
+			'</clipPath>',
+		'</defs>'
+	]; 
+	return clipPath;
+};
+
+Draw.prototype.group = function(attributes, children) {
+	var groupAttributes = Utils.attributesToString(attributes);
+	var group = [
+		'<g ' + groupAttributes + '>',
+			children,
+		'</g>'
+	];
+	return group;
+};
 
 
 module.exports = new Draw();

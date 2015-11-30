@@ -30,13 +30,19 @@ var Graph = function(container) {
 	 * Setup 
 	 *
 	 */
-	this.makeCalculations = function() {
+	this.makeLineBarCalculations = function() {
 		this.range = Utils.getMinMax(this.points);
 		this.pointIncrements = Utils.getPointIncrements(this.range.max, this.increment);
 	}
 
+	this.makePieDoughnutCalculations = function() {
+		this.range = Utils.getMinMax(this.points);
+		this.percentages = Utils.getPercentages(this.points);
+		this.degrees = Utils.getDegrees(this.percentages);
+	}
+
 	this.lineMakeSvg = function() {
-		this.makeCalculations();
+		this.makeLineBarCalculations();
 		// Calculate grid positions
 		this.columnLabelPositions = Utils.calculateColumnPositions(this.labels, this.size.width);
 		this.rowLabelPositions = Utils.calculateRowPositions(this.pointIncrements, this.size.height);
@@ -59,7 +65,7 @@ var Graph = function(container) {
 	}
 
 	this.barVerticalSvg = function() {
-		this.makeCalculations();
+		this.makeLineBarCalculations();
 		// Calculate grid positions
 		this.columnLabelPositions = Utils.calculateColumnPositions(this.labels, this.size.width);
 		this.rowLabelPositions = Utils.calculateRowPositions(this.pointIncrements, this.size.height);
@@ -74,7 +80,7 @@ var Graph = function(container) {
 	}
 
 	this.barHorizontalSvg = function() {
-		this.makeCalculations();
+		this.makeLineBarCalculations();
 		// Calculate grid positions
 		this.columnLabelPositions = Utils.calculateColumnPositions(this.pointIncrements, this.size.width);
 		this.rowLabelPositions = Utils.calculateRowPositions(this.labels, this.size.height);
@@ -89,10 +95,14 @@ var Graph = function(container) {
 	}
 
 	this.pieMakeSvg = function() {
-		this.range = Utils.getMinMax(this.points);
-		this.percentages = Utils.getPercentages(this.points);
-		this.degrees = Utils.getDegrees(this.percentages);
+		this.makePieDoughnutCalculations();
 		var sets = Render.pieSets(this.degrees, this.size.width, this.size.height, this.colors);
+		this.svg = Render.svg(null, sets, null, null, this.textSize, this.size.width, this.size.height);
+	}
+
+	this.doughnutMakeSvg = function() {
+		this.makePieDoughnutCalculations();
+		var sets = Render.doughnutSets(this.degrees, this.size.width, this.size.height, this.colors);
 		this.svg = Render.svg(null, sets, null, null, this.textSize, this.size.width, this.size.height);
 	}
 
@@ -111,6 +121,9 @@ var Graph = function(container) {
 				break;
 			case 'pie':
 				this.pieMakeSvg();
+				break;
+			case 'doughnut':
+				this.doughnutMakeSvg();
 				break;
 		}
 		this.container.innerHTML = this.svg;

@@ -46,6 +46,7 @@
 
 	var Graph = __webpack_require__(1);
 
+	/*
 	var labelsLine = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
 	var pointsLine = [
 		[10, 50, 150, 175, 130],
@@ -137,6 +138,7 @@
 	graphBarMultiStackHorizontal.setIncrement(500);
 	graphBarMultiStackHorizontal.setPoints(pointsBarMultiStackHorizontal);
 	graphBarMultiStackHorizontal.render();
+	*/
 
 	var labelsPie = ['Oracle', 'Azure', 'Joyent', 'IBM'];
 	var pointsPie = [
@@ -152,6 +154,21 @@
 	graphPie.setLabels(labelsPie);
 	graphPie.setPoints(pointsPie);
 	graphPie.render();
+
+	var labelsDoughnut = ['Oracle', 'Azure', 'Joyent', 'IBM'];
+	var pointsDoughnut = [
+		[700],
+		[500],
+		[400],
+		[200]
+	];
+	var containerDoughnut = document.getElementById('graph-doughnut');
+	var graphDoughnut = new Graph(containerDoughnut);
+	graphDoughnut.setType('doughnut');
+	graphDoughnut.setSize(300, 150);
+	graphDoughnut.setLabels(labelsDoughnut);
+	graphDoughnut.setPoints(pointsDoughnut);
+	graphDoughnut.render();
 
 	/*
 	window.addEventListener('resize', function(event) {
@@ -198,13 +215,19 @@
 		 * Setup 
 		 *
 		 */
-		this.makeCalculations = function() {
+		this.makeLineBarCalculations = function() {
 			this.range = Utils.getMinMax(this.points);
 			this.pointIncrements = Utils.getPointIncrements(this.range.max, this.increment);
 		}
 
+		this.makePieDoughnutCalculations = function() {
+			this.range = Utils.getMinMax(this.points);
+			this.percentages = Utils.getPercentages(this.points);
+			this.degrees = Utils.getDegrees(this.percentages);
+		}
+
 		this.lineMakeSvg = function() {
-			this.makeCalculations();
+			this.makeLineBarCalculations();
 			// Calculate grid positions
 			this.columnLabelPositions = Utils.calculateColumnPositions(this.labels, this.size.width);
 			this.rowLabelPositions = Utils.calculateRowPositions(this.pointIncrements, this.size.height);
@@ -227,7 +250,7 @@
 		}
 
 		this.barVerticalSvg = function() {
-			this.makeCalculations();
+			this.makeLineBarCalculations();
 			// Calculate grid positions
 			this.columnLabelPositions = Utils.calculateColumnPositions(this.labels, this.size.width);
 			this.rowLabelPositions = Utils.calculateRowPositions(this.pointIncrements, this.size.height);
@@ -242,7 +265,7 @@
 		}
 
 		this.barHorizontalSvg = function() {
-			this.makeCalculations();
+			this.makeLineBarCalculations();
 			// Calculate grid positions
 			this.columnLabelPositions = Utils.calculateColumnPositions(this.pointIncrements, this.size.width);
 			this.rowLabelPositions = Utils.calculateRowPositions(this.labels, this.size.height);
@@ -257,10 +280,14 @@
 		}
 
 		this.pieMakeSvg = function() {
-			this.range = Utils.getMinMax(this.points);
-			this.percentages = Utils.getPercentages(this.points);
-			this.degrees = Utils.getDegrees(this.percentages);
+			this.makePieDoughnutCalculations();
 			var sets = Render.pieSets(this.degrees, this.size.width, this.size.height, this.colors);
+			this.svg = Render.svg(null, sets, null, null, this.textSize, this.size.width, this.size.height);
+		}
+
+		this.doughnutMakeSvg = function() {
+			this.makePieDoughnutCalculations();
+			var sets = Render.doughnutSets(this.degrees, this.size.width, this.size.height, this.colors);
 			this.svg = Render.svg(null, sets, null, null, this.textSize, this.size.width, this.size.height);
 		}
 
@@ -279,6 +306,9 @@
 					break;
 				case 'pie':
 					this.pieMakeSvg();
+					break;
+				case 'doughnut':
+					this.doughnutMakeSvg();
 					break;
 			}
 			this.container.innerHTML = this.svg;
@@ -607,12 +637,10 @@
 		return paths;
 	};
 
-	Render.prototype.pieSets = function(sets, width, height, colors) {
-		var paths = [];
+	Render.prototype.pieSets = function(sets, width, height, colors, shadow) {
+		var slices = [];
 		var center = { x: (width / 2), y: (height / 2) };
 		var radius = (height / 2);
-		paths.push(Draw.filterShadow('pie-shadow', 8));
-		paths.push(Draw.circle({ id: 'pie-clip', cx: center.x, cy: center.y, r: radius - 1, filter: 'url(#pie-shadow)' }));
 		sets.sort(Utils.sortDesc);
 		var lastEndAngle = 0;
 		sets.forEach(function(set, index, array) {
@@ -642,8 +670,60 @@
 				vectors.push({type: '',  values: [x2, y2]});
 			});
 			vectors.push({type: 'Z'});
-			paths.push(Draw.path(attributes, vectors));
+			slices.push(Draw.path(attributes, vectors));
 		});
+
+		// Compose
+		var paths = []
+		var group = Draw.group({}, slices);
+		paths.push(Draw.filterShadow('pie-shadow', 8));
+		paths.push(Draw.group({filter: 'url(#pie-shadow)', opacity: 0.2}, group));
+		paths.push(group);
+
+		// Return
+		return paths;
+	};
+
+	Render.prototype.doughnutSets = function(sets, width, height, colors) {
+		var center = { x: (width / 2), y: (height / 2) };
+		var radius1 = (height / 2);
+		var radius2 = radius1 - 40;
+		var attributes = { fill: 'yellow', stroke: 'yellow', strokeWidth: '2' };
+		var x1 = Utils.calculateAngleX(center.x, radius1, 0);
+		var y1 = Utils.calculateAngleY(center.y, radius1, 0);
+		var x2 = Utils.calculateAngleX(center.x, radius1, 180);
+		var y2 = Utils.calculateAngleY(center.y, radius1, 180);
+		var x3 = Utils.calculateAngleX(center.x, radius2, 0);
+		var y3 = Utils.calculateAngleY(center.y, radius2, 0);
+		var x4 = Utils.calculateAngleX(center.x, radius2, 180);
+		var y4 = Utils.calculateAngleY(center.y, radius2, 180);
+		var vectors = [
+			{type: 'M', values: [x1, y1]},
+			{type: 'A', values: [radius1, radius1, 0, 0, 1]},
+			{type: '', values: [x2, y2]},
+			{type: 'A', values: [radius1, radius1, 0, 0, 1]},
+			{type: '', values: [x1, y1]},
+			{type: 'Z'},
+			{type: 'M', values: [x3, y3]},
+			{type: 'A', values: [radius2, radius2, 0, 0, 0]},
+			{type: '', values: [x4, y4]},
+			{type: 'A', values: [radius2, radius2, 0, 0, 0]},
+			{type: '', values: [x3, y3]},
+			{type: 'Z'},
+		];
+
+		// Compose
+		var paths = [];
+		var doughnut = Draw.path(attributes, vectors);
+		paths.push(Draw.clipPath('doughnut-clip', doughnut));
+		paths.push(Draw.filterShadow('doughnut-shadow', 8));
+		var pie = this.pieSets(sets, width, height, colors, false);
+		var group = Draw.group({clipPath: 'url(#doughnut-clip)'}, pie);
+		var shadow = Draw.group({filter: 'url(#doughnut-shadow)', opacity: 0.2}, group);
+		paths.push(shadow);
+		paths.push(group);
+
+		// Return
 		return paths;
 	};
 
@@ -680,19 +760,19 @@
 		attributes = Utils.attributesToString(attributes);
 		var text = '<text ' + attributes + '>' + children + '</text>';
 		return text;
-	}
+	};
 
 	Draw.prototype.line = function(attributes) {
 		attributes = Utils.attributesToString(attributes);
 		var line = '<line ' + attributes + '/>';
 		return line;
-	}
+	};
 
 	Draw.prototype.circle = function(attributes) {
 		attributes = Utils.attributesToString(attributes);
 		var circle = '<circle ' + attributes + '/>';
 		return circle;
-	}
+	};
 
 	Draw.prototype.path = function(attributes, vectors) {
 		attributes = Utils.attributesToString(attributes);
@@ -705,34 +785,56 @@
 				});
 			}
 		});
-		var path = '<path ' + attributes + ' d="' + d + '" />';
+		var path = '<path ' + attributes + ' d="' + d.trim() + '" />';
 		return path;
-	}
+	};
 
 	Draw.prototype.filterShadow = function(id, stdDeviation) {
 		var filterAttributes = Utils.attributesToString({
 			id: id, width: '200%', height: '200%'
 		});
-		var feOffsetAttributes = Utils.attributesToString({
-			result: 'offOut', in: 'SourceAlpha', dx: 0, dy: 0 
-		});
 		var feGaussianBlurAttributes = Utils.attributesToString({
-			result: 'blurOut', in: 'offOut'
+			in: 'SourceAlpha', result: 'blurOut'
+		});
+		var feOffsetAttributes = Utils.attributesToString({
+			in: 'blurOut', result: 'offOut', dx: 0, dy: 0
 		});
 		var feBlendAttributes = Utils.attributesToString({
-			in: 'SourceGraphic', in2: 'blurOut', mode: 'normal' 
+			in: 'offOut', mode: 'normal' 
 		});
 		var filter = [
 			'<defs>',
 				'<filter ' + filterAttributes + '>',
-					'<feOffset ' + feOffsetAttributes + ' />',
 					'<feGaussianBlur ' + feGaussianBlurAttributes + ' stdDeviation="' + stdDeviation + '" />',
+					'<feOffset ' + feOffsetAttributes + ' />',
 					'<feBlend ' + feBlendAttributes + ' />',
 				'</filter>',
 			'</defs>'
 		]; 
 		return filter;
-	}
+	};
+
+	Draw.prototype.clipPath = function(id, path) {
+		var clipPathAttributes = Utils.attributesToString({ id: id });
+		var clipPath = [
+			'<defs>',
+				'<clipPath ' + clipPathAttributes + '>',
+					path,
+				'</clipPath>',
+			'</defs>'
+		]; 
+		return clipPath;
+	};
+
+	Draw.prototype.group = function(attributes, children) {
+		var groupAttributes = Utils.attributesToString(attributes);
+		var group = [
+			'<g ' + groupAttributes + '>',
+				children,
+			'</g>'
+		];
+		return group;
+	};
 
 
 	module.exports = new Draw();
