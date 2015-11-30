@@ -53,7 +53,7 @@ Render.prototype.lineSets = function(columnPositions, sets, yMax, height, colors
 	return paths;
 };
 
-Render.prototype.barSets = function(columnPositions, sets, yMax, height, colors) {
+Render.prototype.barSets = function(columnPositions, sets, yMax, height, colors, shadow) {
 	var paths = [];
 	sets.forEach(function(set, i, array) {
 		var index = 0;
@@ -72,7 +72,9 @@ Render.prototype.barSets = function(columnPositions, sets, yMax, height, colors)
 					{type: 'M', values: [x, Utils.calculateY(0, yMax, height)]},
 					{type: '', values: [x, Utils.calculateY(y, yMax, height) + (strokeWidth / 2)]}
 				];
-				paths.push(Draw.path(shadowAttributes, newSet));
+				if(shadow) {
+					paths.push(Draw.path(shadowAttributes, newSet));
+				}
 				paths.push(Draw.path(attributes, newSet));
 				index++;
 			}
@@ -86,7 +88,9 @@ Render.prototype.barSets = function(columnPositions, sets, yMax, height, colors)
 						{ type: 'M', values: [x, Utils.calculateY(0, yMax, height)] },
 						{ type: '', values: [x, Utils.calculateY(y1, yMax, height) + (strokeWidth / 2)] }
 					];
-					paths.push(Draw.path(shadowAttributes, newSet));
+					if(shadow) {
+						paths.push(Draw.path(shadowAttributes, newSet));
+					}
 					paths.push(Draw.path(attributes, newSet));
 					index++;
 				});
@@ -96,7 +100,7 @@ Render.prototype.barSets = function(columnPositions, sets, yMax, height, colors)
 	return paths;
 };
 
-Render.prototype.barSetsHorizontal = function(columnPositions, sets, xMax, width, colors) {
+Render.prototype.barSetsHorizontal = function(columnPositions, sets, xMax, width, colors, shadow) {
 	var paths = [];
 	sets.forEach(function(set, i, array) {
 		var index = 0;
@@ -105,8 +109,8 @@ Render.prototype.barSetsHorizontal = function(columnPositions, sets, xMax, width
 			var strokeWidth = 16;
 			var gutter = -(strokeWidth / 4);
 			var shadowOffset = (strokeWidth / 3);
-			var offset = ((strokeWidth + gutter) * (set.length - 1)) / 2;
 			var shadowAttributes = {transform: 'translate(' + shadowOffset + ', 0)', opacity: '0.15', fill: 'transparent', stroke: '#000', strokeWidth: strokeWidth, strokeLinecap: 'round'};
+			var offset = ((strokeWidth + gutter) * (set.length - 1)) / 2;
 			var attributes = {fill: 'transparent', stroke: colors[index], strokeWidth: strokeWidth, strokeLinecap: 'round'};
 			var y = (columnPositions[i] + (j * (strokeWidth + gutter))) - offset;
 			// Normal
@@ -115,7 +119,9 @@ Render.prototype.barSetsHorizontal = function(columnPositions, sets, xMax, width
 					{ type: 'M', values: [Utils.calculateX(0, xMax, width), y] },
 					{ type: '', values: [Utils.calculateX(x, xMax, width) - (strokeWidth / 2), y] }
 				];
-				paths.push(Draw.path(shadowAttributes, newSet));
+				if(shadow) {
+					paths.push(Draw.path(shadowAttributes, newSet));
+				}
 				paths.push(Draw.path(attributes, newSet));
 				index++;
 			}
@@ -129,7 +135,9 @@ Render.prototype.barSetsHorizontal = function(columnPositions, sets, xMax, width
 						{ type: 'M', values: [Utils.calculateX(0, xMax, width), y] },
 						{ type: '', values: [Utils.calculateX(x1, xMax, width) - (strokeWidth / 2), y] }
 					];
-					paths.push(Draw.path(shadowAttributes, newSet));
+					if(shadow) {
+						paths.push(Draw.path(shadowAttributes, newSet));
+					}
 					paths.push(Draw.path(attributes, newSet));
 					index++;
 				});
@@ -140,11 +148,13 @@ Render.prototype.barSetsHorizontal = function(columnPositions, sets, xMax, width
 };
 
 Render.prototype.pieSets = function(sets, width, height, colors, shadow) {
+	
 	var slices = [];
 	var center = { x: (width / 2), y: (height / 2) };
 	var radius = (height / 2);
 	sets.sort(Utils.sortDesc);
 	var lastEndAngle = 0;
+
 	sets.forEach(function(set, index, array) {
 		var attributes = { fill: colors[index] };
 		var sliceOffset = ((index > 0) ? lastEndAngle : 0);
@@ -178,7 +188,7 @@ Render.prototype.pieSets = function(sets, width, height, colors, shadow) {
 	// Compose
 	var paths = []
 	var group = Draw.group({}, slices);
-	paths.push(Draw.filterShadow('pie-shadow', 8));
+	if(shadow) paths.push(Draw.filterShadow('pie-shadow', 8));
 	paths.push(Draw.group({filter: 'url(#pie-shadow)', opacity: 0.2}, group));
 	paths.push(group);
 
@@ -186,7 +196,9 @@ Render.prototype.pieSets = function(sets, width, height, colors, shadow) {
 	return paths;
 };
 
-Render.prototype.doughnutSets = function(sets, width, height, colors) {
+Render.prototype.doughnutSets = function(sets, width, height, colors, shadow) {
+
+	// Basic calculation
 	var center = { x: (width / 2), y: (height / 2) };
 	var radius1 = (height / 2);
 	var radius2 = radius1 - 40;
@@ -199,6 +211,8 @@ Render.prototype.doughnutSets = function(sets, width, height, colors) {
 	var y3 = Utils.calculateAngleY(center.y, radius2, 0);
 	var x4 = Utils.calculateAngleX(center.x, radius2, 180);
 	var y4 = Utils.calculateAngleY(center.y, radius2, 180);
+
+	// Create vectors
 	var vectors = [
 		{type: 'M', values: [x1, y1]},
 		{type: 'A', values: [radius1, radius1, 0, 0, 1]},
@@ -221,8 +235,8 @@ Render.prototype.doughnutSets = function(sets, width, height, colors) {
 	paths.push(Draw.filterShadow('doughnut-shadow', 8));
 	var pie = this.pieSets(sets, width, height, colors, false);
 	var group = Draw.group({clipPath: 'url(#doughnut-clip)'}, pie);
-	var shadow = Draw.group({filter: 'url(#doughnut-shadow)', opacity: 0.2}, group);
-	paths.push(shadow);
+	
+	if(shadow) paths.push(Draw.group({filter: 'url(#doughnut-shadow)', opacity: 0.2}, group));
 	paths.push(group);
 
 	// Return

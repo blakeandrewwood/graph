@@ -20,10 +20,12 @@ var Graph = function(container) {
 	// Pie
 	this.percentages = [];
 
+	// Options
 	this.columnLabelPositions = [];
 	this.rowLabelPositions = [];
-	this.colors = [];
+	this.colors = ['#2388F2', '#F65237', '#0DEFA5', '#9B7CF3'];
 	this.horizontal = false;
+	this.shadow = true;
 	this.svg = '';
 	
 	/**
@@ -73,7 +75,7 @@ var Graph = function(container) {
 		var columnLabelText = Render.columnLabelText(this.labels, this.columnLabelPositions, this.textSize, this.size.width, this.size.height);
 		var rowLabelText = Render.rowLabelText(this.pointIncrements, this.rowLabelPositions, this.textSize, this.size.width, this.size.height);
 		// Render sets
-		var sets = Render.barSets(this.columnLabelPositions, this.points, this.pointIncrements[0], this.size.height, this.colors);
+		var sets = Render.barSets(this.columnLabelPositions, this.points, this.pointIncrements[0], this.size.height, this.colors, this.shadow);
 		// Render graph
 		var graphLines = Render.graphLines(this.columnLabelPositions, this.rowLabelPositions, this.size.width, this.size.height);
 		this.svg = Render.svg(graphLines, sets, rowLabelText, columnLabelText, this.textSize, this.size.width, this.size.height);
@@ -88,7 +90,7 @@ var Graph = function(container) {
 		var columnLabelText = Render.columnLabelText(this.pointIncrements.reverse(), this.columnLabelPositions, this.textSize, this.size.width, this.size.height);
 		var rowLabelText = Render.rowLabelText(this.labels, this.rowLabelPositions, this.textSize, this.size.width, this.size.height);
 		// Render sets
-		var sets = Render.barSetsHorizontal(this.rowLabelPositions, this.points, this.pointIncrements[this.pointIncrements.length - 1], this.size.width, this.colors);
+		var sets = Render.barSetsHorizontal(this.rowLabelPositions, this.points, this.pointIncrements[this.pointIncrements.length - 1], this.size.width, this.colors, this.shadow);
 		// Render graph
 		var graphLines = Render.graphLines(this.columnLabelPositions, this.rowLabelPositions, this.size.width, this.size.height);
 		this.svg = Render.svg(graphLines, sets, rowLabelText, columnLabelText, this.textSize, this.size.width, this.size.height);
@@ -96,13 +98,13 @@ var Graph = function(container) {
 
 	this.pieMakeSvg = function() {
 		this.makePieDoughnutCalculations();
-		var sets = Render.pieSets(this.degrees, this.size.width, this.size.height, this.colors);
+		var sets = Render.pieSets(this.degrees, this.size.width, this.size.height, this.colors, this.shadow);
 		this.svg = Render.svg(null, sets, null, null, this.textSize, this.size.width, this.size.height);
 	}
 
 	this.doughnutMakeSvg = function() {
 		this.makePieDoughnutCalculations();
-		var sets = Render.doughnutSets(this.degrees, this.size.width, this.size.height, this.colors);
+		var sets = Render.doughnutSets(this.degrees, this.size.width, this.size.height, this.colors, this.shadow);
 		this.svg = Render.svg(null, sets, null, null, this.textSize, this.size.width, this.size.height);
 	}
 
@@ -111,7 +113,6 @@ var Graph = function(container) {
 	 *
 	 */
 	this.render = function() {
-		this.colors = ['#2388F2', '#F65237', '#0DEFA5', '#9B7CF3'];
 		switch(this.type) {
 			case 'line':
 				this.lineMakeSvg();
@@ -156,6 +157,14 @@ var Graph = function(container) {
 
 	this.setHorizontal = function(bool) {
 		this.horizontal = bool;
+	};
+
+	this.setShadow = function(bool) {
+		this.shadow = bool;
+	};
+
+	this.setColors= function(colors) {
+		this.colors = colors;
 	};
 	
 	// Return

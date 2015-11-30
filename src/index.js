@@ -1,6 +1,5 @@
 var Graph = require('./Graph');
 
-/*
 var labelsLine = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
 var pointsLine = [
 	[10, 50, 150, 175, 130],
@@ -40,14 +39,15 @@ graphBar.setSize(350, 150);
 graphBar.setLabels(labelsBar);
 graphBar.setIncrement(1);
 graphBar.setPoints(pointsBar);
+graphBar.setShadow(false);
 graphBar.render();
 
 var labelsBarMulti = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
 var pointsBarMulti = [
 	[1350, 1000, 800],
 	[700, 500, 600],
-	[200, 800],
-	[1650, [500, 100]],
+	[500, 800],
+	[1650, [800, 400]],
 	[[1500, 1000, 500]],
 ];
 var containerBarMulti = document.getElementById('graph-bar-multi');
@@ -92,7 +92,6 @@ graphBarMultiStackHorizontal.setLabels(labelsBarMultiStackHorizontal);
 graphBarMultiStackHorizontal.setIncrement(500);
 graphBarMultiStackHorizontal.setPoints(pointsBarMultiStackHorizontal);
 graphBarMultiStackHorizontal.render();
-*/
 
 var labelsPie = ['Oracle', 'Azure', 'Joyent', 'IBM'];
 var pointsPie = [
@@ -107,6 +106,7 @@ graphPie.setType('pie');
 graphPie.setSize(300, 150);
 graphPie.setLabels(labelsPie);
 graphPie.setPoints(pointsPie);
+graphPie.setColors(['#1CB8F1', '#08ECEF', '#6CF1B2', '#2388F2']);
 graphPie.render();
 
 var labelsDoughnut = ['Oracle', 'Azure', 'Joyent', 'IBM'];
@@ -122,6 +122,7 @@ graphDoughnut.setType('doughnut');
 graphDoughnut.setSize(300, 150);
 graphDoughnut.setLabels(labelsDoughnut);
 graphDoughnut.setPoints(pointsDoughnut);
+graphDoughnut.setColors(['#1CB8F1', '#08ECEF', '#6CF1B2', '#2388F2']);
 graphDoughnut.render();
 
 /*
