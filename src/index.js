@@ -3,7 +3,7 @@ var Graph = require('./Graph');
 var labelsLine = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
 var pointsLine = [
 	[10, 50, 150, 175, 130],
-	[20, 140, 100, 150, 175],
+	[20, 150, 100, 150, 175],
 	[5,  30,  40,  80,  50],
 	[15, 70,  50,  50,  60],
 	[0,  40,  80,  90,  90]
@@ -78,10 +78,10 @@ graphBarMultiStack.render();
 
 var labelsBarMultiStackHorizontal = ['Tom', 'Kelly', 'Rob', 'Owen'];
 var pointsBarMultiStackHorizontal = [
-	[[450, 1000, 1400, 200]],
-	[[700, 500, 1000, 300]],
+	[[450, 800, 1100, 200]],
+	[[700, 1000, 1400, 500]],
 	[[200, 800, 700]],
-	[[500, 100, 200]]
+	[[700, 400]]
 ];
 var graphBarMultiStackHorizontal = new Graph();
 graphBarMultiStackHorizontal.setContainer(document.getElementById('graph-bar-multi-stack-horizontal'));
@@ -89,7 +89,7 @@ graphBarMultiStackHorizontal.setType('bar');
 graphBarMultiStackHorizontal.setHorizontal(true);
 graphBarMultiStackHorizontal.setSize(300, 150);
 graphBarMultiStackHorizontal.setLabels(labelsBarMultiStackHorizontal);
-graphBarMultiStackHorizontal.setIncrement(500);
+graphBarMultiStackHorizontal.setIncrement(400);
 graphBarMultiStackHorizontal.setPoints(pointsBarMultiStackHorizontal);
 graphBarMultiStackHorizontal.render();
 
@@ -120,6 +120,8 @@ var graphDoughnut = new Graph();
 graphDoughnut.setContainer(document.getElementById('graph-doughnut'));
 graphDoughnut.setType('doughnut');
 graphDoughnut.setSize(300, 150);
+graphDoughnut.setFontSize(28);
+graphDoughnut.setFontFamily('Arial');
 graphDoughnut.setLabels(labelsDoughnut);
 graphDoughnut.setPoints(pointsDoughnut);
 graphDoughnut.setColors(['#1CB8F1', '#08ECEF', '#6CF1B2', '#2388F2']);
@@ -131,6 +133,8 @@ var graphDial = new Graph();
 graphDial.setContainer(document.getElementById('graph-dial'));
 graphDial.setType('dial');
 graphDial.setSize(300, 150);
+graphDial.setFontSize(28);
+graphDial.setFontFamily('Arial');
 graphDial.setLabels(labelsDial);
 graphDial.setPoints(pointsDial);
 graphDial.setColors(['#1CB8F1', '#08ECEF', '#6CF1B2', '#2388F2']);

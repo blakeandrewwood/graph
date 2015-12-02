@@ -4,23 +4,52 @@ var Draw = require('./Draw');
 
 function Render() {}
 
-Render.prototype.columnLabelText = function(labels, positions, textSize, size) {
+Render.prototype.columnLabelText = function(labels, columnLabels, size) {
 	var render = '';
-	labels.forEach(function(label, index, array) {
-		var x = positions[index];
-		var text = Draw.text({x: x, y: size.height, fontSize: textSize, fontFamily: 'monospace', textAnchor: 'middle' }, label);
-		render += text;
+	columnLabels.forEach(function(label, index, array) {
+		var x = labels.positions.column[index];
+		var text = labels.prefix + label + labels.suffix;
+		var textSvg = Draw.text({
+			x: x,
+			y: size.height,
+			fontSize: labels.fontSize,
+			fontFamily: labels.fontFamily,
+			textAnchor: 'middle'
+		}, text);
+		render += textSvg;
 	});
 	return render;
 };
 
-Render.prototype.rowLabelText = function(labels, positions, textSize, size) {
+Render.prototype.rowLabelText = function(labels, rowLabels, size) {
 	var render = '';
-	labels.forEach(function(label, index, array) {
-		var y = positions[index] + (textSize / 2);
-		var text = Draw.text({x: 0, y: y, fontSize: textSize, fontFamily: 'monospace', textAnchor: 'right'}, label);
-		render += text;
+	rowLabels.forEach(function(label, index, array) {
+		var y = labels.positions.row[index] + (labels.fontSize / 2);
+		var text = labels.prefix + label + labels.suffix;
+		var textSvg = Draw.text({
+			x: 0,
+			y: y,
+			fontSize: labels.fontSize,
+			fontFamily: labels.fontFamily,
+			textAnchor: 'right'
+		}, text);
+		render += textSvg;
 	});
+	return render;
+};
+
+Render.prototype.centerLabelText = function(text, labels, size) {
+	var render = '';
+	var x = size.width / 2;
+	var y = size.height / 2;
+	var textSvg = Draw.text({
+		x: x,
+		y: y,
+		fontSize: labels.fontSize,
+		fontFamily: labels.fontFamily,
+		textAnchor: 'middle'
+	}, text);
+	render += textSvg;
 	return render;
 };
 
@@ -275,11 +304,11 @@ Render.prototype.dialSets = function(sets, percentage, size, colors, shadow) {
 	return paths;
 };
 
-Render.prototype.svg = function(graph, sets, pointText, labelText, textSize, width, height) {
-	var widthOffset = (textSize / 2) + 120;
-	var heightOffset = (textSize / 2) + 50;
-	var width = width + widthOffset;
-	var height = height + heightOffset;
+Render.prototype.svg = function(graph, sets, pointText, labelText, centerText, fontSize, size, padding) {
+	var widthOffset = (fontSize / 2) + padding.x;
+	var heightOffset = (fontSize / 2) + padding.y;
+	var width = size.width + widthOffset;
+	var height = size.height + heightOffset;
 	var attributes = Utils.attributesToString({ width: width, height: height });
 	var svg = [
 		'<svg style="border: 1px solid #ccc;" ' + attributes + '>',
@@ -287,6 +316,7 @@ Render.prototype.svg = function(graph, sets, pointText, labelText, textSize, wid
 			'<g transform="translate('+(widthOffset/2)+','+(heightOffset/2)+')">'+sets+'</g>',
 			'<g transform="translate('+0+','+(heightOffset/2)+')">'+pointText+'</g>',
 			'<g transform="translate('+(widthOffset/2)+','+(heightOffset)+')">'+labelText+'</g>',
+			'<g transform="translate('+(widthOffset/2)+','+((heightOffset+(fontSize/1.5))/2)+')">'+centerText+'</g>',
 		'</svg>'
 	];
 	return svg;

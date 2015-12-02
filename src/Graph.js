@@ -22,7 +22,8 @@ var Graph = function() {
 		increment: 1,
 		prefix: '',
 		suffix: '',
-		textSize: 12,
+		fontFamily: 'monospace',
+		fontSize: 12,
 	}
 
 	// Pie
@@ -58,21 +59,17 @@ var Graph = function() {
 
 	this.lineMakeSvg = function() {
 		this.makeLineBarCalculations();
-
 		// Calculate grid positions
 		this.labels.positions.row = Utils.calculateRowPositions(this.labels.row, this.size.height);
 		this.labels.positions.column = Utils.calculateColumnPositions(this.labels.column, this.size.width);
-
 		// Render text
-		var columnLabelText = Render.columnLabelText(this.labels.column, this.labels.positions.column, this.labels.textSize, this.size);
-		var rowLabelText = Render.rowLabelText(this.labels.row, this.labels.positions.row, this.labels.textSize, this.size);
-
+		var columnLabelText = Render.columnLabelText(this.labels, this.labels.column, this.size);
+		var rowLabelText = Render.rowLabelText(this.labels, this.labels.row, this.size);
 		// Render sets
 		var sets = Render.lineSets(this.labels, this.points, this.range, this.size, this.colors);
-
 		// Render graph
 		var graphLines = Render.graphLines(this.labels, this.size);
-		this.svg = Render.svg(graphLines, sets, rowLabelText, columnLabelText, this.labels.textSize, this.size.width, this.size.height);
+		this.svg = Render.svg(graphLines, sets, rowLabelText, columnLabelText, null, this.labels.fontSize, this.size, this.padding);
 	}
 
 	this.barMakeSvg = function() {
@@ -89,55 +86,54 @@ var Graph = function() {
 		// Calculate grid positions
 		this.labels.positions.row = Utils.calculateRowPositions(this.labels.row, this.size.height);
 		this.labels.positions.column = Utils.calculateColumnPositions(this.labels.column, this.size.width);
-
 		// Render text
-		var columnLabelText = Render.columnLabelText(this.labels.column, this.labels.positions.column, this.labels.textSize, this.size);
-		var rowLabelText = Render.rowLabelText(this.labels.row, this.labels.positions.row, this.labels.textSize, this.size);
-
+		var columnLabelText = Render.columnLabelText(this.labels, this.labels.column, this.size);
+		var rowLabelText = Render.rowLabelText(this.labels, this.labels.row, this.size);
 		// Render sets
 		var sets = Render.barSets(this.labels, this.points, this.size, this.horizontal, this.colors, this.shadow);
-
 		// Render graph
 		var graphLines = Render.graphLines(this.labels, this.size);
-		this.svg = Render.svg(graphLines, sets, rowLabelText, columnLabelText, this.labels.textSize, this.size.width, this.size.height);
+		this.svg = Render.svg(graphLines, sets, rowLabelText, columnLabelText, null, this.labels.fontSize, this.size, this.padding);
 	}
 
 	this.barHorizontalSvg = function() {
 		this.makeLineBarCalculations();
-
 		// Calculate grid positions
 		this.labels.positions.row = Utils.calculateRowPositions(this.labels.column, this.size.height);
 		this.labels.positions.column = Utils.calculateColumnPositions(this.labels.row, this.size.width);
-
 		// Render text
 		this.labels.row.reverse();
-		var columnLabelText = Render.columnLabelText(this.labels.row, this.labels.positions.column, this.labels.textSize, this.size);
-		var rowLabelText = Render.rowLabelText(this.labels.column, this.labels.positions.row, this.labels.textSize, this.size);
-
+		var columnLabelText = Render.columnLabelText(this.labels, this.labels.row, this.size);
+		var rowLabelText = Render.rowLabelText(this.labels, this.labels.column, this.size);
 		// Render sets
 		var sets = Render.barSets(this.labels, this.points, this.size, this.horizontal, this.colors, this.shadow);
-
 		// Render graph
 		var graphLines = Render.graphLines(this.labels, this.size);
-		this.svg = Render.svg(graphLines, sets, rowLabelText, columnLabelText, this.labels.textSize, this.size.width, this.size.height);
+		this.svg = Render.svg(graphLines, sets, rowLabelText, columnLabelText, null, this.labels.fontSize, this.size, this.padding);
 	}
 
 	this.pieMakeSvg = function() {
 		this.makePieDoughnutCalculations();
 		var sets = Render.pieSets(this.degrees, this.size, this.colors, this.shadow);
-		this.svg = Render.svg(null, sets, null, null, this.labels.textSize, this.size.width, this.size.height);
+		this.svg = Render.svg(null, sets, null, null, null, this.labels.fontSize, this.size, this.padding);
 	}
 
 	this.doughnutMakeSvg = function() {
 		this.makePieDoughnutCalculations();
+		// Render text
+		var centerLabelText = Render.centerLabelText('50', this.labels, this.size, this.padding);
+		// Render sets
 		var sets = Render.doughnutSets(this.degrees, this.size, this.colors, this.shadow);
-		this.svg = Render.svg(null, sets, null, null, this.labels.textSize, this.size.width, this.size.height);
+		this.svg = Render.svg(null, sets, null, null, centerLabelText, this.labels.fontSize, this.size, this.padding);
 	}
 
 	this.dialMakeSvg = function() {
 		this.makeDialCalculations();
+		// Render text
+		var centerLabelText = Render.centerLabelText('50', this.labels, this.size, this.padding);
+		// Render sets
 		var sets = Render.dialSets(this.degrees, this.percentages, this.size, this.colors, this.shadow);
-		this.svg = Render.svg(null, sets, null, null, this.labels.textSize, this.size.width, this.size.height);
+		this.svg = Render.svg(null, sets, null, null, centerLabelText, this.labels.fontSize, this.size, this.padding);
 	}
 
 	/**
@@ -145,6 +141,7 @@ var Graph = function() {
 	 *
 	 */
 	this.render = function() {
+		this.padding = { x: 120, y: 50 };
 		switch(this.type) {
 			case 'line':
 				this.lineMakeSvg();
@@ -207,11 +204,19 @@ var Graph = function() {
 	};
 
 	this.setPrefix = function(prefix) {
-		this.prefix = prefix;
+		this.labels.prefix = prefix;
 	};
 
 	this.setSuffix = function(suffix) {
-		this.suffix = suffix;
+		this.labels.suffix = suffix;
+	};
+
+	this.setFontFamily = function(fontFamily) {
+		this.labels.fontFamily = fontFamily;
+	};
+
+	this.setFontSize = function(fontSize) {
+		this.labels.fontSize = fontSize;
 	};
 	
 	// Return
