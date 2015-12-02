@@ -7,7 +7,7 @@ function Render() {}
 Render.prototype.columnLabelText = function(labels, positions, textSize, size) {
 	var render = '';
 	labels.forEach(function(label, index, array) {
-		var x = positions[index] + (textSize / 2);
+		var x = positions[index];
 		var text = Draw.text({x: x, y: size.height, fontSize: textSize, fontFamily: 'monospace', textAnchor: 'middle' }, label);
 		render += text;
 	});
