@@ -311,7 +311,7 @@ Render.prototype.svg = function(graph, sets, pointText, labelText, centerText, f
 	var height = size.height + heightOffset;
 	var attributes = Utils.attributesToString({ width: width, height: height });
 	var svg = [
-		'<svg style="border: 1px solid #ccc;" ' + attributes + '>',
+		'<svg ' + attributes + '>',
 			'<g transform="translate('+(widthOffset/2)+','+(heightOffset/2)+')">'+graph+'</g>',
 			'<g transform="translate('+(widthOffset/2)+','+(heightOffset/2)+')">'+sets+'</g>',
 			'<g transform="translate('+0+','+(heightOffset/2)+')">'+pointText+'</g>',

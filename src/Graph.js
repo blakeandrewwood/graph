@@ -121,7 +121,7 @@ var Graph = function() {
 	this.doughnutMakeSvg = function() {
 		this.makePieDoughnutCalculations();
 		// Render text
-		var centerLabelText = Render.centerLabelText('50', this.labels, this.size, this.padding);
+		var centerLabelText = Render.centerLabelText('', this.labels, this.size, this.padding);
 		// Render sets
 		var sets = Render.doughnutSets(this.degrees, this.size, this.colors, this.shadow);
 		this.svg = Render.svg(null, sets, null, null, centerLabelText, this.labels.fontSize, this.size, this.padding);
@@ -130,7 +130,7 @@ var Graph = function() {
 	this.dialMakeSvg = function() {
 		this.makeDialCalculations();
 		// Render text
-		var centerLabelText = Render.centerLabelText('50', this.labels, this.size, this.padding);
+		var centerLabelText = Render.centerLabelText('', this.labels, this.size, this.padding);
 		// Render sets
 		var sets = Render.dialSets(this.degrees, this.percentages, this.size, this.colors, this.shadow);
 		this.svg = Render.svg(null, sets, null, null, centerLabelText, this.labels.fontSize, this.size, this.padding);
