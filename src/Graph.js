@@ -9,23 +9,30 @@ var Graph = function() {
 	this.type = 'line';
 	this.size = { width: 400, height: 400 };
 	this.increment = 0;
-	this.textSize = 12;
 	this.range = { min: 0, max: 0 };
-	this.labels = [];
 	this.points = [];
 
-	// Line, Bar
-	this.pointIncrements = [];
+	this.labels = {
+		row: [],
+		column: [],
+		positions: {
+			row: [],
+			column: []
+		},
+		increment: 1,
+		prefix: '',
+		suffix: '',
+		textSize: 12,
+	}
 
 	// Pie
 	this.percentages = [];
 
 	// Options
-	this.columnLabelPositions = [];
-	this.rowLabelPositions = [];
 	this.colors = ['#2388F2', '#F65237', '#0DEFA5', '#9B7CF3'];
 	this.horizontal = false;
 	this.shadow = true;
+	this.prefix = '';
 	this.svg = '';
 	
 	/**
@@ -34,7 +41,7 @@ var Graph = function() {
 	 */
 	this.makeLineBarCalculations = function() {
 		this.range = Utils.getMinMax(this.points);
-		this.pointIncrements = Utils.getPointIncrements(this.range.max, this.increment);
+		this.labels.row = Utils.getPointIncrements(this.range.max, this.labels.increment);
 	}
 
 	this.makePieDoughnutCalculations = function() {
@@ -51,17 +58,21 @@ var Graph = function() {
 
 	this.lineMakeSvg = function() {
 		this.makeLineBarCalculations();
+
 		// Calculate grid positions
-		this.columnLabelPositions = Utils.calculateColumnPositions(this.labels, this.size.width);
-		this.rowLabelPositions = Utils.calculateRowPositions(this.pointIncrements, this.size.height);
+		this.labels.positions.row = Utils.calculateRowPositions(this.labels.row, this.size.height);
+		this.labels.positions.column = Utils.calculateColumnPositions(this.labels.column, this.size.width);
+
 		// Render text
-		var columnLabelText = Render.columnLabelText(this.labels, this.columnLabelPositions, this.textSize, this.size.width, this.size.height);
-		var rowLabelText = Render.rowLabelText(this.pointIncrements, this.rowLabelPositions, this.textSize, this.size.width, this.size.height);
+		var columnLabelText = Render.columnLabelText(this.labels.column, this.labels.positions.column, this.labels.textSize, this.size);
+		var rowLabelText = Render.rowLabelText(this.labels.row, this.labels.positions.row, this.labels.textSize, this.size);
+
 		// Render sets
-		var sets = Render.lineSets(this.columnLabelPositions, this.points, this.range.max, this.size.height, this.colors);
+		var sets = Render.lineSets(this.labels, this.points, this.range, this.size, this.colors);
+
 		// Render graph
-		var graphLines = Render.graphLines(this.columnLabelPositions, this.rowLabelPositions, this.size.width, this.size.height);
-		this.svg = Render.svg(graphLines, sets, rowLabelText, columnLabelText, this.textSize, this.size.width, this.size.height);
+		var graphLines = Render.graphLines(this.labels, this.size);
+		this.svg = Render.svg(graphLines, sets, rowLabelText, columnLabelText, this.labels.textSize, this.size.width, this.size.height);
 	}
 
 	this.barMakeSvg = function() {
@@ -74,50 +85,59 @@ var Graph = function() {
 
 	this.barVerticalSvg = function() {
 		this.makeLineBarCalculations();
+
 		// Calculate grid positions
-		this.columnLabelPositions = Utils.calculateColumnPositions(this.labels, this.size.width);
-		this.rowLabelPositions = Utils.calculateRowPositions(this.pointIncrements, this.size.height);
+		this.labels.positions.row = Utils.calculateRowPositions(this.labels.row, this.size.height);
+		this.labels.positions.column = Utils.calculateColumnPositions(this.labels.column, this.size.width);
+
 		// Render text
-		var columnLabelText = Render.columnLabelText(this.labels, this.columnLabelPositions, this.textSize, this.size.width, this.size.height);
-		var rowLabelText = Render.rowLabelText(this.pointIncrements, this.rowLabelPositions, this.textSize, this.size.width, this.size.height);
+		var columnLabelText = Render.columnLabelText(this.labels.column, this.labels.positions.column, this.labels.textSize, this.size);
+		var rowLabelText = Render.rowLabelText(this.labels.row, this.labels.positions.row, this.labels.textSize, this.size);
+
 		// Render sets
-		var sets = Render.barSets(this.columnLabelPositions, this.points, this.pointIncrements[0], this.size, this.horizontal, this.colors, this.shadow);
+		var sets = Render.barSets(this.labels, this.points, this.size, this.horizontal, this.colors, this.shadow);
+
 		// Render graph
-		var graphLines = Render.graphLines(this.columnLabelPositions, this.rowLabelPositions, this.size.width, this.size.height);
-		this.svg = Render.svg(graphLines, sets, rowLabelText, columnLabelText, this.textSize, this.size.width, this.size.height);
+		var graphLines = Render.graphLines(this.labels, this.size);
+		this.svg = Render.svg(graphLines, sets, rowLabelText, columnLabelText, this.labels.textSize, this.size.width, this.size.height);
 	}
 
 	this.barHorizontalSvg = function() {
 		this.makeLineBarCalculations();
+
 		// Calculate grid positions
-		this.columnLabelPositions = Utils.calculateColumnPositions(this.pointIncrements, this.size.width);
-		this.rowLabelPositions = Utils.calculateRowPositions(this.labels, this.size.height);
+		this.labels.positions.row = Utils.calculateRowPositions(this.labels.column, this.size.height);
+		this.labels.positions.column = Utils.calculateColumnPositions(this.labels.row, this.size.width);
+
 		// Render text
-		var columnLabelText = Render.columnLabelText(this.pointIncrements.reverse(), this.columnLabelPositions, this.textSize, this.size.width, this.size.height);
-		var rowLabelText = Render.rowLabelText(this.labels, this.rowLabelPositions, this.textSize, this.size.width, this.size.height);
+		this.labels.row.reverse();
+		var columnLabelText = Render.columnLabelText(this.labels.row, this.labels.positions.column, this.labels.textSize, this.size);
+		var rowLabelText = Render.rowLabelText(this.labels.column, this.labels.positions.row, this.labels.textSize, this.size);
+
 		// Render sets
-		var sets = Render.barSets(this.rowLabelPositions, this.points, this.pointIncrements[this.pointIncrements.length - 1], this.size, this.horizontal, this.colors, this.shadow);
+		var sets = Render.barSets(this.labels, this.points, this.size, this.horizontal, this.colors, this.shadow);
+
 		// Render graph
-		var graphLines = Render.graphLines(this.columnLabelPositions, this.rowLabelPositions, this.size.width, this.size.height);
-		this.svg = Render.svg(graphLines, sets, rowLabelText, columnLabelText, this.textSize, this.size.width, this.size.height);
+		var graphLines = Render.graphLines(this.labels, this.size);
+		this.svg = Render.svg(graphLines, sets, rowLabelText, columnLabelText, this.labels.textSize, this.size.width, this.size.height);
 	}
 
 	this.pieMakeSvg = function() {
 		this.makePieDoughnutCalculations();
-		var sets = Render.pieSets(this.degrees, this.size.width, this.size.height, this.colors, this.shadow);
-		this.svg = Render.svg(null, sets, null, null, this.textSize, this.size.width, this.size.height);
+		var sets = Render.pieSets(this.degrees, this.size, this.colors, this.shadow);
+		this.svg = Render.svg(null, sets, null, null, this.labels.textSize, this.size.width, this.size.height);
 	}
 
 	this.doughnutMakeSvg = function() {
 		this.makePieDoughnutCalculations();
-		var sets = Render.doughnutSets(this.degrees, this.size.width, this.size.height, this.colors, this.shadow);
-		this.svg = Render.svg(null, sets, null, null, this.textSize, this.size.width, this.size.height);
+		var sets = Render.doughnutSets(this.degrees, this.size, this.colors, this.shadow);
+		this.svg = Render.svg(null, sets, null, null, this.labels.textSize, this.size.width, this.size.height);
 	}
 
 	this.dialMakeSvg = function() {
 		this.makeDialCalculations();
-		var sets = Render.dialSets(this.degrees, this.percentages, this.size.width, this.size.height, this.colors, this.shadow);
-		this.svg = Render.svg(null, sets, null, null, this.textSize, this.size.width, this.size.height);
+		var sets = Render.dialSets(this.degrees, this.percentages, this.size, this.colors, this.shadow);
+		this.svg = Render.svg(null, sets, null, null, this.labels.textSize, this.size.width, this.size.height);
 	}
 
 	/**
@@ -163,7 +183,7 @@ var Graph = function() {
 	};
 
 	this.setLabels = function(labels) {
-		this.labels = labels;
+		this.labels.column = labels;
 	};
 	
 	this.setPoints = function(points) {
@@ -171,7 +191,7 @@ var Graph = function() {
 	};
 	
 	this.setIncrement = function(increment) {
-		this.increment = increment;
+		this.labels.increment = increment;
 	};
 
 	this.setHorizontal = function(bool) {
@@ -184,6 +204,14 @@ var Graph = function() {
 
 	this.setColors= function(colors) {
 		this.colors = colors;
+	};
+
+	this.setPrefix = function(prefix) {
+		this.prefix = prefix;
+	};
+
+	this.setSuffix = function(suffix) {
+		this.suffix = suffix;
 	};
 	
 	// Return

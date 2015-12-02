@@ -1,12 +1,11 @@
 var Graph = require('./Graph');
 
-/*
 var labelsLine = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
 var pointsLine = [
 	[10, 50, 150, 175, 130],
-	[20, 80, 100, 150, 175],
+	[20, 140, 100, 150, 175],
 	[5,  30,  40,  80,  50],
-	[15, 70,  70,  50,  60],
+	[15, 70,  50,  50,  60],
 	[0,  40,  80,  90,  90]
 ];
 var graphLine = new Graph();
@@ -28,7 +27,7 @@ var pointsBar = [
 	[6],
 	[4],
 	[3],
-	[6],
+	[5],
 	[6],
 	[4],
 	[3]
@@ -82,7 +81,7 @@ var pointsBarMultiStackHorizontal = [
 	[[450, 1000, 1400, 200]],
 	[[700, 500, 1000, 300]],
 	[[200, 800, 700]],
-	[[450, 100]]
+	[[500, 100, 200]]
 ];
 var graphBarMultiStackHorizontal = new Graph();
 graphBarMultiStackHorizontal.setContainer(document.getElementById('graph-bar-multi-stack-horizontal'));
@@ -93,7 +92,6 @@ graphBarMultiStackHorizontal.setLabels(labelsBarMultiStackHorizontal);
 graphBarMultiStackHorizontal.setIncrement(500);
 graphBarMultiStackHorizontal.setPoints(pointsBarMultiStackHorizontal);
 graphBarMultiStackHorizontal.render();
-*/
 
 var labelsPie = ['Oracle', 'Azure', 'Joyent', 'IBM'];
 var pointsPie = [
@@ -128,7 +126,7 @@ graphDoughnut.setColors(['#1CB8F1', '#08ECEF', '#6CF1B2', '#2388F2']);
 graphDoughnut.render();
 
 var labelsDial = ['Oracle', 'Azure', 'Joyent', 'IBM'];
-var pointsDial = [[50, 100]];
+var pointsDial = [[75, 100]];
 var graphDial = new Graph();
 graphDial.setContainer(document.getElementById('graph-dial'));
 graphDial.setType('dial');
@@ -146,3 +144,4 @@ window.addEventListener('resize', function(event) {
 	graphDoughnut.render();
 });
 */
+

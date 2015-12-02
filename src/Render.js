@@ -4,48 +4,46 @@ var Draw = require('./Draw');
 
 function Render() {}
 
-Render.prototype.columnLabelText = function(labels, labelPositions, textSize, width, height) {
+Render.prototype.columnLabelText = function(labels, positions, textSize, size) {
 	var render = '';
 	labels.forEach(function(label, index, array) {
-		var x = labelPositions[index] + (textSize / 2);
-		var text = Draw.text({x: x, y: height, fontSize: textSize, fontFamily: 'monospace', textAnchor: 'middle' }, label);
+		var x = positions[index] + (textSize / 2);
+		var text = Draw.text({x: x, y: size.height, fontSize: textSize, fontFamily: 'monospace', textAnchor: 'middle' }, label);
 		render += text;
 	});
 	return render;
 };
 
-Render.prototype.rowLabelText = function(labels, labelPositions, textSize, width, height) {
+Render.prototype.rowLabelText = function(labels, positions, textSize, size) {
 	var render = '';
 	labels.forEach(function(label, index, array) {
-		var y = labelPositions[index] + (textSize / 2);
+		var y = positions[index] + (textSize / 2);
 		var text = Draw.text({x: 0, y: y, fontSize: textSize, fontFamily: 'monospace', textAnchor: 'right'}, label);
 		render += text;
 	});
 	return render;
 };
 
-Render.prototype.graphLines = function(labelPositions, pointPositions, width, height) {
+Render.prototype.graphLines = function(labels, size) {
 	var lines = '';
-	labelPositions.forEach(function(label, index, array) {
-		var x = labelPositions[index];
-		var line = Draw.line({x1: x, y1: 0, x2: x, y2: height, stroke: '#ccc', strokeDasharray: '5, 5'});
+	labels.positions.column.map(function(x) {
+		var line = Draw.line({x1: x, y1: 0, x2: x, y2: size.height, stroke: '#ccc', strokeDasharray: '5, 5'});
 		lines += line;
 	});
-	pointPositions.forEach(function(item, index, array) {
-		var y = pointPositions[index];
-		var line = Draw.line({x1: 0, y1: y, x2: width, y2: y, stroke: '#ccc', strokeDasharray: '5, 5'});
+	labels.positions.row.map(function(y) {
+		var line = Draw.line({x1: 0, y1: y, x2: size.width, y2: y, stroke: '#ccc', strokeDasharray: '5, 5'});
 		lines += line;
 	});
 	return lines;
 };
 
-Render.prototype.lineSets = function(columnPositions, sets, yMax, height, colors) {
+Render.prototype.lineSets = function(labels, sets, range, size, colors) {
 	var paths = [];
 	sets.forEach(function(set, index, array) {
 		var newSet = [];
 		set.forEach(function(y, index, array) {
 			var type = (index > 0) ? '' : 'M';
-			newSet.push({type: type, values: [columnPositions[index], Utils.calculateY(y, yMax, height)]});
+			newSet.push({type: type, values: [labels.positions.column[index], Utils.calculateY(y, labels.row[0], size.height)]});
 		});
 		var path = Draw.path({ fill: 'transparent', stroke: colors[index], strokeWidth: '6', strokeLinecap: 'round' }, newSet);
 		paths.push(path);
@@ -53,7 +51,7 @@ Render.prototype.lineSets = function(columnPositions, sets, yMax, height, colors
 	return paths;
 };
 
-Render.prototype.barSets = function(columnPositions, sets, max, size, horizontal, colors, shadow) {
+Render.prototype.barSets = function(labels, sets, size, horizontal, colors, shadow) {
 	var paths = [];
 	sets.forEach(function(set, i, array) {
 		var index = 0;
@@ -68,9 +66,10 @@ Render.prototype.barSets = function(columnPositions, sets, max, size, horizontal
 			// Vertical 
 			//
 			if(!horizontal) {
+				var max = labels.row[0];
 				var shadowOffset = -(strokeWidth / 3);
 				var shadowAttributes = {transform: 'translate(' + shadowOffset + ', 0)', opacity: '0.15', fill: 'transparent', stroke: '#000', strokeWidth: strokeWidth, strokeLinecap: 'round'};
-				var x = (columnPositions[i] + (j * (strokeWidth + gutter))) - offset;
+				var x = (labels.positions.column[i] + (j * (strokeWidth + gutter))) - offset;
 				// Normal
 				if(typeof point === 'number') {
 					var newSet = [
@@ -104,9 +103,10 @@ Render.prototype.barSets = function(columnPositions, sets, max, size, horizontal
 			// Horizontal
 			//
 			else {
+				var max = labels.row[labels.row.length - 1];
 				var shadowOffset = (strokeWidth / 3);
 				var shadowAttributes = {transform: 'translate(' + shadowOffset + ', 0)', opacity: '0.15', fill: 'transparent', stroke: '#000', strokeWidth: strokeWidth, strokeLinecap: 'round'};
-				var y = (columnPositions[i] + (j * (strokeWidth + gutter))) - offset;
+				var y = (labels.positions.row[i] + (j * (strokeWidth + gutter))) - offset;
 				// Normal
 				if(typeof point === 'number') {
 					var newSet = [
@@ -139,11 +139,11 @@ Render.prototype.barSets = function(columnPositions, sets, max, size, horizontal
 	return paths;
 };
 
-Render.prototype.pieSets = function(sets, width, height, colors, shadow) {
+Render.prototype.pieSets = function(sets, size, colors, shadow) {
 	
 	var slices = [];
-	var center = { x: (width / 2), y: (height / 2) };
-	var radius = (height / 2);
+	var center = { x: (size.width / 2), y: (size.height / 2) };
+	var radius = (size.height / 2);
 	sets.sort(Utils.sortDesc);
 	var lastEndAngle = 0;
 
@@ -188,11 +188,11 @@ Render.prototype.pieSets = function(sets, width, height, colors, shadow) {
 	return paths;
 };
 
-Render.prototype.doughnutSets = function(sets, width, height, colors, shadow) {
+Render.prototype.doughnutSets = function(sets, size, colors, shadow) {
 
 	// Basic calculation
-	var center = { x: (width / 2), y: (height / 2) };
-	var radius1 = (height / 2);
+	var center = { x: (size.width / 2), y: (size.height / 2) };
+	var radius1 = (size.height / 2);
 	var radius2 = radius1 - 40;
 	var x1 = Utils.calculateAngleX(center.x, radius1, 0);
 	var y1 = Utils.calculateAngleY(center.y, radius1, 0);
@@ -224,7 +224,7 @@ Render.prototype.doughnutSets = function(sets, width, height, colors, shadow) {
 	var doughnut = Draw.path({}, vectors);
 	paths.push(Draw.clipPath('doughnut-clip', doughnut));
 	paths.push(Draw.filterShadow('doughnut-shadow', 8));
-	var pie = this.pieSets(sets, width, height, colors, false);
+	var pie = this.pieSets(sets, size, colors, false);
 	var group = Draw.group({clipPath: 'url(#doughnut-clip)'}, pie);
 	
 	if(shadow) paths.push(Draw.group({filter: 'url(#doughnut-shadow)', opacity: 0.15}, group));
@@ -234,11 +234,11 @@ Render.prototype.doughnutSets = function(sets, width, height, colors, shadow) {
 	return paths;
 };
 
-Render.prototype.dialSets = function(sets, percentage, width, height, colors, shadow) {
+Render.prototype.dialSets = function(sets, percentage, size, colors, shadow) {
 
 	// Basic Calculation
-	var center = { x: (width / 2), y: (height / 2) };
-	var radius = (height / 3);
+	var center = { x: (size.width / 2), y: (size.height / 2) };
+	var radius = (size.height / 3);
 
 	// Create dot
 	var degree = (sets) - 220;

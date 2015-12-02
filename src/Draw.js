@@ -108,5 +108,4 @@ Draw.prototype.group = function(attributes, children) {
 	return group;
 };
 
-
 module.exports = new Draw();
