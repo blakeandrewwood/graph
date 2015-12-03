@@ -4,7 +4,7 @@ var Draw = require('./Draw');
 
 function Render() {}
 
-Render.prototype.columnLabelText = function(labels, columnLabels, size) {
+Render.prototype.columnLabelText = function(labels, columnLabels, font, size) {
 	var render = '';
 	columnLabels.forEach(function(label, index, array) {
 		var x = labels.positions.column[index];
@@ -12,8 +12,8 @@ Render.prototype.columnLabelText = function(labels, columnLabels, size) {
 		var textSvg = Draw.text({
 			x: x,
 			y: size.height,
-			fontSize: labels.fontSize,
-			fontFamily: labels.fontFamily,
+			fontSize: font.size,
+			fontFamily: font.family,
 			textAnchor: 'middle'
 		}, text);
 		render += textSvg;
@@ -21,16 +21,16 @@ Render.prototype.columnLabelText = function(labels, columnLabels, size) {
 	return render;
 };
 
-Render.prototype.rowLabelText = function(labels, rowLabels, size) {
+Render.prototype.rowLabelText = function(labels, rowLabels, font, size) {
 	var render = '';
 	rowLabels.forEach(function(label, index, array) {
-		var y = labels.positions.row[index] + (labels.fontSize / 2);
+		var y = labels.positions.row[index] + (font.size / 2);
 		var text = labels.prefix + label + labels.suffix;
 		var textSvg = Draw.text({
 			x: 0,
 			y: y,
-			fontSize: labels.fontSize,
-			fontFamily: labels.fontFamily,
+			fontSize: font.size,
+			fontFamily: font.family,
 			textAnchor: 'right'
 		}, text);
 		render += textSvg;
@@ -38,15 +38,33 @@ Render.prototype.rowLabelText = function(labels, rowLabels, size) {
 	return render;
 };
 
-Render.prototype.centerLabelText = function(text, labels, size) {
+Render.prototype.bottomLeftLabelText = function(labels, font, size, colors) {
+	var render = '';
+	labels.forEach(function(label, index, array) {
+		var y = Utils.reversePosY(((font.size*index) * 1.4), 0, size.height);
+		var textSvg = Draw.text({
+			x: 0,
+			y: y,
+			fill: colors[index],
+			fontSize: font.size,
+			fontFamily: font.family,
+			textAnchor: 'right'
+		}, label);
+		render += textSvg;
+	});
+	return render;
+};
+
+Render.prototype.centerLabelText = function(text, labels, font, size, color) {
 	var render = '';
 	var x = size.width / 2;
 	var y = size.height / 2;
 	var textSvg = Draw.text({
 		x: x,
 		y: y,
-		fontSize: labels.fontSize,
-		fontFamily: labels.fontFamily,
+		fill: color,
+		fontSize: font.size,
+		fontFamily: font.family,
 		textAnchor: 'middle'
 	}, text);
 	render += textSvg;
@@ -56,11 +74,25 @@ Render.prototype.centerLabelText = function(text, labels, size) {
 Render.prototype.graphLines = function(labels, size) {
 	var lines = '';
 	labels.positions.column.map(function(x) {
-		var line = Draw.line({x1: x, y1: 0, x2: x, y2: size.height, stroke: '#ccc', strokeDasharray: '5, 5'});
+		var line = Draw.line({
+			x1: x,
+			y1: 0,
+			x2: x,
+			y2: size.height,
+			stroke: '#ccc',
+			strokeDasharray: '5, 5'
+		});
 		lines += line;
 	});
 	labels.positions.row.map(function(y) {
-		var line = Draw.line({x1: 0, y1: y, x2: size.width, y2: y, stroke: '#ccc', strokeDasharray: '5, 5'});
+		var line = Draw.line({
+			x1: 0,
+			y1: y,
+			x2: size.width,
+			y2: y,
+			stroke: '#ccc',
+			strokeDasharray: '5, 5'
+		});
 		lines += line;
 	});
 	return lines;
@@ -304,13 +336,14 @@ Render.prototype.dialSets = function(sets, percentage, size, colors, shadow) {
 	return paths;
 };
 
-Render.prototype.svg = function(graph, sets, pointText, labelText, centerText, fontSize, size, padding) {
+Render.prototype.svg = function(children, fontSize, size, padding) {
 	var widthOffset = (fontSize / 2) + padding.x;
 	var heightOffset = (fontSize / 2) + padding.y;
 	var width = size.width + widthOffset;
 	var height = size.height + heightOffset;
 	var attributes = Utils.attributesToString({ width: width, height: height });
-	var svg = [
+	var svg = ['<svg ' + attributes + '>', children, '</svg>'];
+	/*
 		'<svg ' + attributes + '>',
 			'<g transform="translate('+(widthOffset/2)+','+(heightOffset/2)+')">'+graph+'</g>',
 			'<g transform="translate('+(widthOffset/2)+','+(heightOffset/2)+')">'+sets+'</g>',
@@ -318,7 +351,7 @@ Render.prototype.svg = function(graph, sets, pointText, labelText, centerText, f
 			'<g transform="translate('+(widthOffset/2)+','+(heightOffset)+')">'+labelText+'</g>',
 			'<g transform="translate('+(widthOffset/2)+','+((heightOffset+(fontSize/1.5))/2)+')">'+centerText+'</g>',
 		'</svg>'
-	];
+		*/
 	return svg;
 };
 

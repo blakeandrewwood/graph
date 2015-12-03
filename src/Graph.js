@@ -1,5 +1,6 @@
 "use strict";
 var Utils = require('./Utils');
+var Draw = require('./Draw');
 var Render = require('./Render');
 
 var Graph = function() {
@@ -8,7 +9,6 @@ var Graph = function() {
 	this.container = '';
 	this.type = 'line';
 	this.size = { width: 400, height: 400 };
-	this.increment = 0;
 	this.range = { min: 0, max: 0 };
 	this.points = [];
 
@@ -19,11 +19,14 @@ var Graph = function() {
 			row: [],
 			column: []
 		},
-		increment: 1,
+		increment: 10,
 		prefix: '',
-		suffix: '',
-		fontFamily: 'monospace',
-		fontSize: 12,
+		suffix: ''
+	}
+
+	this.font = {
+		family: 'monospace',
+		size: 12
 	}
 
 	// Pie
@@ -58,18 +61,26 @@ var Graph = function() {
 	}
 
 	this.lineMakeSvg = function() {
+		// Calculation
 		this.makeLineBarCalculations();
-		// Calculate grid positions
 		this.labels.positions.row = Utils.calculateRowPositions(this.labels.row, this.size.height);
 		this.labels.positions.column = Utils.calculateColumnPositions(this.labels.column, this.size.width);
+
 		// Render text
-		var columnLabelText = Render.columnLabelText(this.labels, this.labels.column, this.size);
-		var rowLabelText = Render.rowLabelText(this.labels, this.labels.row, this.size);
-		// Render sets
-		var sets = Render.lineSets(this.labels, this.points, this.range, this.size, this.colors);
-		// Render graph
 		var graphLines = Render.graphLines(this.labels, this.size);
-		this.svg = Render.svg(graphLines, sets, rowLabelText, columnLabelText, null, this.labels.fontSize, this.size, this.padding);
+		var columnLabelText = Render.columnLabelText(this.labels, this.labels.column, this.font, this.size);
+		var rowLabelText = Render.rowLabelText(this.labels, this.labels.row, this.font, this.size);
+		var sets = Render.lineSets(this.labels, this.points, this.range, this.size, this.colors);
+
+		// Group
+		var g1 = Draw.group({ transform: 'translate('+this.widthOffset/2+','+this.heightOffset/2+')' }, graphLines);
+		var g2 = Draw.group({ transform: 'translate('+0+','+this.heightOffset/2+')' }, rowLabelText);
+		var g3 = Draw.group({ transform: 'translate('+this.widthOffset/2+','+this.heightOffset+')' }, columnLabelText);
+		var g4 = Draw.group({ transform: 'translate('+this.widthOffset/2+','+this.heightOffset/2+')' }, sets);
+		var children = [g1, g2, g3, g4];
+
+		// Return
+		this.svg = Render.svg(children, this.font.size, this.size, this.padding);
 	}
 
 	this.barMakeSvg = function() {
@@ -81,59 +92,103 @@ var Graph = function() {
 	}
 
 	this.barVerticalSvg = function() {
+		// Calculation
 		this.makeLineBarCalculations();
-
-		// Calculate grid positions
 		this.labels.positions.row = Utils.calculateRowPositions(this.labels.row, this.size.height);
 		this.labels.positions.column = Utils.calculateColumnPositions(this.labels.column, this.size.width);
-		// Render text
-		var columnLabelText = Render.columnLabelText(this.labels, this.labels.column, this.size);
-		var rowLabelText = Render.rowLabelText(this.labels, this.labels.row, this.size);
-		// Render sets
-		var sets = Render.barSets(this.labels, this.points, this.size, this.horizontal, this.colors, this.shadow);
-		// Render graph
+
+		// Render
 		var graphLines = Render.graphLines(this.labels, this.size);
-		this.svg = Render.svg(graphLines, sets, rowLabelText, columnLabelText, null, this.labels.fontSize, this.size, this.padding);
+		var columnLabelText = Render.columnLabelText(this.labels, this.labels.column, this.font, this.size);
+		var rowLabelText = Render.rowLabelText(this.labels, this.labels.row, this.font, this.size);
+		var sets = Render.barSets(this.labels, this.points, this.size, this.horizontal, this.colors, this.shadow);
+
+		// Group
+		var g1 = Draw.group({ transform: 'translate('+this.widthOffset/2+','+this.heightOffset/2+')' }, graphLines);
+		var g2 = Draw.group({ transform: 'translate('+0+','+this.heightOffset/2+')' }, rowLabelText);
+		var g3 = Draw.group({ transform: 'translate('+this.widthOffset/2+','+this.heightOffset+')' }, columnLabelText);
+		var g4 = Draw.group({ transform: 'translate('+this.widthOffset/2+','+this.heightOffset/2+')' }, sets);
+		var children = [g1, g2, g3, g4];
+
+		// Return
+		this.svg = Render.svg(children, this.font.size, this.size, this.padding);
 	}
 
 	this.barHorizontalSvg = function() {
+		// Calculation
 		this.makeLineBarCalculations();
-		// Calculate grid positions
 		this.labels.positions.row = Utils.calculateRowPositions(this.labels.column, this.size.height);
 		this.labels.positions.column = Utils.calculateColumnPositions(this.labels.row, this.size.width);
-		// Render text
+
+		// Render
 		this.labels.row.reverse();
-		var columnLabelText = Render.columnLabelText(this.labels, this.labels.row, this.size);
-		var rowLabelText = Render.rowLabelText(this.labels, this.labels.column, this.size);
-		// Render sets
-		var sets = Render.barSets(this.labels, this.points, this.size, this.horizontal, this.colors, this.shadow);
-		// Render graph
 		var graphLines = Render.graphLines(this.labels, this.size);
-		this.svg = Render.svg(graphLines, sets, rowLabelText, columnLabelText, null, this.labels.fontSize, this.size, this.padding);
+		var columnLabelText = Render.columnLabelText(this.labels, this.labels.row, this.font, this.size);
+		var rowLabelText = Render.rowLabelText(this.labels, this.labels.column, this.font, this.size);
+		var sets = Render.barSets(this.labels, this.points, this.size, this.horizontal, this.colors, this.shadow);
+
+		// Group
+		var g1 = Draw.group({ transform: 'translate('+this.widthOffset/2+','+this.heightOffset/2+')' }, graphLines);
+		var g2 = Draw.group({ transform: 'translate('+0+','+this.heightOffset/2+')' }, rowLabelText);
+		var g3 = Draw.group({ transform: 'translate('+this.widthOffset/2+','+this.heightOffset+')' }, columnLabelText);
+		var g4 = Draw.group({ transform: 'translate('+this.widthOffset/2+','+this.heightOffset/2+')' }, sets);
+		var children = [g1, g2, g3, g4];
+
+		// Return
+		this.svg = Render.svg(children, this.font.size, this.size, this.padding);
 	}
 
 	this.pieMakeSvg = function() {
+		// Calculation
 		this.makePieDoughnutCalculations();
+
+		// Render
+		var bottomLeftLabelText = Render.bottomLeftLabelText(this.labels.column, this.font, this.size, this.colors);
 		var sets = Render.pieSets(this.degrees, this.size, this.colors, this.shadow);
-		this.svg = Render.svg(null, sets, null, null, null, this.labels.fontSize, this.size, this.padding);
+
+		// Group
+		var g1 = Draw.group({ transform: 'translate('+this.widthOffset/2+','+this.heightOffset/2+')' }, sets);
+		var g2 = Draw.group({ transform: 'translate('+0+','+this.heightOffset+')' }, bottomLeftLabelText);
+		var children = [g1, g2];
+
+		// Return
+		this.svg = Render.svg(children, this.font.size, this.size, this.padding);
 	}
 
 	this.doughnutMakeSvg = function() {
+		// Calculation
 		this.makePieDoughnutCalculations();
-		// Render text
-		var centerLabelText = Render.centerLabelText('', this.labels, this.size, this.padding);
-		// Render sets
+
+		// Render
+		var bottomLeftLabelText = Render.bottomLeftLabelText(this.labels.column, this.font, this.size, this.colors);
+		var centerLabelText = Render.centerLabelText('50', this.labels, this.font, this.size, '#000');
 		var sets = Render.doughnutSets(this.degrees, this.size, this.colors, this.shadow);
-		this.svg = Render.svg(null, sets, null, null, centerLabelText, this.labels.fontSize, this.size, this.padding);
+
+		// Group
+		var g1 = Draw.group({ transform: 'translate('+this.widthOffset/2+','+this.heightOffset/2+')' }, sets);
+		var g2 = Draw.group({ transform: 'translate('+0+','+this.heightOffset+')' }, bottomLeftLabelText);
+		var g3 = Draw.group({ transform: 'translate('+this.widthOffset/2+','+((this.heightOffset+(this.font.size/1.5))/2)+')' }, centerLabelText);
+		var children = [g1, g2, g3];
+
+		// Return
+		this.svg = Render.svg(children, this.font.size, this.size, this.padding);
 	}
 
 	this.dialMakeSvg = function() {
+		// Calculation
 		this.makeDialCalculations();
-		// Render text
-		var centerLabelText = Render.centerLabelText('', this.labels, this.size, this.padding);
-		// Render sets
+
+		// Render
+		var centerLabelText = Render.centerLabelText('50', this.labels, this.font, this.size, '#fff');
 		var sets = Render.dialSets(this.degrees, this.percentages, this.size, this.colors, this.shadow);
-		this.svg = Render.svg(null, sets, null, null, centerLabelText, this.labels.fontSize, this.size, this.padding);
+
+		// Group
+		var g1 = Draw.group({ transform: 'translate('+this.widthOffset/2+','+this.heightOffset/2+')' }, sets);
+		var g2 = Draw.group({ transform: 'translate('+this.widthOffset/2+','+((this.heightOffset+(this.font.size/1.5))/2)+')' }, centerLabelText);
+		var children = [g1, g2];
+
+		// Return 
+		this.svg = Render.svg(children, this.font.size, this.size, this.padding);
 	}
 
 	/**
@@ -142,6 +197,8 @@ var Graph = function() {
 	 */
 	this.render = function() {
 		this.padding = { x: 120, y: 50 };
+		this.widthOffset = (this.font.size / 2) + this.padding.x;
+		this.heightOffset = (this.font.size / 2) + this.padding.y;
 		switch(this.type) {
 			case 'line':
 				this.lineMakeSvg();
@@ -212,11 +269,11 @@ var Graph = function() {
 	};
 
 	this.setFontFamily = function(fontFamily) {
-		this.labels.fontFamily = fontFamily;
+		this.font.family = fontFamily;
 	};
 
 	this.setFontSize = function(fontSize) {
-		this.labels.fontSize = fontSize;
+		this.font.size = fontSize;
 	};
 	
 	// Return
