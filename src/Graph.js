@@ -84,47 +84,25 @@ var Graph = function() {
 	}
 
 	this.barMakeSvg = function() {
-		if(!this.horizontal) {
-			this.barVerticalSvg();
-		} else {
-			this.barHorizontalSvg();
+		// Calculation
+		this.makeLineBarCalculations();
+		var columnLabels = this.labels.column;
+		var rowLabels = this.labels.row;
+
+		// Calculation Vertical
+		if(this.horizontal) {
+			columnLabels = this.labels.row;
+			rowLabels = this.labels.column;
+			this.labels.row.reverse();
 		}
-	}
 
-	this.barVerticalSvg = function() {
-		// Calculation
-		this.makeLineBarCalculations();
-		this.labels.positions.row = Utils.calculateRowPositions(this.labels.row, this.size.height);
-		this.labels.positions.column = Utils.calculateColumnPositions(this.labels.column, this.size.width);
+		this.labels.positions.column = Utils.calculateColumnPositions(columnLabels, this.size.width);
+		this.labels.positions.row = Utils.calculateRowPositions(rowLabels, this.size.height);
 
 		// Render
 		var graphLines = Render.graphLines(this.labels, this.size);
-		var columnLabelText = Render.columnLabelText(this.labels, this.labels.column, this.font, this.size);
-		var rowLabelText = Render.rowLabelText(this.labels, this.labels.row, this.font, this.size);
-		var sets = Render.barSets(this.labels, this.points, this.size, this.horizontal, this.colors, this.shadow);
-
-		// Group
-		var g1 = Draw.group({ transform: 'translate('+this.widthOffset/2+','+this.heightOffset/2+')' }, graphLines);
-		var g2 = Draw.group({ transform: 'translate('+0+','+this.heightOffset/2+')' }, rowLabelText);
-		var g3 = Draw.group({ transform: 'translate('+this.widthOffset/2+','+this.heightOffset+')' }, columnLabelText);
-		var g4 = Draw.group({ transform: 'translate('+this.widthOffset/2+','+this.heightOffset/2+')' }, sets);
-		var children = [g1, g2, g3, g4];
-
-		// Return
-		this.svg = Render.svg(children, this.font.size, this.size, this.padding);
-	}
-
-	this.barHorizontalSvg = function() {
-		// Calculation
-		this.makeLineBarCalculations();
-		this.labels.positions.row = Utils.calculateRowPositions(this.labels.column, this.size.height);
-		this.labels.positions.column = Utils.calculateColumnPositions(this.labels.row, this.size.width);
-
-		// Render
-		this.labels.row.reverse();
-		var graphLines = Render.graphLines(this.labels, this.size);
-		var columnLabelText = Render.columnLabelText(this.labels, this.labels.row, this.font, this.size);
-		var rowLabelText = Render.rowLabelText(this.labels, this.labels.column, this.font, this.size);
+		var columnLabelText = Render.columnLabelText(this.labels, columnLabels, this.font, this.size);
+		var rowLabelText = Render.rowLabelText(this.labels, rowLabels, this.font, this.size);
 		var sets = Render.barSets(this.labels, this.points, this.size, this.horizontal, this.colors, this.shadow);
 
 		// Group
