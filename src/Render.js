@@ -343,15 +343,6 @@ Render.prototype.svg = function(children, fontSize, size, padding) {
 	var height = size.height + heightOffset;
 	var attributes = Utils.attributesToString({ width: width, height: height });
 	var svg = ['<svg ' + attributes + '>', children, '</svg>'];
-	/*
-		'<svg ' + attributes + '>',
-			'<g transform="translate('+(widthOffset/2)+','+(heightOffset/2)+')">'+graph+'</g>',
-			'<g transform="translate('+(widthOffset/2)+','+(heightOffset/2)+')">'+sets+'</g>',
-			'<g transform="translate('+0+','+(heightOffset/2)+')">'+pointText+'</g>',
-			'<g transform="translate('+(widthOffset/2)+','+(heightOffset)+')">'+labelText+'</g>',
-			'<g transform="translate('+(widthOffset/2)+','+((heightOffset+(fontSize/1.5))/2)+')">'+centerText+'</g>',
-		'</svg>'
-		*/
 	return svg;
 };
 

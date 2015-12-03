@@ -19,20 +19,7 @@ graphLine.setPoints(pointsLine);
 graphLine.render();
 
 var labelsBar = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-var pointsBar = [
-	[1],
-	[2],
-	[3],
-	[4],
-	[3],
-	[6],
-	[4],
-	[3],
-	[5],
-	[6],
-	[4],
-	[3]
-];
+var pointsBar = [[1], [2], [3], [4], [3], [6], [4], [3], [5], [6], [4], [3]];
 var graphBar = new Graph();
 graphBar.setContainer(document.getElementById('graph-bar'));
 graphBar.setType('bar');
