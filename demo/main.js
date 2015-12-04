@@ -6,8 +6,8 @@ var pointsLine = [
 	[15, 70,  50,  50,  60],
 	[0,  40,  80,  90,  90]
 ];
-var graphLine = new Graph();
-graphLine.setContainer(document.getElementById('graph-line'));
+var graphLine = new Graph('App');
+graphLine.setContainer('graph-line');
 graphLine.setType('line');
 graphLine.setSize(300, 150);
 graphLine.setFontFamily('Open Sans');
@@ -18,8 +18,8 @@ graphLine.render();
 
 var labelsBar = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 var pointsBar = [[1], [2], [3], [4], [3], [6], [4], [3], [5], [6], [4], [3]];
-var graphBar = new Graph();
-graphBar.setContainer(document.getElementById('graph-bar'));
+var graphBar = new Graph('App');
+graphBar.setContainer('graph-bar');
 graphBar.setType('bar');
 graphBar.setSize(350, 150);
 graphBar.setFontFamily('Open Sans');
@@ -38,7 +38,7 @@ var pointsBarMulti = [
 	[[1500, 1000, 500]],
 ];
 var graphBarMulti = new Graph();
-graphBarMulti.setContainer(document.getElementById('graph-bar-multi'));
+graphBarMulti.setContainer('graph-bar-multi');
 graphBarMulti.setType('bar');
 graphBarMulti.setSize(300, 150);
 graphBarMulti.setFontFamily('Open Sans');
@@ -56,7 +56,7 @@ var pointsBarMultiStack = [
 	[[1200]]
 ];
 var graphBarMultiStack = new Graph();
-graphBarMultiStack.setContainer(document.getElementById('graph-bar-multi-stack'));
+graphBarMultiStack.setContainer('graph-bar-multi-stack');
 graphBarMultiStack.setType('bar');
 graphBarMultiStack.setSize(300, 150);
 graphBarMultiStack.setFontFamily('Open Sans');
@@ -73,7 +73,7 @@ var pointsBarMultiStackHorizontal = [
 	[[700, 400]]
 ];
 var graphBarMultiStackHorizontal = new Graph();
-graphBarMultiStackHorizontal.setContainer(document.getElementById('graph-bar-multi-stack-horizontal'));
+graphBarMultiStackHorizontal.setContainer('graph-bar-multi-stack-horizontal');
 graphBarMultiStackHorizontal.setType('bar');
 graphBarMultiStackHorizontal.setHorizontal(true);
 graphBarMultiStackHorizontal.setSize(300, 150);
@@ -91,7 +91,7 @@ var pointsPie = [
 	[200]
 ];
 var graphPie = new Graph();
-graphPie.setContainer(document.getElementById('graph-pie'));
+graphPie.setContainer('graph-pie');
 graphPie.setType('pie');
 graphPie.setSize(150, 150);
 graphPie.setFontSize(14);
@@ -109,7 +109,7 @@ var pointsDoughnut = [
 	[400]
 ];
 var graphDoughnut = new Graph();
-graphDoughnut.setContainer(document.getElementById('graph-doughnut'));
+graphDoughnut.setContainer('graph-doughnut');
 graphDoughnut.setType('doughnut');
 graphDoughnut.setSize(150, 150);
 graphDoughnut.setFontSize(14);
@@ -122,7 +122,7 @@ graphDoughnut.render();
 var labelsDial = [];
 var pointsDial = [[75, 100]];
 var graphDial = new Graph();
-graphDial.setContainer(document.getElementById('graph-dial'));
+graphDial.setContainer('graph-dial');
 graphDial.setType('dial');
 graphDial.setSize(150, 150);
 graphDial.setFontSize(16);
@@ -131,91 +131,3 @@ graphDial.setLabels(labelsDial);
 graphDial.setPoints(pointsDial);
 graphDial.setColors(['#1CB8F1', '#08ECEF', '#6CF1B2', '#2388F2']);
 graphDial.render();
-
-/*
-Array.max = function(array) {
-	return Math.max.apply(Math, array);
-};
-
-var labelMove = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
-var pointsMove = [
-	[10, 50, 150, 175, 130],
-	[20, 150, 100, 150, 175],
-	[5,  30,  40,  80,  50],
-	[15, 70,  50,  50,  60],
-	[0,  40,  80,  90,  90]
-];
-var graphMove = new Graph();
-graphMove.setContainer(document.getElementById('graph-move'));
-graphMove.setType('line');
-graphMove.setSize(300, 150);
-graphMove.setFontFamily('Open Sans');
-
-
-var lastY = 20;
-var points = [
-	[0, 0, 0, 0, 0],
-	[0, 0, 0, 0, 0],
-	[0, 0, 0, 0, 0],
-	[0, 0, 0, 0, 0],
-];
-var labels = [0, 0, 0, 0, 0];
-var index = 0;
-var yMax = [20, 20, 20, 20];
-var yMin = [0, 0, 0, 0];
-var y = [20, 20, 20, 20];
-graphMove.setIncrement(20);
-graphMove.render();
-
-setInterval(function() {
-
-	y[0] = Math.floor(Math.random() * (yMax[0] - yMin[0] + 1) + yMin[0]) * 1.0;
-	y[1] = Math.floor(Math.random() * (yMax[1] - yMin[1] + 1) + yMin[1]) * 1.0;
-	y[2] = Math.floor(Math.random() * (yMax[2] - yMin[2] + 1) + yMin[2]) * 1.0;
-	y[3] = Math.floor(Math.random() * (yMax[3] - yMin[3] + 1) + yMin[3]) * 1.0;
-
-	index++;
-	//points[0].shift();
-	points[0].push(y[0]);
-	yMax[0] = y[0] + 10;
-	yMin[0] = y[0] - 6;
-	//points[1].shift();
-	points[1].push(y[1]);
-	yMax[1] = y[1] + 10;
-	yMin[1] = y[1] - 2;
-	points[2].push(y[2]);
-	yMax[2] = y[2] + 10;
-	yMin[2] = y[2] - 1;
-	points[3].push(y[3]);
-	yMax[3] = y[3] + 10;
-	yMin[3] = y[3] - 2;
-
-	if(labels.length > 12) {
-		labels.shift();
-		points[0].shift();
-		points[1].shift();
-		points[2].shift();
-		points[3].shift();
-	}
-
-	labels.push(index);
-	graphMove.setPoints(points);
-	graphMove.setLabels(labels);
-	graphMove.render();
-
-	graphMove.setIncrement(Array.max(y) / 2);
-
-}, 1000);
-*/
-
-
-/*
-window.addEventListener('resize', function(event) {
-	var width = window.innerWidth;
-	var height = window.innerHeight;
-	graphDoughnut.setSize(width, height);
-	graphDoughnut.render();
-});
-*/
-
-

@@ -2,15 +2,44 @@
 
 function Utils() {}
 
-Utils.prototype.attributesToString = function(attributes) {
-	var string = '';
+/**
+ * Element 
+ *
+ */
+Utils.prototype.setElementAttributes = function(element, attributes) {
 	for(var attribute in attributes) {
 		var attr = attribute.replace(/[A-Z]/g, function(v) {
 			return '-' + v.toLowerCase();
 		});
-		string += attr + '="' + attributes[attribute] + '" '; 
+		element.setAttribute(attr, attributes[attribute]);
 	}
-	return string;
+};
+
+Utils.prototype.appendChild = function(element, child) {
+	element.appendChild(child);
+};
+
+Utils.prototype.appendChildren = function(element, children) {
+	children.map(function(child) {
+		element.appendChild(child);
+	});
+};
+
+/**
+ * Data 
+ *
+ */
+Utils.prototype.buildPathString = function(vectors) {
+	var d = '';
+	vectors.forEach(function(vector, index, array) {
+		d += vector.type;
+		if(vector.values) {
+			vector.values.map(function(value) {
+				d += value + ' ';
+			});
+		}
+	});
+	return d.trim();
 };
 
 Utils.prototype.flattenPoints = function(points) {
@@ -77,6 +106,10 @@ Utils.prototype.getMinMax = function(points) {
 	return range;
 };
 
+/**
+ * Math 
+ *
+ */
 Utils.prototype.calculateColumnPositions = function(labels, width) {
 	var positions = [];
 	var size = 	width / (labels.length - 1);

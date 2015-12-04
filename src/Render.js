@@ -4,11 +4,14 @@ var Draw = require('./Draw');
 
 function Render() {}
 
+/**
+ * Text
+ *
+ */
 Render.prototype.columnLabelText = function(labels, columnLabels, font, size) {
-	var render = '';
+	var elements = [];
 	columnLabels.forEach(function(label, index, array) {
 		var x = labels.positions.column[index];
-		var text = labels.prefix + label + labels.suffix;
 		var textSvg = Draw.text({
 			x: x,
 			y: size.height,
@@ -16,17 +19,18 @@ Render.prototype.columnLabelText = function(labels, columnLabels, font, size) {
 			fontSize: font.size,
 			fontFamily: font.family,
 			textAnchor: 'middle'
-		}, text);
-		render += textSvg;
+		});
+		var text = labels.prefix + label + labels.suffix;
+		textSvg.innerHTML = text;
+		elements.push(textSvg);
 	});
-	return render;
+	return elements;
 };
 
 Render.prototype.rowLabelText = function(labels, rowLabels, font, size) {
-	var render = '';
+	var elements = [];
 	rowLabels.forEach(function(label, index, array) {
 		var y = labels.positions.row[index] + (font.size / 2);
-		var text = labels.prefix + label + labels.suffix;
 		var textSvg = Draw.text({
 			x: 0,
 			y: y,
@@ -34,14 +38,16 @@ Render.prototype.rowLabelText = function(labels, rowLabels, font, size) {
 			fontSize: font.size,
 			fontFamily: font.family,
 			textAnchor: 'right'
-		}, text);
-		render += textSvg;
+		});
+		var text = labels.prefix + label + labels.suffix;
+		textSvg.innerHTML = text;
+		elements.push(textSvg);
 	});
-	return render;
+	return elements;
 };
 
 Render.prototype.bottomLeftLabelText = function(labels, font, size, colors) {
-	var render = '';
+	var elements = []; 
 	labels.forEach(function(label, index, array) {
 		// Flip text
 		var a = (font.size * 1.4);
@@ -56,14 +62,16 @@ Render.prototype.bottomLeftLabelText = function(labels, font, size, colors) {
 			fontSize: font.size,
 			fontFamily: font.family,
 			textAnchor: 'right'
-		}, label);
-		render += textSvg;
+		});
+		var text = label;
+		textSvg.innerHTML = text;
+		elements.push(textSvg);
 	});
-	return render;
+	return elements;
 };
 
 Render.prototype.bottomCenterLabelText = function(text, font, size, color) {
-	var render = '';
+	var elements = []; 
 	var x = size.width / 2;
 	var y = Utils.reversePosY(0, 0, size.height);
 	var textSvg = Draw.text({
@@ -73,13 +81,14 @@ Render.prototype.bottomCenterLabelText = function(text, font, size, color) {
 		fontSize: font.size,
 		fontFamily: font.family,
 		textAnchor: 'middle'
-	}, text);
-	render += textSvg;
-	return render;
+	});
+	textSvg.innerHTML = text;
+	elements.push(textSvg);
+	return elements;
 };
 
 Render.prototype.centerLabelText = function(text, font, size, color) {
-	var render = '';
+	var elements = []; 
 	var x = size.width / 2;
 	var y = (font.size / 2) + (size.height / 2);
 	var textSvg = Draw.text({
@@ -90,12 +99,42 @@ Render.prototype.centerLabelText = function(text, font, size, color) {
 		fontFamily: font.family,
 		textAnchor: 'middle'
 	}, text);
-	render += textSvg;
-	return render;
+	textSvg.innerHTML = text;
+	elements.push(textSvg);
+	return elements;
+};
+
+/**
+ * Sets 
+ *
+ */
+Render.prototype.lineSets = function(columnPositions, rowMax, sets, range, size, colors) {
+	var elements = [];
+	sets.forEach(function(set, i, array) {
+		var newSet = [];
+		set.forEach(function(point, j, array) {
+			var type = (j > 0) ? '' : 'M';
+			newSet.push({
+				type: type,
+				values: [columnPositions[j],
+				Utils.calculateY(point, rowMax, size.height)]
+			});
+		});
+		var d = Utils.buildPathString(newSet);
+		var path = Draw.path({
+			d: d,
+			stroke: colors[i],
+			strokeWidth: 6,
+			strokeLinecap: 'round',
+			fill: 'transparent'
+		});
+		elements.push(path);
+	});
+	return elements;
 };
 
 Render.prototype.graphLines = function(labels, size) {
-	var lines = '';
+	var elements = [];
 	labels.positions.column.map(function(x) {
 		var line = Draw.line({
 			x1: x,
@@ -105,7 +144,7 @@ Render.prototype.graphLines = function(labels, size) {
 			stroke: '#ccc',
 			strokeDasharray: '5, 5'
 		});
-		lines += line;
+		elements.push(line);
 	});
 	labels.positions.row.map(function(y) {
 		var line = Draw.line({
@@ -116,111 +155,103 @@ Render.prototype.graphLines = function(labels, size) {
 			stroke: '#ccc',
 			strokeDasharray: '5, 5'
 		});
-		lines += line;
+		elements.push(line);
 	});
-	return lines;
-};
-
-Render.prototype.lineSets = function(labels, sets, range, size, colors) {
-	var paths = [];
-	sets.forEach(function(set, index, array) {
-		var newSet = [];
-		set.forEach(function(y, index, array) {
-			var type = (index > 0) ? '' : 'M';
-			newSet.push({type: type, values: [labels.positions.column[index], Utils.calculateY(y, labels.row[0], size.height)]});
-		});
-		var path = Draw.path({ fill: 'transparent', stroke: colors[index], strokeWidth: '6', strokeLinecap: 'round' }, newSet);
-		paths.push(path);
-	});
-	return paths;
+	return elements;
 };
 
 Render.prototype.barSets = function(labels, sets, size, horizontal, colors, shadow) {
-	var paths = [];
+	var elements = [];
 	sets.forEach(function(set, i, array) {
 		var index = 0;
 		set.sort(Utils.sortDesc);
 		set.forEach(function(point, j, array) {
+
 			var strokeWidth = 16;
 			var gutter = -(strokeWidth / 4);
 			var offset = ((strokeWidth + gutter) * (set.length - 1)) / 2;
 			var attributes = {fill: 'transparent', stroke: colors[index], strokeWidth: strokeWidth, strokeLinecap: 'round'};
+			var shadowOffset = -(strokeWidth / 3);
+			var shadowAttributes = {opacity: '0.15', fill: 'transparent', stroke: '#000', strokeWidth: strokeWidth, strokeLinecap: 'round'};
+			var max;
 
-			//
-			// Vertical 
-			//
-			if(!horizontal) {
-				var max = labels.row[0];
-				var shadowOffset = -(strokeWidth / 3);
-				var shadowAttributes = {transform: 'translate(' + shadowOffset + ', 0)', opacity: '0.15', fill: 'transparent', stroke: '#000', strokeWidth: strokeWidth, strokeLinecap: 'round'};
-				var x = (labels.positions.column[i] + (j * (strokeWidth + gutter))) - offset;
-				// Normal
-				if(typeof point === 'number') {
-					var newSet = [
-						{type: 'M', values: [x, Utils.calculateY(0, max, size.height)]},
-						{type: '', values: [x, Utils.calculateY(point, max, size.height) + (strokeWidth / 2)]}
-					];
-					if(shadow) paths.push(Draw.path(shadowAttributes, newSet));
-					paths.push(Draw.path(attributes, newSet));
-					index++;
+			// Normal
+			if(typeof point === 'number') {
+				var newSet = [];
+				if(!horizontal) { 
+					shadowAttributes.transform = 'translate(' + shadowOffset + ', 0)';
+					max = labels.row[0];
+					var x = (labels.positions.column[i] + (j * (strokeWidth + gutter))) - offset;
+					newSet.push({type: 'M', values: [x, Utils.calculateY(0, max, size.height)]});
+					newSet.push({type: '', values: [x, Utils.calculateY(point, max, size.height) + (strokeWidth / 2)]});
+				} 
+				else {
+					shadowAttributes.transform = 'translate(' + -shadowOffset + ', 0)';
+					max = labels.row[labels.row.length - 1];
+					var y = (labels.positions.row[i] + (j * (strokeWidth + gutter))) - offset;
+					newSet.push({ type: 'M', values: [Utils.calculateX(0, max, size.width), y] });
+					newSet.push({ type: '', values: [Utils.calculateX(point, max, size.width) - (strokeWidth / 2), y] });
 				}
-				// Stacked
-				else if(typeof point === 'object') {
-					point.sort(Utils.sortDesc);
-					point.map(function(y1) {
-						// Update stroke color since index increases
-						attributes.stroke = colors[index];
-						var newSet = [
-							{ type: 'M', values: [x, Utils.calculateY(0, max, size.height)] },
-							{ type: '', values: [x, Utils.calculateY(y1, max, size.height) + (strokeWidth / 2)] }
-						];
-						if(shadow) {
-							paths.push(Draw.path(shadowAttributes, newSet));
-						}
-						paths.push(Draw.path(attributes, newSet));
-						index++;
-					});
+
+				// d
+				var d = Utils.buildPathString(newSet);
+				// Shadow
+				if(shadow) { 
+					shadowAttributes.d = d;
+					var shadowPath = Draw.path(shadowAttributes, newSet);
+					elements.push(shadowPath);
 				}
+				// Path
+				attributes.d = d;
+				var path = Draw.path(attributes, newSet);
+				elements.push(path);
+
+				index++;
 			}
+			// Stacked
+			else if(typeof point === 'object') {
+				point.sort(Utils.sortDesc);
+				point.map(function(y1) {
 
-			//
-			// Horizontal
-			//
-			else {
-				var max = labels.row[labels.row.length - 1];
-				var shadowOffset = (strokeWidth / 3);
-				var shadowAttributes = {transform: 'translate(' + shadowOffset + ', 0)', opacity: '0.15', fill: 'transparent', stroke: '#000', strokeWidth: strokeWidth, strokeLinecap: 'round'};
-				var y = (labels.positions.row[i] + (j * (strokeWidth + gutter))) - offset;
-				// Normal
-				if(typeof point === 'number') {
-					var newSet = [
-						{ type: 'M', values: [Utils.calculateX(0, max, size.width), y] },
-						{ type: '', values: [Utils.calculateX(point, max, size.width) - (strokeWidth / 2), y] }
-					];
-					if(shadow) paths.push(Draw.path(shadowAttributes, newSet));
-					paths.push(Draw.path(attributes, newSet));
+					// Update stroke color since index increases
+					attributes.stroke = colors[index];
+
+					var newSet = [];
+					if(!horizontal) { 
+						shadowAttributes.transform = 'translate(' + shadowOffset + ', 0)';
+						max = labels.row[0];
+						var x = (labels.positions.column[i] + (j * (strokeWidth + gutter))) - offset;
+						newSet.push({ type: 'M', values: [x, Utils.calculateY(0, max, size.height)] });
+						newSet.push({ type: '', values: [x, Utils.calculateY(y1, max, size.height) + (strokeWidth / 2)] });
+					} 
+					else {
+						shadowAttributes.transform = 'translate(' + -shadowOffset + ', 0)';
+						max = labels.row[labels.row.length - 1];
+						var y = (labels.positions.row[i] + (j * (strokeWidth + gutter))) - offset;
+						newSet.push({ type: 'M', values: [Utils.calculateX(0, max, size.width), y] });
+						newSet.push({ type: '', values: [Utils.calculateX(y1, max, size.width) - (strokeWidth / 2), y] });
+					}
+
+					// d
+					var d = Utils.buildPathString(newSet);
+					// Shadow
+					if(shadow) { 
+						shadowAttributes.d = d;
+						var shadowPath = Draw.path(shadowAttributes, newSet);
+						elements.push(shadowPath);
+					}
+					// Path
+					attributes.d = d;
+					var path = Draw.path(attributes, newSet);
+					elements.push(path);
+
 					index++;
-				}
-				// Stacked
-				else if(typeof point === 'object') {
-					point.sort(Utils.sortDesc);
-					point.map(function(x1) {
-						// Update stroke color since index increases
-						attributes.stroke = colors[index];
-						var newSet = [
-							{ type: 'M', values: [Utils.calculateX(0, max, size.width), y] },
-							{ type: '', values: [Utils.calculateX(x1, max, size.width) - (strokeWidth / 2), y] }
-						];
-						if(shadow) paths.push(Draw.path(shadowAttributes, newSet));
-						paths.push(Draw.path(attributes, newSet));
-						index++;
-					});
-				}
+				});
 			}
 
 		});
 	});
-	return paths;
+	return elements;
 };
 
 Render.prototype.pieSets = function(sets, size, colors, shadow) {
@@ -257,18 +288,22 @@ Render.prototype.pieSets = function(sets, size, colors, shadow) {
 			vectors.push({type: '',  values: [x2, y2]});
 		});
 		vectors.push({type: 'Z'});
-		slices.push(Draw.path(attributes, vectors));
+
+		attributes.d = Utils.buildPathString(vectors);
+		slices.push(Draw.path(attributes));
 	});
 
 	// Compose
-	var paths = []
+	var elements = []
 	var group = Draw.group({}, slices);
+	/*
 	if(shadow) paths.push(Draw.filterShadow('pie-shadow', 8));
 	paths.push(Draw.group({filter: 'url(#pie-shadow)', opacity: 0.15}, group));
-	paths.push(group);
+	*/
+	elements.push(group);
 
 	// Return
-	return paths;
+	return elements;
 };
 
 Render.prototype.doughnutSets = function(sets, size, colors, shadow) {
@@ -303,18 +338,26 @@ Render.prototype.doughnutSets = function(sets, size, colors, shadow) {
 	];
 
 	// Compose
-	var paths = [];
-	var doughnut = Draw.path({}, vectors);
-	paths.push(Draw.clipPath('doughnut-clip', doughnut));
-	paths.push(Draw.filterShadow('doughnut-shadow', 8));
+	var elements = [];
+	var attributes = {
+		d: Utils.buildPathString(vectors)
+	};
+	var doughnut = Draw.path(attributes);
+
+	var defs = Draw.defs();
+	var clipPath = Draw.clipPath('doughnut-clip', doughnut);
+	var shadowFilter = Draw.filterShadow('doughnut-shadow', 8);
+	Utils.appendChild(defs, clipPath);
+	//Utils.appendChild(defs, shadowFilter);
+	elements.push(defs);
+
 	var pie = this.pieSets(sets, size, colors, false);
-	var group = Draw.group({clipPath: 'url(#doughnut-clip)'}, pie);
-	
-	if(shadow) paths.push(Draw.group({filter: 'url(#doughnut-shadow)', opacity: 0.15}, group));
-	paths.push(group);
+	var group = Draw.group({clipPath: 'url(#doughnut-clip)', filter: 'url(#doughnut-shadow)'}, pie);
+	//if(shadow) elements.push(Draw.group({filter: 'url(#doughnut-shadow)', opacity: 0.15}, [group]));
+	elements.push(group);
 
 	// Return
-	return paths;
+	return elements;
 };
 
 Render.prototype.dialSets = function(sets, percentage, size, colors, shadow) {
@@ -328,7 +371,6 @@ Render.prototype.dialSets = function(sets, percentage, size, colors, shadow) {
 	var dotRadius = radius - 15;
 	var cx = Utils.calculateAngleX(center.x, dotRadius, degree);
 	var cy = Utils.calculateAngleY(center.y, dotRadius, degree);
-	var dot = Draw.circle({cx: cx, cy: cy, r: 5, fill: '#fff'});
 
 	// Create dash
 	var dashes = [];
@@ -347,24 +389,37 @@ Render.prototype.dialSets = function(sets, percentage, size, colors, shadow) {
 	}
 
 	// Compose
-	var paths = [];
+	var children = [];
+	
+	/*
 	paths.push(Draw.filterShadow('dial-shadow', 6));
 	var dial = Draw.circle({ cx: center.x, cy: center.y, r: radius, fill: colors[0] });
 	if(shadow) paths.push(Draw.group({filter: 'url(#doughnut-shadow)', opacity: 0.15}, dial));
 	paths.push(dial);
 	paths.push(dot);
 	paths.push(dashes);
+	*/
 
-	return paths;
+	var group = Draw.group({}, dashes);
+	var dial = Draw.circle({ cx: center.x, cy: center.y, r: radius, fill: colors[0] });
+	var dot = Draw.circle({cx: cx, cy: cy, r: 5, fill: '#fff'});
+	children.push(dial);
+	children.push(dot);
+	children.push(group);
+
+	return children;
 };
 
-Render.prototype.svg = function(children, fontSize, size, padding) {
+Render.prototype.svg = function(container, fontSize, size, padding) {
 	var widthOffset = (fontSize / 2) + padding.x;
 	var heightOffset = (fontSize / 2) + padding.y;
 	var width = size.width + widthOffset;
 	var height = size.height + heightOffset;
-	var attributes = Utils.attributesToString({ width: width, height: height });
-	var svg = ['<svg ' + attributes + '>', children, '</svg>'];
+	var attributes = {
+		width: width,
+		height: height 
+	};
+	var svg  = Draw.svg(attributes);
 	return svg;
 };
 

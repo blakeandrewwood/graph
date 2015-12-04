@@ -7,37 +7,47 @@ function Draw() {}
  * Basics
  *
  */
-Draw.prototype.text = function(attributes, children) {
-	attributes = Utils.attributesToString(attributes);
-	var text = '<text ' + attributes + '>' + children + '</text>';
+Draw.prototype.text = function(attributes) {
+	var text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+	Utils.setElementAttributes(text, attributes);
 	return text;
 };
 
 Draw.prototype.line = function(attributes) {
-	attributes = Utils.attributesToString(attributes);
-	var line = '<line ' + attributes + '/>';
+	var line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+	Utils.setElementAttributes(line, attributes);
 	return line;
 };
 
 Draw.prototype.circle = function(attributes) {
-	attributes = Utils.attributesToString(attributes);
-	var circle = '<circle ' + attributes + '/>';
+	var circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+	Utils.setElementAttributes(circle, attributes);
 	return circle;
 };
 
-Draw.prototype.path = function(attributes, vectors) {
-	attributes = Utils.attributesToString(attributes);
-	var d = '';
-	vectors.forEach(function(vector, index, array) {
-		d += vector.type;
-		if(vector.values) {
-			vector.values.map(function(value) {
-				d += value + ' ';
-			});
-		}
-	});
-	var path = '<path ' + attributes + ' d="' + d.trim() + '" />';
+Draw.prototype.rect = function(attributes) {
+	var rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+	Utils.setElementAttributes(rect, attributes);
+	return rect;
+};
+
+Draw.prototype.path = function(attributes) {
+	var path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+	Utils.setElementAttributes(path, attributes);
 	return path;
+};
+
+Draw.prototype.svg = function(attributes) {
+	var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+	Utils.setElementAttributes(svg, attributes);
+	return svg;
+};
+
+Draw.prototype.group = function(attributes, children) {
+	var g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+	Utils.setElementAttributes(g, attributes);
+	Utils.appendChildren(g, children);
+	return g;
 };
 
 /**
@@ -53,59 +63,39 @@ Draw.prototype.dash = function(attributes) {
 		{type: '', values: [2.6, 0]},
 		{type: 'Z'},
 	];
-	var dash = this.path(attributes, vectors);
+	attributes.d = Utils.buildPathString(vectors);
+	var dash = this.path(attributes);
 	return dash;
 };
 
 /**
- * Definitions 
+ * Defs 
  *
  */
-Draw.prototype.filterShadow = function(id, stdDeviation) {
-	var filterAttributes = Utils.attributesToString({
-		id: id, width: '200%', height: '200%'
-	});
-	var feGaussianBlurAttributes = Utils.attributesToString({
-		in: 'SourceAlpha', result: 'blurOut'
-	});
-	var feOffsetAttributes = Utils.attributesToString({
-		in: 'blurOut', result: 'offOut', dx: 0, dy: 0
-	});
-	var feBlendAttributes = Utils.attributesToString({
-		in: 'offOut', mode: 'normal' 
-	});
-	var filter = [
-		'<defs>',
-			'<filter ' + filterAttributes + '>',
-				'<feGaussianBlur ' + feGaussianBlurAttributes + ' stdDeviation="' + stdDeviation + '" />',
-				'<feOffset ' + feOffsetAttributes + ' />',
-				'<feBlend ' + feBlendAttributes + ' />',
-			'</filter>',
-		'</defs>'
-	]; 
-	return filter;
+Draw.prototype.defs = function() {
+	var defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+	return defs;
 };
 
 Draw.prototype.clipPath = function(id, path) {
-	var clipPathAttributes = Utils.attributesToString({ id: id });
-	var clipPath = [
-		'<defs>',
-			'<clipPath ' + clipPathAttributes + '>',
-				path,
-			'</clipPath>',
-		'</defs>'
-	]; 
+	var clipPath = document.createElementNS('http://www.w3.org/2000/svg', 'clipPath');
+	Utils.setElementAttributes(clipPath, {id: id});
+	Utils.appendChild(clipPath, path);
 	return clipPath;
 };
 
-Draw.prototype.group = function(attributes, children) {
-	var groupAttributes = Utils.attributesToString(attributes);
-	var group = [
-		'<g ' + groupAttributes + '>',
-			children,
-		'</g>'
-	];
-	return group;
+Draw.prototype.filterShadow = function(id, stdDeviation) {
+	var filter = document.createElementNS('http://www.w3.org/2000/svg', 'filter');
+	var feGaussianBlur = document.createElementNS('http://www.w3.org/2000/svg', 'feGaussianBlur');
+	var feBlend = document.createElementNS('http://www.w3.org/2000/svg', 'feBlend');
+	Utils.setElementAttributes(filter, {id: id, width: '200%', height: '200%'});
+	Utils.setElementAttributes(feGaussianBlur, {in: 'SourceAlpha', result: 'blurOut'});
+	feGaussianBlur.setAttribute('stdDeviation', stdDeviation);
+	Utils.setElementAttributes(feBlend, {in: 'blurOut', mode: 'normal'});
+	Utils.appendChild(filter, feGaussianBlur);
+	Utils.appendChild(filter, feBlend);
+	return filter;
 };
+
 
 module.exports = new Draw();
