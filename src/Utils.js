@@ -40,7 +40,7 @@ Utils.prototype.getPointIncrements = function(yMax, increment) {
 	}
 	items.reverse();
 	return items;
-}
+};
 
 Utils.prototype.getSetPercentages = function(points) {
 	var percentages = [];
@@ -52,14 +52,14 @@ Utils.prototype.getSetPercentages = function(points) {
 		percentages.push((point[0] / sum));
 	});
 	return percentages;
-}
+};
 
 Utils.prototype.getPercentages = function(points) {
 	var percentages = [];
 	var flatten = this.flattenPoints(points);
 	percentages.push(flatten[0] / flatten[1]);
 	return percentages;
-}
+};
 
 Utils.prototype.getDegrees = function(percentages, angle) {
 	var degrees = [];
@@ -67,7 +67,7 @@ Utils.prototype.getDegrees = function(percentages, angle) {
 		degrees.push(percent * angle);
 	});
 	return degrees;
-}
+};
 
 Utils.prototype.getMinMax = function(points) {
 	var range = {};
@@ -75,7 +75,18 @@ Utils.prototype.getMinMax = function(points) {
 	range.min = Array.min(flatten);
 	range.max = Array.max(flatten);
 	return range;
-}
+};
+
+Utils.prototype.orderLabelsFromPoints = function(labels, points) {
+	var flatten = this.flattenPoints(points);
+	var sorted = this.flattenPoints(points).sort(this.sortDesc);
+	var sortedLabels = [];
+	sorted.forEach(function(num, index, array) {
+		var j = flatten.indexOf(num);
+		sortedLabels.push(labels[j]);
+	});
+	return sortedLabels;
+};
 
 Utils.prototype.calculateColumnPositions = function(labels, width) {
 	var positions = [];
@@ -133,5 +144,13 @@ Utils.prototype.calculateAngleY = function(ry, radius, angle) {
 Utils.prototype.sortDesc = function(a, b) {
 	return b-a;
 }
+
+Array.max = function(array) {
+	return Math.max.apply(Math, array);
+};
+
+Array.min = function(array) {
+	return Math.min.apply(Math, array);
+};
 
 module.exports = new Utils();

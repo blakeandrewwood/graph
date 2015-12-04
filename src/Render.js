@@ -12,6 +12,7 @@ Render.prototype.columnLabelText = function(labels, columnLabels, font, size) {
 		var textSvg = Draw.text({
 			x: x,
 			y: size.height,
+			fill: '#888',
 			fontSize: font.size,
 			fontFamily: font.family,
 			textAnchor: 'middle'
@@ -29,6 +30,7 @@ Render.prototype.rowLabelText = function(labels, rowLabels, font, size) {
 		var textSvg = Draw.text({
 			x: 0,
 			y: y,
+			fill: '#888',
 			fontSize: font.size,
 			fontFamily: font.family,
 			textAnchor: 'right'
@@ -41,7 +43,12 @@ Render.prototype.rowLabelText = function(labels, rowLabels, font, size) {
 Render.prototype.bottomLeftLabelText = function(labels, font, size, colors) {
 	var render = '';
 	labels.forEach(function(label, index, array) {
-		var y = Utils.reversePosY(((font.size*index) * 1.4), 0, size.height);
+		// Flip text
+		var a = (font.size * 1.4);
+		var b = (labels.length - 1);
+		var c = (a * b) - (a * index);
+		// Reverse y position
+		var y = Utils.reversePosY(c, 0, size.height);
 		var textSvg = Draw.text({
 			x: 0,
 			y: y,
@@ -55,10 +62,26 @@ Render.prototype.bottomLeftLabelText = function(labels, font, size, colors) {
 	return render;
 };
 
-Render.prototype.centerLabelText = function(text, labels, font, size, color) {
+Render.prototype.bottomCenterLabelText = function(text, font, size, color) {
 	var render = '';
 	var x = size.width / 2;
-	var y = size.height / 2;
+	var y = Utils.reversePosY(0, 0, size.height);
+	var textSvg = Draw.text({
+		x: x,
+		y: y,
+		fill: color,
+		fontSize: font.size,
+		fontFamily: font.family,
+		textAnchor: 'middle'
+	}, text);
+	render += textSvg;
+	return render;
+};
+
+Render.prototype.centerLabelText = function(text, font, size, color) {
+	var render = '';
+	var x = size.width / 2;
+	var y = (font.size / 2) + (size.height / 2);
 	var textSvg = Draw.text({
 		x: x,
 		y: y,
@@ -299,7 +322,7 @@ Render.prototype.dialSets = function(sets, percentage, size, colors, shadow) {
 
 	// Basic Calculation
 	var center = { x: (size.width / 2), y: (size.height / 2) };
-	var radius = (size.height / 3);
+	var radius = (size.height / 3.2);
 
 	// Create dot
 	var degree = (sets) - 220;

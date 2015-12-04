@@ -73,11 +73,11 @@ var Graph = function() {
 		var sets = Render.lineSets(this.labels, this.points, this.range, this.size, this.colors);
 
 		// Group
-		var g1 = Draw.group({ transform: 'translate('+this.widthOffset/2+','+this.heightOffset/2+')' }, graphLines);
-		var g2 = Draw.group({ transform: 'translate('+0+','+this.heightOffset/2+')' }, rowLabelText);
-		var g3 = Draw.group({ transform: 'translate('+this.widthOffset/2+','+this.heightOffset+')' }, columnLabelText);
-		var g4 = Draw.group({ transform: 'translate('+this.widthOffset/2+','+this.heightOffset/2+')' }, sets);
-		var children = [g1, g2, g3, g4];
+		var children = [];
+		children.push(Draw.group({ transform: 'translate('+this.widthOffset/2+','+this.heightOffset/2+')' }, graphLines));
+		children.push(Draw.group({ transform: 'translate('+0+','+this.heightOffset/2+')' }, rowLabelText));
+		children.push(Draw.group({ transform: 'translate('+this.widthOffset/2+','+this.heightOffset+')' }, columnLabelText));
+		children.push(Draw.group({ transform: 'translate('+this.widthOffset/2+','+this.heightOffset/2+')' }, sets));
 
 		// Return
 		this.svg = Render.svg(children, this.font.size, this.size, this.padding);
@@ -106,11 +106,11 @@ var Graph = function() {
 		var sets = Render.barSets(this.labels, this.points, this.size, this.horizontal, this.colors, this.shadow);
 
 		// Group
-		var g1 = Draw.group({ transform: 'translate('+this.widthOffset/2+','+this.heightOffset/2+')' }, graphLines);
-		var g2 = Draw.group({ transform: 'translate('+0+','+this.heightOffset/2+')' }, rowLabelText);
-		var g3 = Draw.group({ transform: 'translate('+this.widthOffset/2+','+this.heightOffset+')' }, columnLabelText);
-		var g4 = Draw.group({ transform: 'translate('+this.widthOffset/2+','+this.heightOffset/2+')' }, sets);
-		var children = [g1, g2, g3, g4];
+		var children = [];
+		children.push(Draw.group({ transform: 'translate('+this.widthOffset/2+','+this.heightOffset/2+')' }, graphLines));
+		children.push(Draw.group({ transform: 'translate('+0+','+this.heightOffset/2+')' }, rowLabelText));
+		children.push(Draw.group({ transform: 'translate('+this.widthOffset/2+','+this.heightOffset+')' }, columnLabelText));
+		children.push(Draw.group({ transform: 'translate('+this.widthOffset/2+','+this.heightOffset/2+')' }, sets));
 
 		// Return
 		this.svg = Render.svg(children, this.font.size, this.size, this.padding);
@@ -119,15 +119,16 @@ var Graph = function() {
 	this.pieMakeSvg = function() {
 		// Calculation
 		this.makePieDoughnutCalculations();
+		var labels = Utils.orderLabelsFromPoints(this.labels.column, this.points);
 
 		// Render
-		var bottomLeftLabelText = Render.bottomLeftLabelText(this.labels.column, this.font, this.size, this.colors);
+		var bottomLeftLabelText = Render.bottomLeftLabelText(labels, this.font, this.size, this.colors);
 		var sets = Render.pieSets(this.degrees, this.size, this.colors, this.shadow);
 
 		// Group
-		var g1 = Draw.group({ transform: 'translate('+this.widthOffset/2+','+this.heightOffset/2+')' }, sets);
-		var g2 = Draw.group({ transform: 'translate('+0+','+this.heightOffset+')' }, bottomLeftLabelText);
-		var children = [g1, g2];
+		var children = [];
+		children.push(Draw.group({ transform: 'translate('+this.widthOffset/2+','+this.heightOffset/2+')' }, sets));
+		children.push(Draw.group({ transform: 'translate('+0+','+this.heightOffset+')' }, bottomLeftLabelText));
 
 		// Return
 		this.svg = Render.svg(children, this.font.size, this.size, this.padding);
@@ -136,17 +137,18 @@ var Graph = function() {
 	this.doughnutMakeSvg = function() {
 		// Calculation
 		this.makePieDoughnutCalculations();
+		var labels = Utils.orderLabelsFromPoints(this.labels.column, this.points);
 
 		// Render
-		var bottomLeftLabelText = Render.bottomLeftLabelText(this.labels.column, this.font, this.size, this.colors);
-		var centerLabelText = Render.centerLabelText('50', this.labels, this.font, this.size, '#000');
+		var bottomLeftLabelText = Render.bottomLeftLabelText(labels, this.font, this.size, this.colors);
+		var centerLabelText = Render.centerLabelText('50', this.font, this.size, '#000');
 		var sets = Render.doughnutSets(this.degrees, this.size, this.colors, this.shadow);
 
 		// Group
-		var g1 = Draw.group({ transform: 'translate('+this.widthOffset/2+','+this.heightOffset/2+')' }, sets);
-		var g2 = Draw.group({ transform: 'translate('+0+','+this.heightOffset+')' }, bottomLeftLabelText);
-		var g3 = Draw.group({ transform: 'translate('+this.widthOffset/2+','+((this.heightOffset+(this.font.size/1.5))/2)+')' }, centerLabelText);
-		var children = [g1, g2, g3];
+		var children = [];
+		children.push(Draw.group({ transform: 'translate('+this.widthOffset/2+','+this.heightOffset/2+')' }, sets));
+		children.push(Draw.group({ transform: 'translate('+0+','+this.heightOffset+')' }, bottomLeftLabelText));
+		children.push(Draw.group({ transform: 'translate('+this.widthOffset/2+','+this.heightOffset/2+')' }, centerLabelText));
 
 		// Return
 		this.svg = Render.svg(children, this.font.size, this.size, this.padding);
@@ -157,13 +159,15 @@ var Graph = function() {
 		this.makeDialCalculations();
 
 		// Render
-		var centerLabelText = Render.centerLabelText('50', this.labels, this.font, this.size, '#fff');
+		var centerLabelText = Render.centerLabelText((this.percentages[0] * 100), this.font, this.size, '#fff');
+		var bottomCenterLabelText = Render.bottomCenterLabelText(this.points[0][0] + '/' + this.points[0][1], this.font, this.size, '#000');
 		var sets = Render.dialSets(this.degrees, this.percentages, this.size, this.colors, this.shadow);
 
 		// Group
-		var g1 = Draw.group({ transform: 'translate('+this.widthOffset/2+','+this.heightOffset/2+')' }, sets);
-		var g2 = Draw.group({ transform: 'translate('+this.widthOffset/2+','+((this.heightOffset+(this.font.size/1.5))/2)+')' }, centerLabelText);
-		var children = [g1, g2];
+		var children = [];
+		children.push(Draw.group({ transform: 'translate('+this.widthOffset/2+','+this.heightOffset/2+')' }, sets));
+		children.push(Draw.group({ transform: 'translate('+this.widthOffset/2+','+this.heightOffset/2+')' }, centerLabelText));
+		children.push(Draw.group({ transform: 'translate('+this.widthOffset/2+','+this.heightOffset+')' }, bottomCenterLabelText));
 
 		// Return 
 		this.svg = Render.svg(children, this.font.size, this.size, this.padding);
@@ -256,14 +260,6 @@ var Graph = function() {
 	
 	// Return
 	return this;
-};
-
-Array.max = function(array) {
-	return Math.max.apply(Math, array);
-};
-
-Array.min = function(array) {
-	return Math.min.apply(Math, array);
 };
 
 module.exports = Graph;
