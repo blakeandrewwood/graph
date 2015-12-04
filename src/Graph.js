@@ -119,10 +119,9 @@ var Graph = function() {
 	this.pieMakeSvg = function() {
 		// Calculation
 		this.makePieDoughnutCalculations();
-		var labels = Utils.orderLabelsFromPoints(this.labels.column, this.points);
 
 		// Render
-		var bottomLeftLabelText = Render.bottomLeftLabelText(labels, this.font, this.size, this.colors);
+		var bottomLeftLabelText = Render.bottomLeftLabelText(this.labels.column, this.font, this.size, this.colors);
 		var sets = Render.pieSets(this.degrees, this.size, this.colors, this.shadow);
 
 		// Group
@@ -137,10 +136,9 @@ var Graph = function() {
 	this.doughnutMakeSvg = function() {
 		// Calculation
 		this.makePieDoughnutCalculations();
-		var labels = Utils.orderLabelsFromPoints(this.labels.column, this.points);
 
 		// Render
-		var bottomLeftLabelText = Render.bottomLeftLabelText(labels, this.font, this.size, this.colors);
+		var bottomLeftLabelText = Render.bottomLeftLabelText(this.labels.column, this.font, this.size, this.colors);
 		var centerLabelText = Render.centerLabelText('50', this.font, this.size, '#000');
 		var sets = Render.doughnutSets(this.degrees, this.size, this.colors, this.shadow);
 

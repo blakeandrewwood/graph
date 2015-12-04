@@ -77,17 +77,6 @@ Utils.prototype.getMinMax = function(points) {
 	return range;
 };
 
-Utils.prototype.orderLabelsFromPoints = function(labels, points) {
-	var flatten = this.flattenPoints(points);
-	var sorted = this.flattenPoints(points).sort(this.sortDesc);
-	var sortedLabels = [];
-	sorted.forEach(function(num, index, array) {
-		var j = flatten.indexOf(num);
-		sortedLabels.push(labels[j]);
-	});
-	return sortedLabels;
-};
-
 Utils.prototype.calculateColumnPositions = function(labels, width) {
 	var positions = [];
 	var size = 	width / (labels.length - 1);

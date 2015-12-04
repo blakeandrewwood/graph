@@ -228,7 +228,6 @@ Render.prototype.pieSets = function(sets, size, colors, shadow) {
 	var slices = [];
 	var center = { x: (size.width / 2), y: (size.height / 2) };
 	var radius = (size.height / 2);
-	sets.sort(Utils.sortDesc);
 	var lastEndAngle = 0;
 
 	sets.forEach(function(set, index, array) {

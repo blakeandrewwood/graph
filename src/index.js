@@ -107,10 +107,10 @@ graphPie.render();
 
 var labelsDoughnut = ['Oracle', 'Azure', 'Joyent', 'IBM'];
 var pointsDoughnut = [
-	[700],
-	[2000],
 	[400],
-	[200]
+	[400],
+	[400],
+	[400]
 ];
 var graphDoughnut = new Graph();
 graphDoughnut.setContainer(document.getElementById('graph-doughnut'));
@@ -123,6 +123,7 @@ graphDoughnut.setPoints(pointsDoughnut);
 graphDoughnut.setColors(['#1CB8F1', '#08ECEF', '#6CF1B2', '#2388F2']);
 graphDoughnut.render();
 
+/*
 var labelsDial = [];
 var pointsDial = [[75, 100]];
 var graphDial = new Graph();
@@ -135,6 +136,7 @@ graphDial.setLabels(labelsDial);
 graphDial.setPoints(pointsDial);
 graphDial.setColors(['#1CB8F1', '#08ECEF', '#6CF1B2', '#2388F2']);
 graphDial.render();
+*/
 
 /*
 Array.max = function(array) {
