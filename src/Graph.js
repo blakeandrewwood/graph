@@ -3,11 +3,14 @@ var Utils = require('./Utils');
 var Draw = require('./Draw');
 var Render = require('./Render');
 var Events = require('./Events');
-window.Events = new Events();
 
-function Graph(moduleName) {
-	// Module name
-	this.moduleName = moduleName;
+var Application = function(application) {
+	window[application] = new Graph(application);
+	return window[application];
+};
+
+function Graph(application) {
+	this.application = application;
 	// Parameters
 	this.type = 'line';
 	this.size = { width: 400, height: 400 };
@@ -35,11 +38,17 @@ function Graph(moduleName) {
 	this.horizontal = false;
 	this.shadow = true;
 	this.prefix = '';
-	this.moduleName = moduleName;
+	this.containerId;
 	this.container;
 	this.svg;
+
+	this.Events = new Events();
 }
 
+/**
+ * Calculation 
+ *
+ */
 Graph.prototype.makeLineBarCalculations = function() {
 	this.range = Utils.getMinMax(this.points);
 	this.labels.row = Utils.getPointIncrements(this.range.max, this.labels.increment);
@@ -57,16 +66,24 @@ Graph.prototype.makeDialCalculations = function() {
 	this.degrees = Utils.getDegrees(this.percentages, 260);
 };
 
-Graph.prototype.lineMakeSvg = function() {
+/**
+ * Build
+ *
+ */
+Graph.prototype.lineBuildSvg = function() {
+	// Calculation
 	this.makeLineBarCalculations();
 	this.labels.positions.row = Utils.calculateRowPositions(this.labels.row, this.size.height);
 	this.labels.positions.column = Utils.calculateColumnPositions(this.labels.column, this.size.width);
 
+	// Render
 	var graphLines = Render.graphLines(this.labels, this.size);
 	var columnLabelText = Render.columnLabelText(this.labels, this.labels.column, this.font, this.size);
 	var rowLabelText = Render.rowLabelText(this.labels, this.labels.row, this.font, this.size);
-	var sets = Render.lineSets(this.labels.positions.column, this.labels.row[0], this.points, this.range, this.size, this.colors);
 
+	var sets = Render.lineSets(this.application, this.labels.positions.column, this.labels.row[0], this.points, this.range, this.size, this.colors);
+
+	// Group
 	var children = [];
 	var g1 = Draw.group({ transform: 'translate('+this.widthOffset/2+','+this.heightOffset/2+')' }, graphLines);
 	var g2 = Draw.group({ transform: 'translate('+this.widthOffset/2+','+this.heightOffset/2+')' }, sets);
@@ -78,11 +95,12 @@ Graph.prototype.lineMakeSvg = function() {
 	children.push(g4);
 	var g = Draw.group({}, children);
 
+	// Return
 	this.svg = Render.svg(this.container, this.font.size, this.size, this.padding);
 	Utils.appendChild(this.svg, g);
 };
 
-Graph.prototype.barMakeSvg = function() {
+Graph.prototype.barBuildSvg = function() {
 	// Calculation
 	this.makeLineBarCalculations();
 	var columnLabels = this.labels.column;
@@ -103,6 +121,7 @@ Graph.prototype.barMakeSvg = function() {
 	var rowLabelText = Render.rowLabelText(this.labels, rowLabels, this.font, this.size);
 	var sets = Render.barSets(this.labels, this.points, this.size, this.horizontal, this.colors, this.shadow);
 
+	// Group
 	var children = [];
 	var g1 = Draw.group({ transform: 'translate('+this.widthOffset/2+','+this.heightOffset/2+')' }, graphLines);
 	var g2 = Draw.group({ transform: 'translate('+this.widthOffset/2+','+this.heightOffset/2+')' }, sets);
@@ -114,11 +133,12 @@ Graph.prototype.barMakeSvg = function() {
 	children.push(g4);
 	var g = Draw.group({}, children);
 
+	// Return
 	this.svg = Render.svg(this.container, this.font.size, this.size, this.padding);
 	Utils.appendChild(this.svg, g);
 };
 
-Graph.prototype.pieMakeSvg = function() {
+Graph.prototype.pieBuildSvg = function() {
 	// Calculation
 	this.makePieDoughnutCalculations();
 
@@ -139,7 +159,7 @@ Graph.prototype.pieMakeSvg = function() {
 	Utils.appendChild(this.svg, g);
 };
 
-Graph.prototype.doughnutMakeSvg = function() {
+Graph.prototype.doughnutBuildSvg = function() {
 	// Calculation
 	this.makePieDoughnutCalculations();
 
@@ -163,7 +183,7 @@ Graph.prototype.doughnutMakeSvg = function() {
 	Utils.appendChild(this.svg, g);
 };
 
-Graph.prototype.dialMakeSvg = function() {
+Graph.prototype.dialBuildSvg = function() {
 	// Calculation
 	this.makeDialCalculations();
 
@@ -197,19 +217,19 @@ Graph.prototype.render = function() {
 	this.heightOffset = (this.font.size / 2) + this.padding.y;
 	switch(this.type) {
 		case 'line':
-			this.lineMakeSvg();
+			this.lineBuildSvg();
 			break;
 		case 'bar':
-			this.barMakeSvg();
+			this.barBuildSvg();
 			break;
 		case 'pie':
-			this.pieMakeSvg();
+			this.pieBuildSvg();
 			break;
 		case 'doughnut':
-			this.doughnutMakeSvg();
+			this.doughnutBuildSvg();
 			break;
 		case 'dial':
-			this.dialMakeSvg();
+			this.dialBuildSvg();
 			break;
 	}
 	Utils.appendChild(this.container, this.svg);
@@ -220,6 +240,7 @@ Graph.prototype.render = function() {
  *
  */
 Graph.prototype.setContainer = function(container) {
+	this.containerId = container; 
 	this.container = document.getElementById(container);
 };
 
@@ -272,4 +293,4 @@ Graph.prototype.setFontSize = function(fontSize) {
 	this.font.size = fontSize;
 };
 
-module.exports = Graph;
+module.exports = Application;

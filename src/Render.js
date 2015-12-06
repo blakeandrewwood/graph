@@ -20,7 +20,7 @@ Render.prototype.columnLabelText = function(labels, columnLabels, font, size) {
 			fontFamily: font.family,
 			textAnchor: 'middle'
 		});
-		var text = labels.prefix + label + labels.suffix;
+		var text = label;
 		textSvg.innerHTML = text;
 		elements.push(textSvg);
 	});
@@ -108,7 +108,7 @@ Render.prototype.centerLabelText = function(text, font, size, color) {
  * Sets 
  *
  */
-Render.prototype.lineSets = function(columnPositions, rowMax, sets, range, size, colors) {
+Render.prototype.lineSets = function(application, columnPositions, rowMax, sets, range, size, colors) {
 	var elements = [];
 	sets.forEach(function(set, i, array) {
 		var newSet = [];
@@ -121,12 +121,18 @@ Render.prototype.lineSets = function(columnPositions, rowMax, sets, range, size,
 			});
 		});
 		var d = Utils.buildPathString(newSet);
+
+		window.sets = sets;
+		window.columnPositions = columnPositions;
+
 		var path = Draw.path({
 			d: d,
 			stroke: colors[i],
-			strokeWidth: 6,
+			strokeWidth: 8,
 			strokeLinecap: 'round',
-			fill: 'transparent'
+			fill: 'none',
+			onmousemove: application + '.Events.onMouseOver(evt, ' + application + ', '+ i+', '+rowMax+')',
+			onmouseout: application + '.Events.onMouseOut(evt, ' + application + ')'
 		});
 		elements.push(path);
 	});
@@ -424,6 +430,21 @@ Render.prototype.dialSets = function(sets, percentage, size, colors, shadow) {
 	return elements;
 };
 
+Render.prototype.tooltip = function(id, x, y, color) {
+	var style = Utils.styleToString({
+		padding: '10px 20px',
+		margin: 'none',
+		color: '#fff',
+		boxShadow: '0 2px 3px rgba(0, 0, 0, 0.3)',
+		background: color
+	});
+	var element = Draw.div({
+		id: id,
+		style: style
+	});
+	return element;
+};
+
 Render.prototype.svg = function(container, fontSize, size, padding) {
 	var widthOffset = (fontSize / 2) + padding.x;
 	var heightOffset = (fontSize / 2) + padding.y;
@@ -431,7 +452,8 @@ Render.prototype.svg = function(container, fontSize, size, padding) {
 	var height = size.height + heightOffset;
 	var attributes = {
 		width: width,
-		height: height 
+		height: height,
+		//onmousemove: 'console.log(evt.offsetY)'
 	};
 	var svg  = Draw.svg(attributes);
 	return svg;

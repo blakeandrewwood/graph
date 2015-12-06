@@ -15,6 +15,17 @@ Utils.prototype.setElementAttributes = function(element, attributes) {
 	}
 };
 
+Utils.prototype.styleToString = function(attributes) {
+	var string = '';
+	for(var attribute in attributes) {
+		var attr = attribute.replace(/[A-Z]/g, function(v) {
+			return '-' + v.toLowerCase();
+		});
+		string += (attr + ':' + attributes[attribute] + ';');
+	}
+	return string;
+};
+
 Utils.prototype.appendChild = function(element, child) {
 	element.appendChild(child);
 };
@@ -23,6 +34,13 @@ Utils.prototype.appendChildren = function(element, children) {
 	children.map(function(child) {
 		element.appendChild(child);
 	});
+};
+
+
+Utils.prototype.setDivPosition = function(element, x, y) {
+	element.style.position = 'absolute';
+	element.style.left = x + 'px';
+	element.style.top = y + 'px';
 };
 
 /**

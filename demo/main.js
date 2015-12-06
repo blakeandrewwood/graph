@@ -1,4 +1,3 @@
-/*
 var labelsLine = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
 var pointsLine = [
 	[10, 50, 150, 175, 130],
@@ -7,16 +6,18 @@ var pointsLine = [
 	[15, 70,  50,  50,  60],
 	[0,  40,  80,  90,  90]
 ];
-var graphLine = new Graph('App');
+var graphLine = new Graph('GraphLine');
 graphLine.setContainer('graph-line');
 graphLine.setType('line');
 graphLine.setSize(300, 150);
 graphLine.setFontFamily('Open Sans');
 graphLine.setLabels(labelsLine);
 graphLine.setIncrement(50);
+graphLine.setPrefix('$');
 graphLine.setPoints(pointsLine);
 graphLine.render();
 
+/*
 var labelsBar = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 var pointsBar = [[1], [2], [3], [4], [3], [6], [4], [3], [5], [6], [4], [3]];
 var graphBar = new Graph('App');
@@ -83,7 +84,6 @@ graphBarMultiStackHorizontal.setLabels(labelsBarMultiStackHorizontal);
 graphBarMultiStackHorizontal.setIncrement(400);
 graphBarMultiStackHorizontal.setPoints(pointsBarMultiStackHorizontal);
 graphBarMultiStackHorizontal.render();
-*/
 
 var labelsPie = ['Oracle', 'Azure', 'Joyent', 'IBM'];
 var pointsPie = [
@@ -133,3 +133,4 @@ graphDial.setLabels(labelsDial);
 graphDial.setPoints(pointsDial);
 graphDial.setColors(['#1CB8F1', '#08ECEF', '#6CF1B2', '#2388F2']);
 graphDial.render();
+*/

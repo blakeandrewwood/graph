@@ -4,7 +4,7 @@ var Utils = require('./Utils');
 function Draw() {}
 
 /**
- * Basics
+ * Svg Basics
  *
  */
 Draw.prototype.text = function(attributes) {
@@ -48,6 +48,16 @@ Draw.prototype.group = function(attributes, children) {
 	Utils.setElementAttributes(g, attributes);
 	Utils.appendChildren(g, children);
 	return g;
+};
+
+/**
+ * Element Basics
+ *
+ */
+Draw.prototype.div = function(attributes) {
+	var div = document.createElement('div');
+	Utils.setElementAttributes(div, attributes);
+	return div;
 };
 
 /**
