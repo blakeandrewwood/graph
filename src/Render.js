@@ -296,10 +296,15 @@ Render.prototype.pieSets = function(sets, size, colors, shadow) {
 	// Compose
 	var elements = []
 	var group = Draw.group({}, slices);
-	/*
-	if(shadow) paths.push(Draw.filterShadow('pie-shadow', 8));
-	paths.push(Draw.group({filter: 'url(#pie-shadow)', opacity: 0.15}, group));
-	*/
+
+	if(shadow) {
+		var defs = Draw.defs();
+		var shadow = Draw.shadow({opacity: 0.15}, 'pie-shadow', 8, group);
+		Utils.appendChild(defs, shadow.def);
+		elements.push(defs);
+		elements.push(shadow.element);
+	}
+
 	elements.push(group);
 
 	// Return
@@ -344,17 +349,25 @@ Render.prototype.doughnutSets = function(sets, size, colors, shadow) {
 	};
 	var doughnut = Draw.path(attributes);
 
+	// Clip path
 	var defs = Draw.defs();
 	var clipPath = Draw.clipPath('doughnut-clip', doughnut);
-	var shadowFilter = Draw.filterShadow('doughnut-shadow', 8);
 	Utils.appendChild(defs, clipPath);
-	//Utils.appendChild(defs, shadowFilter);
-	elements.push(defs);
 
-	var pie = this.pieSets(sets, size, colors, false);
-	var group = Draw.group({clipPath: 'url(#doughnut-clip)', filter: 'url(#doughnut-shadow)'}, pie);
-	//if(shadow) elements.push(Draw.group({filter: 'url(#doughnut-shadow)', opacity: 0.15}, [group]));
-	elements.push(group);
+
+	var pie = this.pieSets(sets, size, colors, false)[0];
+	Utils.setElementAttributes(pie, {clipPath: 'url(#doughnut-clip)'});
+	var group = Draw.group({}, [pie]);
+
+	// Shadow
+	if(shadow) {
+		var shadow = Draw.shadow({opacity: 0.15}, 'doughnut-shadow', 8, group);
+		Utils.appendChild(defs, shadow.def);
+		elements.push(shadow.element);
+	}
+
+	elements.push(defs);
+	elements.push(pie);
 
 	// Return
 	return elements;
@@ -389,25 +402,26 @@ Render.prototype.dialSets = function(sets, percentage, size, colors, shadow) {
 	}
 
 	// Compose
-	var children = [];
-	
-	/*
-	paths.push(Draw.filterShadow('dial-shadow', 6));
-	var dial = Draw.circle({ cx: center.x, cy: center.y, r: radius, fill: colors[0] });
-	if(shadow) paths.push(Draw.group({filter: 'url(#doughnut-shadow)', opacity: 0.15}, dial));
-	paths.push(dial);
-	paths.push(dot);
-	paths.push(dashes);
-	*/
+	var elements = [];
 
 	var group = Draw.group({}, dashes);
 	var dial = Draw.circle({ cx: center.x, cy: center.y, r: radius, fill: colors[0] });
 	var dot = Draw.circle({cx: cx, cy: cy, r: 5, fill: '#fff'});
-	children.push(dial);
-	children.push(dot);
-	children.push(group);
 
-	return children;
+	// Shadow
+	if(shadow) {
+		var defs = Draw.defs();
+		var shadow = Draw.shadow({opacity: 0.15}, 'pie-shadow', 8, dial);
+		Utils.appendChild(defs, shadow.def);
+		elements.push(defs);
+		elements.push(shadow.element);
+	}
+
+	elements.push(dial);
+	elements.push(dot);
+	elements.push(group);
+
+	return elements;
 };
 
 Render.prototype.svg = function(container, fontSize, size, padding) {

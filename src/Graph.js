@@ -87,6 +87,7 @@ Graph.prototype.barMakeSvg = function() {
 	this.makeLineBarCalculations();
 	var columnLabels = this.labels.column;
 	var rowLabels = this.labels.row;
+	
 	// Calculation Vertical
 	if(this.horizontal) {
 		columnLabels = this.labels.row;

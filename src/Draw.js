@@ -68,6 +68,19 @@ Draw.prototype.dash = function(attributes) {
 	return dash;
 };
 
+Draw.prototype.shadow = function(attributes, id, stdDeviation, group) {
+	var object = {
+		def: null,
+		element: null,
+	}
+	object.def = this.filterShadow(id, stdDeviation);
+	var shadowGroup = group.cloneNode(true);
+	attributes.filter = 'url(#' + id + ')';
+	Utils.setElementAttributes(shadowGroup, attributes);
+	object.element = shadowGroup;
+	return object;
+};
+
 /**
  * Defs 
  *
