@@ -36,7 +36,6 @@ Utils.prototype.appendChildren = function(element, children) {
 	});
 };
 
-
 Utils.prototype.setDivPosition = function(element, x, y) {
 	element.style.position = 'absolute';
 	element.style.left = x + 'px';
@@ -49,11 +48,19 @@ Utils.prototype.getElementOffset = function(element) {
 	var docElement = document.documentElement;
 	var scrollTop = window.pageYOffset || docElement.scrollTop || body.scrollTop;
 	var scrollLeft = window.pageXOffset || docElement.scrollLeft || body.scrollLeft;
-	var clientTop = docElement.clientTop || body.clientTop || 0;
-	var clientLeft = docElement.clientLeft || body.clientLeft || 0;
+	var clientTop = docElement.clientTop || body.clientTop || Math.abs(body.getBoundingClientRect().top) || 0;
+	var clientLeft = docElement.clientLeft || body.clientLeft || Math.abs(body.getBoundingClientRect().left) || 0;
 	var top = box.top + scrollTop - clientTop;
 	var left = box.left + scrollLeft - clientLeft;
 	return { top: Math.round(top), left: Math.round(left) }
+};
+
+Utils.prototype.showElement = function(element) {
+	element.style.display = 'block';
+};
+
+Utils.prototype.hideElement = function(element) {
+	element.style.display = 'none';
 };
 
 /**

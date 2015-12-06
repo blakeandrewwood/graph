@@ -80,8 +80,7 @@ Graph.prototype.lineBuildSvg = function() {
 	var graphLines = Render.graphLines(this.labels, this.size);
 	var columnLabelText = Render.columnLabelText(this.labels, this.labels.column, this.font, this.size);
 	var rowLabelText = Render.rowLabelText(this.labels, this.labels.row, this.font, this.size);
-
-	var sets = Render.lineSets(this.application, this.labels.positions.column, this.labels.row[0], this.points, this.range, this.size, this.colors);
+	var sets = Render.lineSets(this, this.labels.positions.column, this.labels.row[0], this.points, this.range, this.size, this.colors);
 
 	// Group
 	var children = [];
@@ -119,7 +118,7 @@ Graph.prototype.barBuildSvg = function() {
 	var graphLines = Render.graphLines(this.labels, this.size);
 	var columnLabelText = Render.columnLabelText(this.labels, columnLabels, this.font, this.size);
 	var rowLabelText = Render.rowLabelText(this.labels, rowLabels, this.font, this.size);
-	var sets = Render.barSets(this.labels, this.points, this.size, this.horizontal, this.colors, this.shadow);
+	var sets = Render.barSets(this, this.labels, this.points, this.size, this.horizontal, this.colors, this.shadow);
 
 	// Group
 	var children = [];
@@ -144,7 +143,7 @@ Graph.prototype.pieBuildSvg = function() {
 
 	// Render
 	var bottomLeftLabelText = Render.bottomLeftLabelText(this.labels.column, this.font, this.size, this.colors);
-	var sets = Render.pieSets(this.degrees, this.size, this.colors, this.shadow);
+	var sets = Render.pieSets(this, this.degrees, this.size, this.colors, this.shadow);
 
 	// Group
 	var children = [];
@@ -166,7 +165,7 @@ Graph.prototype.doughnutBuildSvg = function() {
 	// Render
 	var bottomLeftLabelText = Render.bottomLeftLabelText(this.labels.column, this.font, this.size, this.colors);
 	var centerLabelText = Render.centerLabelText('50', this.font, this.size, '#000');
-	var sets = Render.doughnutSets(this.degrees, this.size, this.colors, this.shadow);
+	var sets = Render.doughnutSets(this, this.degrees, this.size, this.colors, this.shadow);
 
 	// Group
 	var children = [];
@@ -212,7 +211,7 @@ Graph.prototype.dialBuildSvg = function() {
  *
  */
 Graph.prototype.render = function() {
-	this.padding = { x: 100, y: 40 };
+	this.padding = { x: 100, y: 60 };
 	this.widthOffset = (this.font.size / 2) + this.padding.x;
 	this.heightOffset = (this.font.size / 2) + this.padding.y;
 	switch(this.type) {

@@ -60,6 +60,12 @@ Draw.prototype.div = function(attributes) {
 	return div;
 };
 
+Draw.prototype.p = function(attributes) {
+	var p = document.createElement('p');
+	Utils.setElementAttributes(p, attributes);
+	return p;
+};
+
 /**
  * Assets 
  *

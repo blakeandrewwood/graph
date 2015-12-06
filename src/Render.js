@@ -14,14 +14,14 @@ Render.prototype.columnLabelText = function(labels, columnLabels, font, size) {
 		var x = labels.positions.column[index];
 		var textSvg = Draw.text({
 			x: x,
-			y: size.height,
+			y: size.height - (font.size/2),
 			fill: '#888',
 			fontSize: font.size,
 			fontFamily: font.family,
 			textAnchor: 'middle'
 		});
-		var text = label;
-		textSvg.innerHTML = text;
+		var text = document.createTextNode(label);
+		textSvg.appendChild(text);
 		elements.push(textSvg);
 	});
 	return elements;
@@ -39,8 +39,8 @@ Render.prototype.rowLabelText = function(labels, rowLabels, font, size) {
 			fontFamily: font.family,
 			textAnchor: 'right'
 		});
-		var text = labels.prefix + label + labels.suffix;
-		textSvg.innerHTML = text;
+		var text = document.createTextNode(label);
+		textSvg.appendChild(text);
 		elements.push(textSvg);
 	});
 	return elements;
@@ -63,8 +63,8 @@ Render.prototype.bottomLeftLabelText = function(labels, font, size, colors) {
 			fontFamily: font.family,
 			textAnchor: 'right'
 		});
-		var text = label;
-		textSvg.innerHTML = text;
+		var text = document.createTextNode(label);
+		textSvg.appendChild(text);
 		elements.push(textSvg);
 	});
 	return elements;
@@ -82,8 +82,8 @@ Render.prototype.bottomCenterLabelText = function(text, font, size, color) {
 		fontFamily: font.family,
 		textAnchor: 'middle'
 	});
-	textSvg.innerHTML = text;
-	elements.push(textSvg);
+	var text = document.createTextNode(text);
+	textSvg.appendChild(text);
 	return elements;
 };
 
@@ -99,8 +99,8 @@ Render.prototype.centerLabelText = function(text, font, size, color) {
 		fontFamily: font.family,
 		textAnchor: 'middle'
 	});
-	textSvg.innerHTML = text;
-	elements.push(textSvg);
+	var text = document.createTextNode(text);
+	textSvg.appendChild(text);
 	return elements;
 };
 
@@ -127,42 +127,20 @@ Render.prototype.lineSets = function(application, columnPositions, rowMax, sets,
 			strokeWidth: 8,
 			strokeLinecap: 'round',
 			fill: 'none',
-			onmousemove: application + '.Events.onMouseOver(evt, ' + application + ', '+ i+', '+rowMax+')',
-			onmouseout: application + '.Events.onMouseOut(evt, ' + application + ')'
+		});
+		// Events
+		path.addEventListener('mousemove', function(evt) {
+			application.Events.onMouseOverLine(evt, application, i, rowMax);
+		});
+		path.addEventListener('mouseout', function(evt) {
+			application.Events.onMouseOut(evt, application);
 		});
 		elements.push(path);
 	});
 	return elements;
 };
 
-Render.prototype.graphLines = function(labels, size) {
-	var elements = [];
-	labels.positions.column.map(function(x) {
-		var line = Draw.line({
-			x1: x,
-			y1: 0,
-			x2: x,
-			y2: size.height,
-			stroke: '#ccc',
-			strokeDasharray: '5, 5'
-		});
-		elements.push(line);
-	});
-	labels.positions.row.map(function(y) {
-		var line = Draw.line({
-			x1: 0,
-			y1: y,
-			x2: size.width,
-			y2: y,
-			stroke: '#ccc',
-			strokeDasharray: '5, 5'
-		});
-		elements.push(line);
-	});
-	return elements;
-};
-
-Render.prototype.barSets = function(labels, sets, size, horizontal, colors, shadow) {
+Render.prototype.barSets = function(application, labels, sets, size, horizontal, colors, shadow) {
 	var elements = [];
 	sets.forEach(function(set, i, array) {
 		var index = 0;
@@ -172,10 +150,23 @@ Render.prototype.barSets = function(labels, sets, size, horizontal, colors, shad
 			var strokeWidth = 16;
 			var gutter = -(strokeWidth / 4);
 			var offset = ((strokeWidth + gutter) * (set.length - 1)) / 2;
-			var attributes = {fill: 'transparent', stroke: colors[index], strokeWidth: strokeWidth, strokeLinecap: 'round'};
 			var shadowOffset = -(strokeWidth / 3);
-			var shadowAttributes = {opacity: '0.15', fill: 'transparent', stroke: '#000', strokeWidth: strokeWidth, strokeLinecap: 'round'};
 			var max;
+
+			var attributes = {
+				fill: 'transparent',
+				stroke: colors[index],
+				strokeWidth: strokeWidth,
+				strokeLinecap: 'round'
+			};
+
+			var shadowAttributes = {
+				opacity: '0.15',
+				fill: 'transparent',
+				stroke: '#000',
+				strokeWidth: strokeWidth,
+				strokeLinecap: 'round'
+			};
 
 			// Normal
 			if(typeof point === 'number') {
@@ -208,12 +199,20 @@ Render.prototype.barSets = function(labels, sets, size, horizontal, colors, shad
 				var path = Draw.path(attributes, newSet);
 				elements.push(path);
 
+				// Events
+				path.addEventListener('mousemove', function(evt) {
+					application.Events.onMouseOverBar(evt, application, 0, point);
+				});
+				path.addEventListener('mouseout', function(evt) {
+					application.Events.onMouseOut(evt, application);
+				});
+
 				index++;
 			}
 			// Stacked
 			else if(typeof point === 'object') {
 				point.sort(Utils.sortDesc);
-				point.map(function(y1) {
+				point.forEach(function(y1, k, array) {
 
 					// Update stroke color since index increases
 					attributes.stroke = colors[index];
@@ -227,7 +226,7 @@ Render.prototype.barSets = function(labels, sets, size, horizontal, colors, shad
 						newSet.push({ type: '', values: [x, Utils.calculateY(y1, max, size.height) + (strokeWidth / 2)] });
 					} 
 					else {
-						shadowAttributes.transform = 'translate(' + -shadowOffset + ', 0)';
+						shadowAttributes.transform = 'translate(' + (-shadowOffset) + ', 0)';
 						max = labels.row[labels.row.length - 1];
 						var y = (labels.positions.row[i] + (j * (strokeWidth + gutter))) - offset;
 						newSet.push({ type: 'M', values: [Utils.calculateX(0, max, size.width), y] });
@@ -236,16 +235,27 @@ Render.prototype.barSets = function(labels, sets, size, horizontal, colors, shad
 
 					// d
 					var d = Utils.buildPathString(newSet);
+
 					// Shadow
 					if(shadow) { 
 						shadowAttributes.d = d;
 						var shadowPath = Draw.path(shadowAttributes, newSet);
 						elements.push(shadowPath);
 					}
+
 					// Path
 					attributes.d = d;
 					var path = Draw.path(attributes, newSet);
 					elements.push(path);
+
+					// Events
+					path.addEventListener('mousemove', function(evt) {
+						application.Events.onMouseOverBar(evt, application, 0, y1);
+					});
+
+					path.addEventListener('mouseout', function(evt) {
+						application.Events.onMouseOut(evt, application);
+					});
 
 					index++;
 				});
@@ -256,7 +266,7 @@ Render.prototype.barSets = function(labels, sets, size, horizontal, colors, shad
 	return elements;
 };
 
-Render.prototype.pieSets = function(sets, size, colors, shadow) {
+Render.prototype.pieSets = function(application, sets, size, colors, shadow) {
 	
 	var slices = [];
 	var center = { x: (size.width / 2), y: (size.height / 2) };
@@ -292,7 +302,17 @@ Render.prototype.pieSets = function(sets, size, colors, shadow) {
 		vectors.push({type: 'Z'});
 
 		attributes.d = Utils.buildPathString(vectors);
-		slices.push(Draw.path(attributes));
+		var path = Draw.path(attributes);
+
+		// Events
+		path.addEventListener('mousemove', function(evt) {
+			application.Events.onMouseOverPie(evt, application, index, y1);
+		});
+		path.addEventListener('mouseout', function(evt) {
+			application.Events.onMouseOut(evt, application);
+		});
+
+		slices.push(path);
 	});
 
 	// Compose
@@ -313,7 +333,7 @@ Render.prototype.pieSets = function(sets, size, colors, shadow) {
 	return elements;
 };
 
-Render.prototype.doughnutSets = function(sets, size, colors, shadow) {
+Render.prototype.doughnutSets = function(application, sets, size, colors, shadow) {
 
 	// Basic calculation
 	var center = { x: (size.width / 2), y: (size.height / 2) };
@@ -356,8 +376,7 @@ Render.prototype.doughnutSets = function(sets, size, colors, shadow) {
 	var clipPath = Draw.clipPath('doughnut-clip', doughnut);
 	Utils.appendChild(defs, clipPath);
 
-
-	var pie = this.pieSets(sets, size, colors, false)[0];
+	var pie = this.pieSets(application, sets, size, colors, false)[0];
 	Utils.setElementAttributes(pie, {clipPath: 'url(#doughnut-clip)'});
 	var group = Draw.group({}, [pie]);
 
@@ -426,21 +445,48 @@ Render.prototype.dialSets = function(sets, percentage, size, colors, shadow) {
 	return elements;
 };
 
-Render.prototype.tooltip = function(id, x, y, color) {
-	var style = Utils.styleToString({
-		width: '100px',
+Render.prototype.tooltip = function(id, fontFamily) {
+	var divStyle = Utils.styleToString({
+		position: 'absolute',
 		padding: '10px 20px',
 		margin: 'none',
 		color: '#fff',
 		fontSize: '16px',
-		boxShadow: '4px 4px 0 rgba(0, 0, 0, 0.2)',
-		background: color
+		fontFamily: fontFamily,
+		boxShadow: '4px 4px 0 rgba(0, 0, 0, 0.2)'
 	});
-	var element = Draw.div({
-		id: id,
-		style: style
-	});
+	var pStyle = Utils.styleToString({ padding: '0', margin: '0' });
+	var element = Draw.div({ id: id, style: divStyle });
+	var p = Draw.p({ id: id + '-text', style: pStyle });
+	Utils.appendChild(element, p);
 	return element;
+};
+
+Render.prototype.graphLines = function(labels, size) {
+	var elements = [];
+	labels.positions.column.map(function(x) {
+		var line = Draw.line({
+			x1: x,
+			y1: 0,
+			x2: x,
+			y2: size.height,
+			stroke: '#ccc',
+			strokeDasharray: '5, 5'
+		});
+		elements.push(line);
+	});
+	labels.positions.row.map(function(y) {
+		var line = Draw.line({
+			x1: 0,
+			y1: y,
+			x2: size.width,
+			y2: y,
+			stroke: '#ccc',
+			strokeDasharray: '5, 5'
+		});
+		elements.push(line);
+	});
+	return elements;
 };
 
 Render.prototype.svg = function(container, fontSize, size, padding) {
@@ -448,8 +494,9 @@ Render.prototype.svg = function(container, fontSize, size, padding) {
 	var heightOffset = (fontSize / 2) + padding.y;
 	var width = size.width + widthOffset;
 	var height = size.height + heightOffset;
-	
 	var attributes = {
+		xmlns: 'http://www.w3.org/2000/svg',
+		version: '1.1',
 		width: width,
 		height: height
 	};

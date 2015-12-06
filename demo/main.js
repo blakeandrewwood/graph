@@ -3,8 +3,7 @@ var pointsLine = [
 	[10, 50, 150, 175, 130],
 	[20, 150, 100, 150, 175],
 	[5,  30,  40,  80,  50],
-	[15, 70,  50,  50,  60],
-	[0,  40,  80,  90,  90]
+	[15, 70,  50,  50,  60]
 ];
 var graphLine = new Graph('GraphLine');
 graphLine.setContainer('graph-line');
@@ -17,7 +16,6 @@ graphLine.setPrefix('$');
 graphLine.setPoints(pointsLine);
 graphLine.render();
 
-/*
 var labelsBar = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 var pointsBar = [[1], [2], [3], [4], [3], [6], [4], [3], [5], [6], [4], [3]];
 var graphBar = new Graph('GraphBar');
@@ -33,10 +31,10 @@ graphBar.render();
 
 var labelsBarMulti = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
 var pointsBarMulti = [
-	[1350, 1000, 800],
-	[700, 500, 600],
-	[500, 800],
-	[1650, [800, 400]],
+	[1350, [1000, 800]],
+	[[700, 500], 600],
+	[[500, 800]],
+	[[1650, 800, 400]],
 	[[1500, 1000, 500]],
 ];
 var graphBarMulti = new Graph('GraphBarMulti');
@@ -133,4 +131,3 @@ graphDial.setLabels(labelsDial);
 graphDial.setPoints(pointsDial);
 graphDial.setColors(['#1CB8F1', '#08ECEF', '#6CF1B2', '#2388F2']);
 graphDial.render();
-*/
