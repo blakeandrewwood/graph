@@ -87,7 +87,7 @@ Graph.prototype.barMakeSvg = function() {
 	this.makeLineBarCalculations();
 	var columnLabels = this.labels.column;
 	var rowLabels = this.labels.row;
-	
+
 	// Calculation Vertical
 	if(this.horizontal) {
 		columnLabels = this.labels.row;
@@ -145,15 +145,17 @@ Graph.prototype.doughnutMakeSvg = function() {
 
 	// Render
 	var bottomLeftLabelText = Render.bottomLeftLabelText(this.labels.column, this.font, this.size, this.colors);
-	//var centerLabelText = Render.centerLabelText('50', this.font, this.size, '#000');
+	var centerLabelText = Render.centerLabelText('50', this.font, this.size, '#000');
 	var sets = Render.doughnutSets(this.degrees, this.size, this.colors, this.shadow);
 
 	// Group
 	var children = [];
 	var g1 = Draw.group({ transform: 'translate('+0+','+this.heightOffset+')' }, bottomLeftLabelText);
 	var g2 = Draw.group({ transform: 'translate('+this.widthOffset/2+','+this.heightOffset/2+')' }, sets);
+	var g3 = Draw.group({ transform: 'translate('+this.widthOffset/2+','+this.heightOffset/2+')' }, centerLabelText);
 	children.push(g1);
 	children.push(g2);
+	children.push(g3);
 	var g = Draw.group({}, children);
 
 	// Return
@@ -166,14 +168,18 @@ Graph.prototype.dialMakeSvg = function() {
 	this.makeDialCalculations();
 
 	// Render
-	//var centerLabelText = Render.centerLabelText((this.percentages[0] * 100), this.font, this.size, '#fff');
-	//var bottomCenterLabelText = Render.bottomCenterLabelText(this.points[0][0] + '/' + this.points[0][1], this.font, this.size, '#000');
+	var centerLabelText = Render.centerLabelText((this.percentages[0] * 100), this.font, this.size, '#fff');
+	var bottomCenterLabelText = Render.bottomCenterLabelText(this.points[0][0] + '/' + this.points[0][1], this.font, this.size, '#000');
 	var sets = Render.dialSets(this.degrees, this.percentages, this.size, this.colors, this.shadow);
 
 	// Group
 	var children = [];
 	var g1 = Draw.group({ transform: 'translate('+this.widthOffset/2+','+this.heightOffset/2+')' }, sets);
+	var g2 = Draw.group({ transform: 'translate('+this.widthOffset/2+','+this.heightOffset/2+')' }, centerLabelText);
+	var g3 = Draw.group({ transform: 'translate('+this.widthOffset/2+','+this.heightOffset+')' }, bottomCenterLabelText);
 	children.push(g1);
+	children.push(g2);
+	children.push(g3);
 	var g = Draw.group({}, children);
 
 	// Return 

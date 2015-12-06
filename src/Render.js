@@ -98,7 +98,7 @@ Render.prototype.centerLabelText = function(text, font, size, color) {
 		fontSize: font.size,
 		fontFamily: font.family,
 		textAnchor: 'middle'
-	}, text);
+	});
 	textSvg.innerHTML = text;
 	elements.push(textSvg);
 	return elements;
