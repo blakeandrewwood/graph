@@ -6,7 +6,10 @@
 	<link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
 </head>
 <body>
-	<div id="graph-line" class="graph g1"></div>
+
+	<div style="padding: 48px">
+		<div id="graph-line" class="graph g1"></div>
+	</div>
 	<div id="graph-bar" class="graph g2"></div>
 	<div id="graph-bar-multi" class="graph g3"></div>
 	<div id="graph-bar-multi-stack" class="graph g4"></div>
@@ -21,13 +24,15 @@
 		body {
 			background: rgb(245, 245, 245);
 			font-size: 0;
+			padding: 0;
+			margin: 0;
 		}
 		div {
 			display: inline-block;
 		}
 		.graph {
 			background: #fff;
-			padding:20px 20px;
+			padding:40px 40px;
 			position: relative;
 			box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.1);
 		}

@@ -19,39 +19,31 @@ Events.prototype.getSvg = function(containerId) {
 	return object;
 };
 
-Events.prototype.getNormalizedX = function(x, paddingX, cssPaddingX) {
-	return ((x - (paddingX/2)) - cssPaddingX);
-};
-
-Events.prototype.getNormalizedY = function(y, paddingY, cssPaddingY) {
-	return ((y - (paddingY/2)) - cssPaddingY);
-};
-
 Events.prototype.onMouseOver = function(evt, application, index, rowMax) {
 	var svg = this.getSvg(application.containerId);
 	var color = application.colors[index];
 
 	// Get position
-	var containerPosition = svg.container.getBoundingClientRect();
-	var svgPosition = svg.svg.getBoundingClientRect();
-
-	console.log(svg.svg.offsetLeft, svg.container.offsetLeft);
+	var containerOffset = Utils.getElementOffset(svg.container);
+	var svgOffset = Utils.getElementOffset(svg.svg);
 
 	// Make calculations
 	var width = application.size.width;
 	var height = application.size.height;
 	var padding = application.padding;
-	var cssPadding = { x: svg.svg.offsetLeft, y: svg.svg.offsetTop };
-
-	var x = evt.clientX - (svg.container.offsetLeft);
-	var y = evt.clientY - (svg.container.offsetTop);
-
-	var nx = this.getNormalizedX((x - (svg.container.offsetLeft / 2)), padding.x, cssPadding.x);
-	var ny = this.getNormalizedY((y - (svg.container.offsetTop / 2)), padding.y, cssPadding.y);
+	var x = evt.clientX - containerOffset.left;
+	var y = evt.clientY - containerOffset.top;
+	var nx = (evt.clientX - svgOffset.left) - (padding.x/2);
+	var ny = (evt.clientY - svgOffset.top) - (padding.y/2); 
 	var d = application.labels.positions.column.length - 1;
+
+	// Percent between two nodes
 	var p = nx/(width/d);
 
+	// Index
 	var i = Math.floor(p);
+
+	// Calculate difference
 	var nums = [application.points[index][i], application.points[index][i + 1]];
 	var number = Math.floor(((nums[1] - nums[0]) * (p % 1)) + nums[0]);
 

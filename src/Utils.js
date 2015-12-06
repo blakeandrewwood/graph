@@ -43,6 +43,19 @@ Utils.prototype.setDivPosition = function(element, x, y) {
 	element.style.top = y + 'px';
 };
 
+Utils.prototype.getElementOffset = function(element) {
+	var box = element.getBoundingClientRect();
+	var body = document.body;
+	var docElement = document.documentElement;
+	var scrollTop = window.pageYOffset || docElement.scrollTop || body.scrollTop;
+	var scrollLeft = window.pageXOffset || docElement.scrollLeft || body.scrollLeft;
+	var clientTop = docElement.clientTop || body.clientTop || 0;
+	var clientLeft = docElement.clientLeft || body.clientLeft || 0;
+	var top = box.top + scrollTop - clientTop;
+	var left = box.left + scrollLeft - clientLeft;
+	return { top: Math.round(top), left: Math.round(left) }
+};
+
 /**
  * Data 
  *
