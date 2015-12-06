@@ -20,11 +20,11 @@ Events.prototype.getSvg = function(containerId) {
 };
 
 Events.prototype.getNormalizedX = function(x, paddingX, cssPaddingX) {
-	return ((x + cssPaddingX) - paddingX);
+	return ((x - (paddingX/2)) - cssPaddingX);
 };
 
 Events.prototype.getNormalizedY = function(y, paddingY, cssPaddingY) {
-	return ((y - cssPaddingY) - paddingY);
+	return ((y - (paddingY/2)) - cssPaddingY);
 };
 
 Events.prototype.onMouseOver = function(evt, application, index, rowMax) {
@@ -34,22 +34,25 @@ Events.prototype.onMouseOver = function(evt, application, index, rowMax) {
 	// Get position
 	var containerPosition = svg.container.getBoundingClientRect();
 	var svgPosition = svg.svg.getBoundingClientRect();
-	var x = ((evt.clientX) - containerPosition.left);
-	var y = ((evt.clientY) - containerPosition.top);
+
+	console.log(svg.svg.offsetLeft, svg.container.offsetLeft);
 
 	// Make calculations
 	var width = application.size.width;
 	var height = application.size.height;
 	var padding = application.padding;
-	var cssPadding = { x: 20, y: 20 };
-	var nx = this.getNormalizedX(x, padding.x, cssPadding.x);
-	var ny = this.getNormalizedY(y, padding.y, cssPadding.y);
-	var d = window.columnPositions.length - 1;
-	var p = (nx + cssPadding.x)/(width/d);
+	var cssPadding = { x: svg.svg.offsetLeft, y: svg.svg.offsetTop };
+
+	var x = evt.clientX - (svg.container.offsetLeft);
+	var y = evt.clientY - (svg.container.offsetTop);
+
+	var nx = this.getNormalizedX((x - (svg.container.offsetLeft / 2)), padding.x, cssPadding.x);
+	var ny = this.getNormalizedY((y - (svg.container.offsetTop / 2)), padding.y, cssPadding.y);
+	var d = application.labels.positions.column.length - 1;
+	var p = nx/(width/d);
+
 	var i = Math.floor(p);
-	var cx = window.columnPositions[i] - cssPadding.x;
-	var cy = Utils.calculateY(window.sets[index][i], rowMax, height);
-	var nums = [window.sets[index][i], window.sets[index][i + 1]];
+	var nums = [application.points[index][i], application.points[index][i + 1]];
 	var number = Math.floor(((nums[1] - nums[0]) * (p % 1)) + nums[0]);
 
 	// Render

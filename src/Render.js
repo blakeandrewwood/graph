@@ -121,10 +121,6 @@ Render.prototype.lineSets = function(application, columnPositions, rowMax, sets,
 			});
 		});
 		var d = Utils.buildPathString(newSet);
-
-		window.sets = sets;
-		window.columnPositions = columnPositions;
-
 		var path = Draw.path({
 			d: d,
 			stroke: colors[i],
@@ -436,6 +432,7 @@ Render.prototype.tooltip = function(id, x, y, color) {
 		padding: '10px 20px',
 		margin: 'none',
 		color: '#fff',
+		fontSize: '16px',
 		boxShadow: '4px 4px 0 rgba(0, 0, 0, 0.2)',
 		background: color
 	});

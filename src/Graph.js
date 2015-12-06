@@ -85,9 +85,9 @@ Graph.prototype.lineBuildSvg = function() {
 
 	// Group
 	var children = [];
-	var g1 = Draw.group({ transform: 'translate('+this.widthOffset+','+this.heightOffset/2+')' }, graphLines);
-	var g2 = Draw.group({ transform: 'translate('+this.widthOffset+','+this.heightOffset/2+')' }, sets);
-	var g3 = Draw.group({ transform: 'translate('+this.widthOffset+','+this.heightOffset+')' }, columnLabelText);
+	var g1 = Draw.group({ transform: 'translate('+this.widthOffset/2+','+this.heightOffset/2+')' }, graphLines);
+	var g2 = Draw.group({ transform: 'translate('+this.widthOffset/2+','+this.heightOffset/2+')' }, sets);
+	var g3 = Draw.group({ transform: 'translate('+this.widthOffset/2+','+this.heightOffset+')' }, columnLabelText);
 	var g4 = Draw.group({ transform: 'translate('+0+','+this.heightOffset/2+')' }, rowLabelText);
 	children.push(g1);
 	children.push(g2);
@@ -123,9 +123,9 @@ Graph.prototype.barBuildSvg = function() {
 
 	// Group
 	var children = [];
-	var g1 = Draw.group({ transform: 'translate('+this.widthOffset+','+this.heightOffset/2+')' }, graphLines);
-	var g2 = Draw.group({ transform: 'translate('+this.widthOffset+','+this.heightOffset/2+')' }, sets);
-	var g3 = Draw.group({ transform: 'translate('+this.widthOffset+','+this.heightOffset+')' }, columnLabelText);
+	var g1 = Draw.group({ transform: 'translate('+this.widthOffset/2+','+this.heightOffset/2+')' }, graphLines);
+	var g2 = Draw.group({ transform: 'translate('+this.widthOffset/2+','+this.heightOffset/2+')' }, sets);
+	var g3 = Draw.group({ transform: 'translate('+this.widthOffset/2+','+this.heightOffset+')' }, columnLabelText);
 	var g4 = Draw.group({ transform: 'translate('+0+','+this.heightOffset/2+')' }, rowLabelText);
 	children.push(g1);
 	children.push(g2);
@@ -212,7 +212,7 @@ Graph.prototype.dialBuildSvg = function() {
  *
  */
 Graph.prototype.render = function() {
-	this.padding = { x: 40, y: 50 };
+	this.padding = { x: 100, y: 40 };
 	this.widthOffset = (this.font.size / 2) + this.padding.x;
 	this.heightOffset = (this.font.size / 2) + this.padding.y;
 	switch(this.type) {
