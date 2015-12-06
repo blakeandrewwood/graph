@@ -84,6 +84,7 @@ Render.prototype.bottomCenterLabelText = function(text, font, size, color) {
 	});
 	var text = document.createTextNode(text);
 	textSvg.appendChild(text);
+	elements.push(textSvg);
 	return elements;
 };
 
@@ -101,6 +102,7 @@ Render.prototype.centerLabelText = function(text, font, size, color) {
 	});
 	var text = document.createTextNode(text);
 	textSvg.appendChild(text);
+	elements.push(textSvg);
 	return elements;
 };
 

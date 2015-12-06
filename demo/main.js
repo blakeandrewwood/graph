@@ -103,7 +103,7 @@ graphPie.render();
 
 var labelsDoughnut = ['Oracle', 'Azure', 'Joyent', 'IBM'];
 var pointsDoughnut = [
-	[200],
+	[100],
 	[200],
 	[400],
 	[400]
