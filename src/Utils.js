@@ -7,60 +7,60 @@ function Utils() {}
  *
  */
 Utils.prototype.setElementAttributes = function(element, attributes) {
-	for(var attribute in attributes) {
-		var attr = attribute.replace(/[A-Z]/g, function(v) {
-			return '-' + v.toLowerCase();
-		});
-		element.setAttribute(attr, attributes[attribute]);
-	}
+  for(var attribute in attributes) {
+    var attr = attribute.replace(/[A-Z]/g, function(v) {
+      return '-' + v.toLowerCase();
+    });
+    element.setAttribute(attr, attributes[attribute]);
+  }
 };
 
 Utils.prototype.styleToString = function(attributes) {
-	var string = '';
-	for(var attribute in attributes) {
-		var attr = attribute.replace(/[A-Z]/g, function(v) {
-			return '-' + v.toLowerCase();
-		});
-		string += (attr + ':' + attributes[attribute] + ';');
-	}
-	return string;
+  var string = '';
+  for(var attribute in attributes) {
+    var attr = attribute.replace(/[A-Z]/g, function(v) {
+      return '-' + v.toLowerCase();
+    });
+    string += (attr + ':' + attributes[attribute] + ';');
+  }
+  return string;
 };
 
 Utils.prototype.appendChild = function(element, child) {
-	element.appendChild(child);
+  element.appendChild(child);
 };
 
 Utils.prototype.appendChildren = function(element, children) {
-	children.map(function(child) {
-		element.appendChild(child);
-	});
+  children.map(function(child) {
+    element.appendChild(child);
+  });
 };
 
 Utils.prototype.setDivPosition = function(element, x, y) {
-	element.style.position = 'absolute';
-	element.style.left = x + 'px';
-	element.style.top = y + 'px';
+  element.style.position = 'absolute';
+  element.style.left = x + 'px';
+  element.style.top = y + 'px';
 };
 
 Utils.prototype.getElementOffset = function(element) {
-	var box = element.getBoundingClientRect();
-	var body = document.body;
-	var docElement = document.documentElement;
-	var scrollTop = window.pageYOffset || docElement.scrollTop || body.scrollTop;
-	var scrollLeft = window.pageXOffset || docElement.scrollLeft || body.scrollLeft;
-	var clientTop = docElement.clientTop || body.clientTop || Math.abs(body.getBoundingClientRect().top) || 0;
-	var clientLeft = docElement.clientLeft || body.clientLeft || Math.abs(body.getBoundingClientRect().left) || 0;
-	var top = box.top + scrollTop - clientTop;
-	var left = box.left + scrollLeft - clientLeft;
-	return { top: Math.round(top), left: Math.round(left) }
+  var box = element.getBoundingClientRect();
+  var body = document.body;
+  var docElement = document.documentElement;
+  var scrollTop = window.pageYOffset || docElement.scrollTop || body.scrollTop;
+  var scrollLeft = window.pageXOffset || docElement.scrollLeft || body.scrollLeft;
+  var clientTop = docElement.clientTop || body.clientTop || Math.abs(body.getBoundingClientRect().top) || 0;
+  var clientLeft = docElement.clientLeft || body.clientLeft || Math.abs(body.getBoundingClientRect().left) || 0;
+  var top = box.top + scrollTop - clientTop;
+  var left = box.left + scrollLeft - clientLeft;
+  return { top: Math.round(top), left: Math.round(left) }
 };
 
 Utils.prototype.showElement = function(element) {
-	element.style.display = 'block';
+  element.style.display = 'block';
 };
 
 Utils.prototype.hideElement = function(element) {
-	element.style.display = 'none';
+  element.style.display = 'none';
 };
 
 /**
@@ -68,80 +68,80 @@ Utils.prototype.hideElement = function(element) {
  *
  */
 Utils.prototype.buildPathString = function(vectors) {
-	var d = '';
-	vectors.forEach(function(vector, index, array) {
-		d += vector.type;
-		if(vector.values) {
-			vector.values.map(function(value) {
-				d += value + ' ';
-			});
-		}
-	});
-	return d.trim();
+  var d = '';
+  vectors.forEach(function(vector, index, array) {
+    d += vector.type;
+    if(vector.values) {
+      vector.values.map(function(value) {
+        d += value + ' ';
+      });
+    }
+  });
+  return d.trim();
 };
 
 Utils.prototype.flattenPoints = function(points) {
-	var yArray = [];
-	points.map(function(point) {
-		point.map(function(y) {
-			// If stacked point
-			if(typeof y === 'object') {
-				y.map(function(y1) {
-					yArray.push(y1);
-				});
-			}
-			// If single point
-			else {
-				yArray.push(y);
-			}
-		});
-	});
-	return yArray;
+  var yArray = [];
+  points.map(function(point) {
+    point.map(function(y) {
+      // If stacked point
+      if(typeof y === 'object') {
+        y.map(function(y1) {
+          yArray.push(y1);
+        });
+      }
+      // If single point
+      else {
+        yArray.push(y);
+      }
+    });
+  });
+  return yArray;
 };
 
 Utils.prototype.getPointIncrements = function(yMax, increment) {
-	var numItems = Math.ceil(yMax / increment) + 1;
-	var items = [];
-	for(var i = 0; i < numItems; i++) {
-		items.push(i * increment);
-	}
-	items.reverse();
-	return items;
+  var numItems = Math.ceil(yMax / increment) + 1;
+  var items = [];
+  for(var i = 0; i < numItems; i++) {
+    items.push(i * increment);
+  }
+  items.reverse();
+  return items;
 };
 
 Utils.prototype.getSetPercentages = function(points) {
-	var percentages = [];
-	var flatten = this.flattenPoints(points);
-	var sum = flatten.reduce(function(pv, cv) {
-		return pv + cv;
-	}, 0);
-	points.map(function(point) {
-		percentages.push((point[0] / sum));
-	});
-	return percentages;
+  var percentages = [];
+  var flatten = this.flattenPoints(points);
+  var sum = flatten.reduce(function(pv, cv) {
+    return pv + cv;
+  }, 0);
+  points.map(function(point) {
+    percentages.push((point[0] / sum));
+  });
+  return percentages;
 };
 
 Utils.prototype.getPercentages = function(points) {
-	var percentages = [];
-	var flatten = this.flattenPoints(points);
-	percentages.push(flatten[0] / flatten[1]);
-	return percentages;
+  var percentages = [];
+  var flatten = this.flattenPoints(points);
+  percentages.push(flatten[0] / flatten[1]);
+  return percentages;
 };
 
 Utils.prototype.getDegrees = function(percentages, angle) {
-	var degrees = [];
-	percentages.map(function(percent) {
-		degrees.push(percent * angle);
-	});
-	return degrees;
+  var degrees = [];
+  percentages.map(function(percent) {
+    degrees.push(percent * angle);
+  });
+  return degrees;
 };
 
 Utils.prototype.getMinMax = function(points) {
-	var range = {};
-	var flatten = this.flattenPoints(points);
-	range.min = Array.min(flatten);
-	range.max = Array.max(flatten);
-	return range;
+  var range = {};
+  var flatten = this.flattenPoints(points);
+  range.min = Array.min(flatten);
+  range.max = Array.max(flatten);
+  return range;
 };
 
 /**
@@ -149,68 +149,68 @@ Utils.prototype.getMinMax = function(points) {
  *
  */
 Utils.prototype.calculateColumnPositions = function(labels, width) {
-	var positions = [];
-	var size = 	width / (labels.length - 1);
-	labels.forEach(function(label, index, array) {
-		var x = Math.round((size * index));
-		positions.push(x);
-	});
-	return positions;
+  var positions = [];
+  var size =  width / (labels.length - 1);
+  labels.forEach(function(label, index, array) {
+    var x = Math.round((size * index));
+    positions.push(x);
+  });
+  return positions;
 };
 
 Utils.prototype.calculateRowPositions = function(labels, height) {
-	var positions = [];
-	var size = 	height / (labels.length - 1);
-	labels.forEach(function(label, index, array) {
-		var y = Math.round((size * index));
-		positions.push(y);
-	}, this);
-	return positions;
+  var positions = [];
+  var size =  height / (labels.length - 1);
+  labels.forEach(function(label, index, array) {
+    var y = Math.round((size * index));
+    positions.push(y);
+  }, this);
+  return positions;
 };
 
 Utils.prototype.calculateY = function(y, yMax, height) {
-	var calculatedY = this.normalizeY(y, yMax, height);
-	return this.reversePosY(calculatedY, 0, height);
+  var calculatedY = this.normalizeY(y, yMax, height);
+  return this.reversePosY(calculatedY, 0, height);
 }
 
 Utils.prototype.calculateX = function(x, xMax, width) {
-	return this.normalizeX(x, xMax, width);
+  return this.normalizeX(x, xMax, width);
 }
 
 Utils.prototype.normalizeY = function(y, yMax, height) {
-	return (height/yMax) * y;
+  return (height/yMax) * y;
 }
 
 Utils.prototype.normalizeX = function(x, xMax, width) {
-	return (width/xMax) * x;
+  return (width/xMax) * x;
 }
 
 Utils.prototype.reversePosY = function(x, xMin, xMax) {
-	return (xMax + xMin) - x;
+  return (xMax + xMin) - x;
 }
 
 Utils.prototype.reversePosX = function(y, yMin, yMax) {
-	return (yMax + yMin) - y;
+  return (yMax + yMin) - y;
 }
 
 Utils.prototype.calculateAngleX = function(rx, radius, angle) {
-	return rx + (radius * Math.cos(Math.PI * (angle / 180)));
+  return rx + (radius * Math.cos(Math.PI * (angle / 180)));
 }
 
 Utils.prototype.calculateAngleY = function(ry, radius, angle) {
-	return ry + (radius * Math.sin(Math.PI * (angle / 180)));
+  return ry + (radius * Math.sin(Math.PI * (angle / 180)));
 }
 
 Utils.prototype.sortDesc = function(a, b) {
-	return b-a;
+  return b-a;
 }
 
 Array.max = function(array) {
-	return Math.max.apply(Math, array);
+  return Math.max.apply(Math, array);
 };
 
 Array.min = function(array) {
-	return Math.min.apply(Math, array);
+  return Math.min.apply(Math, array);
 };
 
 module.exports = new Utils();

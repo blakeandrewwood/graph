@@ -1,9 +1,9 @@
 var labelsLine = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
 var pointsLine = [
-	[10, 50, 150, 175, 130],
-	[20, 150, 100, 150, 175],
-	[5,  30,  40,  80,  50],
-	[15, 70,  50,  50,  60]
+  [10, 50, 150, 175, 130],
+  [20, 150, 100, 150, 175],
+  [5,  30,  40,  80,  50],
+  [15, 70,  50,  50,  60]
 ];
 var graphLine = new Graph('GraphLine');
 graphLine.setContainer('graph-line');
@@ -31,11 +31,11 @@ graphBar.render();
 
 var labelsBarMulti = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
 var pointsBarMulti = [
-	[1350, [1000, 800]],
-	[[700, 500], 600],
-	[[500, 800]],
-	[[1650, 800, 400]],
-	[[1500, 1000, 500]],
+  [1350, [1000, 800]],
+  [[700, 500], 600],
+  [[500, 800]],
+  [[1650, 800, 400]],
+  [[1500, 1000, 500]],
 ];
 var graphBarMulti = new Graph('GraphBarMulti');
 graphBarMulti.setContainer('graph-bar-multi');
@@ -49,11 +49,11 @@ graphBarMulti.render();
 
 var labelsBarMultiStack = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
 var pointsBarMultiStack = [
-	[[500, 1000, 1300]],
-	[[700, 500, 600]],
-	[[200, 800]],
-	[[450]],
-	[[1200]]
+  [[500, 1000, 1300]],
+  [[700, 500, 600]],
+  [[200, 800]],
+  [[450]],
+  [[1200]]
 ];
 var graphBarMultiStack = new Graph('GraphBarMultiStack');
 graphBarMultiStack.setContainer('graph-bar-multi-stack');
@@ -67,10 +67,10 @@ graphBarMultiStack.render();
 
 var labelsBarMultiStackHorizontal = ['Tom', 'Kelly', 'Rob', 'Owen'];
 var pointsBarMultiStackHorizontal = [
-	[[450, 800, 1100, 200]],
-	[[700, 1000, 1400, 500]],
-	[[200, 800, 700]],
-	[[700, 400]]
+  [[450, 800, 1100, 200]],
+  [[700, 1000, 1400, 500]],
+  [[200, 800, 700]],
+  [[700, 400]]
 ];
 var graphBarMultiStackHorizontal = new Graph('GraphBarMultiStackHorizontal');
 graphBarMultiStackHorizontal.setContainer('graph-bar-multi-stack-horizontal');
@@ -85,10 +85,10 @@ graphBarMultiStackHorizontal.render();
 
 var labelsPie = ['Oracle', 'Azure', 'Joyent', 'IBM'];
 var pointsPie = [
-	[700],
-	[500],
-	[400],
-	[200]
+  [700],
+  [500],
+  [400],
+  [200]
 ];
 var graphPie = new Graph('GraphPie');
 graphPie.setContainer('graph-pie');
@@ -103,10 +103,10 @@ graphPie.render();
 
 var labelsDoughnut = ['Oracle', 'Azure', 'Joyent', 'IBM'];
 var pointsDoughnut = [
-	[100],
-	[200],
-	[400],
-	[400]
+  [100],
+  [200],
+  [400],
+  [400]
 ];
 var graphDoughnut = new Graph('GraphDoughnut');
 graphDoughnut.setContainer('graph-doughnut');
