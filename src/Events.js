@@ -30,11 +30,27 @@ Events.prototype.getNormalizedY = function(y, paddingY, cssPaddingY) {
 Events.prototype.onMouseOver = function(evt, application, index, rowMax) {
 	var svg = this.getSvg(application.containerId);
 	var color = application.colors[index];
+
 	// Get position
 	var containerPosition = svg.container.getBoundingClientRect();
 	var svgPosition = svg.svg.getBoundingClientRect();
 	var x = ((evt.clientX) - containerPosition.left);
 	var y = ((evt.clientY) - containerPosition.top);
+
+	// Make calculations
+	var width = application.size.width;
+	var height = application.size.height;
+	var padding = application.padding;
+	var cssPadding = { x: 20, y: 20 };
+	var nx = this.getNormalizedX(x, padding.x, cssPadding.x);
+	var ny = this.getNormalizedY(y, padding.y, cssPadding.y);
+	var d = window.columnPositions.length - 1;
+	var p = (nx + cssPadding.x)/(width/d);
+	var i = Math.floor(p);
+	var cx = window.columnPositions[i] - cssPadding.x;
+	var cy = Utils.calculateY(window.sets[index][i], rowMax, height);
+	var nums = [window.sets[index][i], window.sets[index][i + 1]];
+	var number = Math.floor(((nums[1] - nums[0]) * (p % 1)) + nums[0]);
 
 	// Render
 	if(!svg.tooltip) {
@@ -46,31 +62,15 @@ Events.prototype.onMouseOver = function(evt, application, index, rowMax) {
 
 	// Update
 	else {
-		var width = application.size.width;
-		var height = application.size.height;
-		var padding = application.padding;
-		var cssPadding = { x: 20, y: 20 };
-		var nx = this.getNormalizedX(x, padding.x, cssPadding.x);
-		var ny = this.getNormalizedY(y, padding.y, cssPadding.y);
-		var d = window.columnPositions.length - 1;
-		var p = (nx + cssPadding.x)/(width/d);
-		var i = Math.floor(p);
-		var cx = window.columnPositions[i] - cssPadding.x;
-		var cy = Utils.calculateY(window.sets[index][i], rowMax, height);
-		var nums = [window.sets[index][i], window.sets[index][i + 1]];
-		var number = Math.floor(((nums[1] - nums[0]) * (p % 1)) + nums[0]);
-
 		var textStyle = Utils.styleToString({
 			padding: '0',
 			margin: '0',
 			fontFamily: application.font.family
 		});
-
 		if(!isNaN(number)) {
 			var text = application.labels.prefix + (number.toString()) + application.labels.suffix;
 			svg.tooltip.innerHTML = '<p style="' + textStyle + '">' + text + '</p>';
 		}
-
 		Utils.setDivPosition(svg.tooltip, x + 10, y + 10);
 	}
 };

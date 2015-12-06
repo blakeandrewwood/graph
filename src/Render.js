@@ -432,10 +432,11 @@ Render.prototype.dialSets = function(sets, percentage, size, colors, shadow) {
 
 Render.prototype.tooltip = function(id, x, y, color) {
 	var style = Utils.styleToString({
+		width: '100px',
 		padding: '10px 20px',
 		margin: 'none',
 		color: '#fff',
-		boxShadow: '0 2px 3px rgba(0, 0, 0, 0.3)',
+		boxShadow: '4px 4px 0 rgba(0, 0, 0, 0.2)',
 		background: color
 	});
 	var element = Draw.div({
@@ -450,10 +451,10 @@ Render.prototype.svg = function(container, fontSize, size, padding) {
 	var heightOffset = (fontSize / 2) + padding.y;
 	var width = size.width + widthOffset;
 	var height = size.height + heightOffset;
+	
 	var attributes = {
 		width: width,
-		height: height,
-		//onmousemove: 'console.log(evt.offsetY)'
+		height: height
 	};
 	var svg  = Draw.svg(attributes);
 	return svg;

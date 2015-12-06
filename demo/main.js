@@ -17,16 +17,15 @@ graphLine.setPrefix('$');
 graphLine.setPoints(pointsLine);
 graphLine.render();
 
-/*
 var labelsBar = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 var pointsBar = [[1], [2], [3], [4], [3], [6], [4], [3], [5], [6], [4], [3]];
-var graphBar = new Graph('App');
+var graphBar = new Graph('GraphBar');
 graphBar.setContainer('graph-bar');
 graphBar.setType('bar');
 graphBar.setSize(350, 150);
 graphBar.setFontFamily('Open Sans');
 graphBar.setLabels(labelsBar);
-graphBar.setIncrement(1);
+graphBar.setIncrement(2);
 graphBar.setPoints(pointsBar);
 graphBar.setShadow(false);
 graphBar.render();
@@ -39,7 +38,7 @@ var pointsBarMulti = [
 	[1650, [800, 400]],
 	[[1500, 1000, 500]],
 ];
-var graphBarMulti = new Graph();
+var graphBarMulti = new Graph('GraphBarMulti');
 graphBarMulti.setContainer('graph-bar-multi');
 graphBarMulti.setType('bar');
 graphBarMulti.setSize(300, 150);
@@ -57,7 +56,7 @@ var pointsBarMultiStack = [
 	[[450]],
 	[[1200]]
 ];
-var graphBarMultiStack = new Graph();
+var graphBarMultiStack = new Graph('GraphBarMultiStack');
 graphBarMultiStack.setContainer('graph-bar-multi-stack');
 graphBarMultiStack.setType('bar');
 graphBarMultiStack.setSize(300, 150);
@@ -74,7 +73,7 @@ var pointsBarMultiStackHorizontal = [
 	[[200, 800, 700]],
 	[[700, 400]]
 ];
-var graphBarMultiStackHorizontal = new Graph();
+var graphBarMultiStackHorizontal = new Graph('GraphBarMultiStackHorizontal');
 graphBarMultiStackHorizontal.setContainer('graph-bar-multi-stack-horizontal');
 graphBarMultiStackHorizontal.setType('bar');
 graphBarMultiStackHorizontal.setHorizontal(true);
@@ -92,7 +91,7 @@ var pointsPie = [
 	[400],
 	[200]
 ];
-var graphPie = new Graph();
+var graphPie = new Graph('GraphPie');
 graphPie.setContainer('graph-pie');
 graphPie.setType('pie');
 graphPie.setSize(150, 150);
@@ -110,7 +109,7 @@ var pointsDoughnut = [
 	[400],
 	[400]
 ];
-var graphDoughnut = new Graph();
+var graphDoughnut = new Graph('GraphDoughnut');
 graphDoughnut.setContainer('graph-doughnut');
 graphDoughnut.setType('doughnut');
 graphDoughnut.setSize(150, 150);
@@ -123,7 +122,7 @@ graphDoughnut.render();
 
 var labelsDial = [];
 var pointsDial = [[75, 100]];
-var graphDial = new Graph();
+var graphDial = new Graph('GraphDial');
 graphDial.setContainer('graph-dial');
 graphDial.setType('dial');
 graphDial.setSize(150, 150);
@@ -133,4 +132,3 @@ graphDial.setLabels(labelsDial);
 graphDial.setPoints(pointsDial);
 graphDial.setColors(['#1CB8F1', '#08ECEF', '#6CF1B2', '#2388F2']);
 graphDial.render();
-*/
