@@ -118,17 +118,20 @@ Graph.prototype.barBuildSvg = function() {
   var graphLines = Render.graphLines(this.labels, this.size);
   var columnLabelText = Render.columnLabelText(this.labels, columnLabels, this.font, this.size);
   var rowLabelText = Render.rowLabelText(this.labels, rowLabels, this.font, this.size);
+  var seriesLabelText = Render.seriesLabelText(this.labels, this.font, this.size, this.colors);
   var sets = Render.barSets(this, this.labels, this.points, this.size, this.horizontal, this.colors, this.shadow);
   // Group
   var children = [];
   var g1 = Draw.group({ transform: 'translate('+this.widthOffset/2+','+this.heightOffset/2+')' }, graphLines);
   var g2 = Draw.group({ transform: 'translate('+this.widthOffset/2+','+this.heightOffset/2+')' }, sets);
   var g3 = Draw.group({ transform: 'translate('+this.widthOffset/2+','+this.heightOffset/2+')' }, columnLabelText);
-  var g4 = Draw.group({ transform: 'translate('+0+','+this.heightOffset/2+')' }, rowLabelText);
+  var g4 = Draw.group({ transform: 'translate('+this.widthOffset+','+this.heightOffset+')' }, seriesLabelText);
+  var g5 = Draw.group({ transform: 'translate('+0+','+this.heightOffset/2+')' }, rowLabelText);
   children.push(g1);
   children.push(g2);
   children.push(g3);
   children.push(g4);
+  children.push(g5);
   var g = Draw.group({}, children);
   // Return
   this.svg = Render.svg(this.container, this.font.size, this.size, this.padding);
