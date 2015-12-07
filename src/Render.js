@@ -14,7 +14,7 @@ Render.prototype.columnLabelText = function(labels, columnLabels, font, size) {
     var x = labels.positions.column[index];
     var textSvg = Draw.text({
       x: x,
-      y: size.height - (font.size/2),
+      y: (size.height + (font.size*2.2)),
       fill: '#888',
       fontSize: font.size,
       fontFamily: font.family,
@@ -37,12 +37,31 @@ Render.prototype.rowLabelText = function(labels, rowLabels, font, size) {
       fill: '#888',
       fontSize: font.size,
       fontFamily: font.family,
-      textAnchor: 'right'
     });
     var text = document.createTextNode(label);
     textSvg.appendChild(text);
     elements.push(textSvg);
   });
+  return elements;
+};
+
+Render.prototype.seriesLabelText = function(labels, font, size, colors) {
+  var elements = [];
+  var dx = 10;
+  var textSvg = Draw.text({
+    x: size.width - dx,
+    y: size.height - (font.size * 0.2),
+    fill: '#888',
+    fontSize: font.size,
+    fontFamily: font.family,
+    textAnchor: 'end'
+  });
+  labels.series.forEach(function(label, index, array) {
+    var tspanText = Draw.tspan({ dx: dx, fill: colors[index] });
+    tspanText.appendChild(document.createTextNode(label));
+    textSvg.appendChild(tspanText);
+  });
+  elements.push(textSvg);
   return elements;
 };
 
@@ -126,7 +145,7 @@ Render.prototype.lineSets = function(application, columnPositions, rowMax, sets,
     var path = Draw.path({
       d: d,
       stroke: colors[i],
-      strokeWidth: 8,
+      strokeWidth: 6,
       strokeLinecap: 'round',
       fill: 'none',
     });
@@ -451,10 +470,8 @@ Render.prototype.graphLines = function(labels, size) {
 };
 
 Render.prototype.svg = function(container, fontSize, size, padding) {
-  var widthOffset = (fontSize / 2) + padding.x;
-  var heightOffset = (fontSize / 2) + padding.y;
-  var width = size.width + widthOffset;
-  var height = size.height + heightOffset;
+  var width = size.width + padding.x;
+  var height = size.height + padding.y;
   var attributes = {
     xmlns: 'http://www.w3.org/2000/svg',
     version: '1.1',

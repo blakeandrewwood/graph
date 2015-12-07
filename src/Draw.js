@@ -13,6 +13,12 @@ Draw.prototype.text = function(attributes) {
   return text;
 };
 
+Draw.prototype.tspan = function(attributes) {
+  var tspan = document.createElementNS('http://www.w3.org/2000/svg', 'tspan');
+  Utils.setElementAttributes(tspan, attributes);
+  return tspan;
+};
+
 Draw.prototype.line = function(attributes) {
   var line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
   Utils.setElementAttributes(line, attributes);

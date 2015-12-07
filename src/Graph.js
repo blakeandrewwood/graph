@@ -19,9 +19,11 @@ function Graph(application) {
   this.labels = {
     row: [],
     column: [],
+    series: [],
     positions: {
       row: [],
-      column: []
+      column: [],
+      series: []
     },
     increment: 10,
     prefix: '',
@@ -79,19 +81,21 @@ Graph.prototype.lineBuildSvg = function() {
   var graphLines = Render.graphLines(this.labels, this.size);
   var columnLabelText = Render.columnLabelText(this.labels, this.labels.column, this.font, this.size);
   var rowLabelText = Render.rowLabelText(this.labels, this.labels.row, this.font, this.size);
+  var seriesLabelText = Render.seriesLabelText(this.labels, this.font, this.size, this.colors);
   var sets = Render.lineSets(this, this.labels.positions.column, this.labels.row[0], this.points, this.range, this.size, this.colors);
   // Group
   var children = [];
   var g1 = Draw.group({ transform: 'translate('+this.widthOffset/2+','+this.heightOffset/2+')' }, graphLines);
   var g2 = Draw.group({ transform: 'translate('+this.widthOffset/2+','+this.heightOffset/2+')' }, sets);
-  var g3 = Draw.group({ transform: 'translate('+this.widthOffset/2+','+this.heightOffset+')' }, columnLabelText);
-  var g4 = Draw.group({ transform: 'translate('+0+','+this.heightOffset/2+')' }, rowLabelText);
+  var g3 = Draw.group({ transform: 'translate('+this.widthOffset/2+','+this.heightOffset/2+')' }, columnLabelText);
+  var g4 = Draw.group({ transform: 'translate('+this.widthOffset+','+this.heightOffset+')' }, seriesLabelText);
+  var g5 = Draw.group({ transform: 'translate('+0+','+this.heightOffset/2+')' }, rowLabelText);
   children.push(g1);
   children.push(g2);
   children.push(g3);
   children.push(g4);
+  children.push(g5);
   var g = Draw.group({}, children);
-
   // Return
   this.svg = Render.svg(this.container, this.font.size, this.size, this.padding);
   Utils.appendChild(this.svg, g);
@@ -119,7 +123,7 @@ Graph.prototype.barBuildSvg = function() {
   var children = [];
   var g1 = Draw.group({ transform: 'translate('+this.widthOffset/2+','+this.heightOffset/2+')' }, graphLines);
   var g2 = Draw.group({ transform: 'translate('+this.widthOffset/2+','+this.heightOffset/2+')' }, sets);
-  var g3 = Draw.group({ transform: 'translate('+this.widthOffset/2+','+this.heightOffset+')' }, columnLabelText);
+  var g3 = Draw.group({ transform: 'translate('+this.widthOffset/2+','+this.heightOffset/2+')' }, columnLabelText);
   var g4 = Draw.group({ transform: 'translate('+0+','+this.heightOffset/2+')' }, rowLabelText);
   children.push(g1);
   children.push(g2);
@@ -196,9 +200,9 @@ Graph.prototype.dialBuildSvg = function() {
  *
  */
 Graph.prototype.render = function() {
-  this.padding = { x: 100, y: 60 };
-  this.widthOffset = (this.font.size / 2) + this.padding.x;
-  this.heightOffset = (this.font.size / 2) + this.padding.y;
+  this.padding = { x: 100, y: 120 };
+  this.widthOffset = this.padding.x;
+  this.heightOffset = this.padding.y;
   switch(this.type) {
     case 'line':
       this.lineBuildSvg();
@@ -239,6 +243,10 @@ Graph.prototype.setSize = function(width, height) {
 
 Graph.prototype.setLabels = function(labels) {
   this.labels.column = labels;
+};
+
+Graph.prototype.setSeriesLabels = function(labels) {
+  this.labels.series = labels;
 };
 
 Graph.prototype.setPoints = function(points) {
