@@ -19,6 +19,8 @@ graphLine.setPrefix('$');
 graphLine.setPoints(pointsLine);
 graphLine.setSeriesLabels(seriesLabels);
 graphLine.setColors(colors);
+graphLine.setGraphLines(false);
+graphLine.setPadding(120, 120);
 graphLine.render();
 
 var labelsBar = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -32,6 +34,8 @@ graphBar.setLabels(labelsBar);
 graphBar.setIncrement(2);
 graphBar.setPoints(pointsBar);
 graphBar.setShadow(false);
+graphBar.setGraphLines(false);
+graphBar.setPadding(100, 120);
 graphBar.render();
 
 var labelsBarMulti = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
@@ -52,6 +56,8 @@ graphBarMulti.setIncrement(500);
 graphBarMulti.setPoints(pointsBarMulti);
 graphBarMulti.setSeriesLabels(seriesLabels);
 graphBarMulti.setColors(colors);
+graphBarMulti.setGraphLines(false);
+graphBarMulti.setPadding(140, 120);
 graphBarMulti.render();
 
 var labelsBarMultiStack = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
@@ -72,6 +78,8 @@ graphBarMultiStack.setIncrement(500);
 graphBarMultiStack.setPoints(pointsBarMultiStack);
 graphBarMultiStack.setSeriesLabels(seriesLabels);
 graphBarMultiStack.setColors(colors);
+graphBarMultiStack.setGraphLines(false);
+graphBarMultiStack.setPadding(140, 120);
 graphBarMultiStack.render();
 
 var labelsBarMultiStackHorizontal = ['Tom', 'Kelly', 'Rob', 'Owen'];
@@ -93,6 +101,8 @@ graphBarMultiStackHorizontal.setIncrement(400);
 graphBarMultiStackHorizontal.setPoints(pointsBarMultiStackHorizontal);
 graphBarMultiStackHorizontal.setSeriesLabels(seriesLabelsLineBarMultiStackHorizontal);
 graphBarMultiStackHorizontal.setColors(colors);
+graphBarMultiStackHorizontal.setGraphLines(false);
+graphBarMultiStackHorizontal.setPadding(100, 120);
 graphBarMultiStackHorizontal.render();
 
 var labelsPie = ['Oracle', 'Azure', 'Joyent', 'IBM'];

@@ -14,7 +14,7 @@ Render.prototype.columnLabelText = function(labels, columnLabels, font, size) {
     var x = labels.positions.column[index];
     var textSvg = Draw.text({
       x: x,
-      y: (size.height + (font.size*2.2)),
+      y: (size.height + (font.size*2.6)),
       fill: '#888',
       fontSize: font.size,
       fontFamily: font.family,
@@ -38,7 +38,7 @@ Render.prototype.rowLabelText = function(labels, rowLabels, font, size) {
       fontSize: font.size,
       fontFamily: font.family,
     });
-    var text = document.createTextNode(label);
+    var text = document.createTextNode(labels.prefix + label + labels.suffix);
     textSvg.appendChild(text);
     elements.push(textSvg);
   });

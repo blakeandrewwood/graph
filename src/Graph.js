@@ -14,6 +14,7 @@ function Graph(application) {
   // Parameters
   this.type = 'line';
   this.size = { width: 400, height: 400 };
+  this.padding = { x: 100, y: 120 };
   this.range = { min: 0, max: 0 };
   this.points = [];
   this.labels = {
@@ -42,6 +43,7 @@ function Graph(application) {
   this.prefix = '';
   this.containerId;
   this.container;
+  this.showGraphLines = true;
   this.svg;
 
   this.Events = new Events();
@@ -90,7 +92,7 @@ Graph.prototype.lineBuildSvg = function() {
   var g3 = Draw.group({ transform: 'translate('+this.widthOffset/2+','+this.heightOffset/2+')' }, columnLabelText);
   var g4 = Draw.group({ transform: 'translate('+this.widthOffset+','+this.heightOffset+')' }, seriesLabelText);
   var g5 = Draw.group({ transform: 'translate('+0+','+this.heightOffset/2+')' }, rowLabelText);
-  children.push(g1);
+  if(this.showGraphLines) children.push(g1);
   children.push(g2);
   children.push(g3);
   children.push(g4);
@@ -127,7 +129,7 @@ Graph.prototype.barBuildSvg = function() {
   var g3 = Draw.group({ transform: 'translate('+this.widthOffset/2+','+this.heightOffset/2+')' }, columnLabelText);
   var g4 = Draw.group({ transform: 'translate('+this.widthOffset+','+this.heightOffset+')' }, seriesLabelText);
   var g5 = Draw.group({ transform: 'translate('+0+','+this.heightOffset/2+')' }, rowLabelText);
-  children.push(g1);
+  if(this.showGraphLines) children.push(g1);
   children.push(g2);
   children.push(g3);
   children.push(g4);
@@ -170,7 +172,10 @@ Graph.prototype.doughnutBuildSvg = function() {
   var g3 = Draw.group({ transform: 'translate('+this.widthOffset/2+','+this.heightOffset/2+')' }, centerLabelText);
   children.push(g1);
   children.push(g2);
-  children.push(g3);
+
+  // TODO: Finish
+  // children.push(g3);
+
   var g = Draw.group({}, children);
   // Return
   this.svg = Render.svg(children, this.font.size, this.size, this.padding);
@@ -203,7 +208,6 @@ Graph.prototype.dialBuildSvg = function() {
  *
  */
 Graph.prototype.render = function() {
-  this.padding = { x: 100, y: 120 };
   this.widthOffset = this.padding.x;
   this.heightOffset = this.padding.y;
   switch(this.type) {
@@ -242,6 +246,10 @@ Graph.prototype.setType = function(type) {
 Graph.prototype.setSize = function(width, height) {
   this.size.width = width;
   this.size.height = height;
+};
+
+Graph.prototype.setPadding = function(x, y) {
+  this.padding = { x: x, y: y };
 };
 
 Graph.prototype.setLabels = function(labels) {
@@ -286,6 +294,10 @@ Graph.prototype.setFontFamily = function(fontFamily) {
 
 Graph.prototype.setFontSize = function(fontSize) {
   this.font.size = fontSize;
+};
+
+Graph.prototype.setGraphLines = function(bool) {
+  this.showGraphLines = bool;
 };
 
 module.exports = Application;
