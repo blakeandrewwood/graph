@@ -8,60 +8,113 @@ function Render() {}
  * Text
  *
  */
-Render.prototype.columnLabelText = function(positions, labels, suffix, prefix, font, size) {
-  var elements = [];
-  labels.forEach(function(label, index, array) {
-    var x = positions[index];
-    var textSvg = Draw.text({
-      x: x,
-      y: (size.height + (font.size*2.6)),
-      fill: '#888',
-      fontSize: font.size,
-      fontFamily: font.family,
-      textAnchor: 'middle'
-    });
-    var text = document.createTextNode(prefix + label + suffix);
-    textSvg.appendChild(text);
-    elements.push(textSvg);
-  });
-  return elements;
-};
+Render.prototype.columnLabelText = function(containerId, positions, labels, suffix, prefix, font, size) {
+  var textAttributes = [];
 
-Render.prototype.rowLabelText = function(positions, labels, suffix, prefix, font, size) {
-  var elements = [];
-  labels.forEach(function(label, index, array) {
-    var y = positions[index] + (font.size / 2);
-    var textSvg = Draw.text({
-      x: 0,
+  // Text
+  labels.forEach(function(label, index) {
+    var id = containerId + '-column-label-' + index;
+    var x = positions[index];
+    var y = size.height + (font.size * 2.6);
+    var attributes = {
+      id: id,
+      x: x,
       y: y,
       fill: '#888',
       fontSize: font.size,
       fontFamily: font.family,
-    });
-    var text = document.createTextNode(prefix + label + suffix);
-    textSvg.appendChild(text);
-    elements.push(textSvg);
+      textAnchor: 'middle',
+      dataText: prefix + label + suffix
+    };
+    textAttributes.push(attributes);
   });
+
+  // Build or Update
+  var elements = [];
+  textAttributes.map(function(attributes) {
+    var element = Utils.buildOrUpdate(attributes, Draw.text);
+    var exists = document.getElementById(attributes.id);
+    if(!exists) {
+      var text = document.createTextNode(attributes.dataText);
+      element.appendChild(text);
+      elements.push(element);
+    }
+  });
+
+  // Return
   return elements;
 };
 
-Render.prototype.seriesLabelText = function(labels, font, size, colors) {
+Render.prototype.rowLabelText = function(containerId, positions, labels, suffix, prefix, font, size) {
+  var textAttributes = [];
+
+  // Text
+  labels.forEach(function(label, index) {
+    var id = containerId + '-column-label-' + index;
+    var x = 0;
+    var y = positions[index] + (font.size / 2);
+    var attributes = {
+      id: id,
+      x: x,
+      y: y,
+      fill: '#888',
+      fontSize: font.size,
+      fontFamily: font.family,
+      textAnchor: 'start',
+      dataText: prefix + label + suffix
+    };
+    textAttributes.push(attributes);
+  });
+
+  // Build or Update
   var elements = [];
+  textAttributes.map(function(attributes) {
+    var element = Utils.buildOrUpdate(attributes, Draw.text);
+    var exists = document.getElementById(attributes.id);
+    if(!exists) {
+      var text = document.createTextNode(attributes.dataText);
+      element.appendChild(text);
+      elements.push(element);
+    }
+  });
+
+  // Return
+  return elements;
+};
+
+Render.prototype.seriesLabelText = function(containerId, labels, font, size, colors) {
+  var textAttributes = [];
+
+  // Text
+  var id = containerId + '-series-label-0';
   var dx = 10;
-  var textSvg = Draw.text({
-    x: size.width - dx,
-    y: size.height - (font.size * 0.2),
+  var x = size.width - dx ;
+  var y = size.height - (font.size * 0.2);
+  var attributes = {
+    id: id,
+    x: x,
+    y: y,
     fill: '#888',
     fontSize: font.size,
     fontFamily: font.family,
     textAnchor: 'end'
-  });
-  labels.forEach(function(label, index, array) {
-    var tspanText = Draw.tspan({ dx: dx, fill: colors[index] });
-    tspanText.appendChild(document.createTextNode(label));
-    textSvg.appendChild(tspanText);
-  });
-  elements.push(textSvg);
+  };
+  textAttributes.push(attributes);
+
+  // Build or Update
+  var elements = [];
+  var element = Utils.buildOrUpdate(attributes, Draw.text);
+  var exists = document.getElementById(attributes.id);
+  if(!exists) {
+    labels.forEach(function(label, index) {
+      var tspanText = Draw.tspan({ dx: dx, fill: colors[index] });
+      tspanText.appendChild(document.createTextNode(label));
+      element.appendChild(tspanText);
+    });
+    elements.push(element);
+  }
+
+  // Return
   return elements;
 };
 
@@ -73,9 +126,10 @@ Render.prototype.bottomLeftLabelText = function(labels, font, size, colors) {
     var b = (labels.length - 1);
     var c = (a * b) - (a * index);
     // Reverse y position
+    var x = 0;
     var y = Utils.reversePosY(c, 0, size.height);
     var textSvg = Draw.text({
-      x: 0,
+      x: x,
       y: y,
       fill: colors[index],
       fontSize: font.size,
@@ -129,8 +183,10 @@ Render.prototype.centerLabelText = function(text, font, size, color) {
  * Sets 
  *
  */
-Render.prototype.lineSets = function(application, columnPositions, rowMax, sets, range, size, colors) {
-  var elements = [];
+Render.prototype.lineSets = function(application, containerId, columnPositions, rowMax, sets, range, size, colors) {
+  var lineAttributes = [];
+
+  // Lines
   sets.forEach(function(set, i, array) {
     var newSet = [];
     set.forEach(function(point, j, array) {
@@ -141,23 +197,37 @@ Render.prototype.lineSets = function(application, columnPositions, rowMax, sets,
         Utils.calculateY(point, rowMax, size.height)]
       });
     });
+    var id = containerId + '-line-' + i;
     var d = Utils.buildPathString(newSet);
-    var path = Draw.path({
+    var attributes = {
+      id: id,
       d: d,
       stroke: colors[i],
       strokeWidth: 6,
       strokeLinecap: 'round',
       fill: 'none',
-    });
-    // Events
-    path.addEventListener('mousemove', function(evt) {
-      application.Events.onMouseOverLine(evt, application, i, rowMax);
-    });
-    path.addEventListener('mouseout', function(evt) {
-      application.Events.onMouseOut(evt, application);
-    });
-    elements.push(path);
+      dataIndex: i
+    };
+    lineAttributes.push(attributes);
   });
+
+  // Build or Update
+  var elements = [];
+  lineAttributes.map(function(attributes) {
+    var element = Utils.buildOrUpdate(attributes, Draw.path);
+    var exists = document.getElementById(attributes.id);
+    if(!exists) {
+      // Events
+      element.addEventListener('mousemove', function(evt) {
+        application.Events.onMouseOverLine(evt, application, attributes.dataIndex, rowMax);
+      });
+      element.addEventListener('mouseout', function(evt) {
+        application.Events.onMouseOut(evt, application);
+      });
+      elements.push(element);
+    }
+  });
+
   return elements;
 };
 
@@ -442,44 +512,70 @@ Render.prototype.tooltip = function(id, fontFamily) {
   return element;
 };
 
-Render.prototype.graphLines = function(columnPositions, rowPositions, size) {
-  var elements = [];
-  columnPositions.map(function(x) {
-    var line = Draw.line({
+Render.prototype.graphLines = function(containerId, columnPositions, rowPositions, size) {
+  var lines = [];
+
+  // Vertical
+  columnPositions.forEach(function(x, index) {
+    var id = containerId + '-graph-line-vertical-' + index;
+    var lineAttributes = {
+      id: id,
       x1: x,
       y1: 0,
       x2: x,
       y2: size.height,
       stroke: '#ccc',
       strokeDasharray: '5, 5'
-    });
-    elements.push(line);
+    }
+    lines.push(lineAttributes);
   });
-  rowPositions.map(function(y) {
-    var line = Draw.line({
+
+  // Horizontal
+  rowPositions.forEach(function(y, index) {
+    var id = containerId + '-graph-line-horizontal-' + index;
+    var lineAttributes = {
+      id: id,
       x1: 0,
       y1: y,
       x2: size.width,
       y2: y,
       stroke: '#ccc',
       strokeDasharray: '5, 5'
-    });
-    elements.push(line);
+    }
+    lines.push(lineAttributes);
   });
+
+  // Build or Update
+  var elements = [];
+  lines.map(function(attributes) {
+    var element = Utils.buildOrUpdate(attributes, Draw.line);
+    var exists = document.getElementById(attributes.id);
+    if(!exists) {
+      elements.push(element);
+    }
+  });
+
+  // Return
   return elements;
 };
 
-Render.prototype.svg = function(container, fontSize, size, padding) {
+Render.prototype.svg = function(containerId, container, fontSize, size, padding) {
+  var id = containerId + '-svg';
   var width = size.width + padding.x;
   var height = size.height + padding.y;
   var attributes = {
+    id: id,
     xmlns: 'http://www.w3.org/2000/svg',
     version: '1.1',
     width: width,
     height: height
   };
-  var svg  = Draw.svg(attributes);
-  return svg;
+
+  // Build or Update
+  var element = Utils.buildOrUpdate(attributes, Draw.svg);
+
+  // Return
+  return element;
 };
 
 module.exports = new Render();

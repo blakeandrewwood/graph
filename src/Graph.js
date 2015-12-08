@@ -88,11 +88,13 @@ Graph.prototype.lineBuildSvg = function() {
 
   // Render
   var graphLines = Render.graphLines(
+    this.containerId,
     this.columnPositions,
     this.rowPositions,
     this.size
   );
   var columnLabelText = Render.columnLabelText(
+    this.containerId,
     this.columnPositions,
     this.labels.column,
     '',
@@ -101,6 +103,7 @@ Graph.prototype.lineBuildSvg = function() {
     this.size
   );
   var rowLabelText = Render.rowLabelText(
+    this.containerId,
     this.rowPositions,
     this.labels.row,
     this.labels.suffix,
@@ -109,6 +112,7 @@ Graph.prototype.lineBuildSvg = function() {
     this.size
   );
   var seriesLabelText = Render.seriesLabelText(
+    this.containerId,
     this.labels.series,
     this.font,
     this.size,
@@ -116,6 +120,7 @@ Graph.prototype.lineBuildSvg = function() {
   );
   var sets = Render.lineSets(
     this,
+    this.containerId,
     this.columnPositions,
     this.labels.row[0],
     this.points,
@@ -126,31 +131,60 @@ Graph.prototype.lineBuildSvg = function() {
 
   // Group
   var children = [];
-  var g1 = Draw.group({
-    transform: 'translate('+this.widthOffset/2+','+this.heightOffset/2+')'
-  }, graphLines);
-  var g2 = Draw.group({
-    transform: 'translate('+this.widthOffset/2+','+this.heightOffset/2+')'
-  }, columnLabelText);
-  var g3 = Draw.group({
-    transform: 'translate('+0+','+this.heightOffset/2+')'
-  }, rowLabelText);
-  var g4 = Draw.group({
-    transform: 'translate('+this.widthOffset+','+this.heightOffset+')'
-  }, seriesLabelText);
-  var g5 = Draw.group({
-    transform: 'translate('+this.widthOffset/2+','+this.heightOffset/2+')'
-  }, sets);
-  if(this.showGraphLines) children.push(g1);
-  children.push(g2);
-  children.push(g3);
-  children.push(g4);
-  children.push(g5);
-  var g = Draw.group({}, children);
+  children = Utils.buildOrUpdateGroupConcat(
+    children,
+    graphLines,
+    this.containerId + '-group-0',
+    this.padding.x/2,
+    this.padding.y/2,
+    Draw.group
+  );
+  children = Utils.buildOrUpdateGroupConcat(
+    children,
+    columnLabelText,
+    this.containerId + '-group-1',
+    this.padding.x/2,
+    this.padding.y/2,
+    Draw.group
+  );
+  children = Utils.buildOrUpdateGroupConcat(
+    children,
+    rowLabelText,
+    this.containerId + '-group-2',
+    0,
+    this.padding.y/2,
+    Draw.group
+  );
+  children = Utils.buildOrUpdateGroupConcat(
+    children,
+    seriesLabelText,
+    this.containerId + '-group-3',
+    this.padding.x,
+    this.padding.y,
+    Draw.group
+  );
+  children = Utils.buildOrUpdateGroupConcat(
+    children,
+    sets,
+    this.containerId + '-group-4',
+    this.padding.x/2,
+    this.padding.y/2,
+    Draw.group
+  );
 
   // Return
-  this.svg = Render.svg(this.container, this.font.size, this.size, this.padding);
-  Utils.appendChild(this.svg, g);
+  this.svg = Render.svg(
+    this.containerId,
+    this.container,
+    this.font.size,
+    this.size,
+    this.padding
+  );
+
+  // Add children
+  if(children.length) {
+    Utils.appendChildren(this.svg, children);
+  }
 };
 
 Graph.prototype.barBuildSvg = function() {
@@ -372,7 +406,7 @@ Graph.prototype.dialBuildSvg = function() {
   children.push(g2);
   children.push(g3);
   var g = Draw.group({}, children);
-  
+
   // Return 
   this.svg = Render.svg(children, this.font.size, this.size, this.padding);
   Utils.appendChild(this.svg, g);
@@ -383,8 +417,6 @@ Graph.prototype.dialBuildSvg = function() {
  *
  */
 Graph.prototype.render = function() {
-  this.widthOffset = this.padding.x;
-  this.heightOffset = this.padding.y;
   switch(this.type) {
     case 'line':
       this.lineBuildSvg();

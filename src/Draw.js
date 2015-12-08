@@ -49,10 +49,9 @@ Draw.prototype.svg = function(attributes) {
   return svg;
 };
 
-Draw.prototype.group = function(attributes, children) {
+Draw.prototype.group = function(attributes) {
   var g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
   Utils.setElementAttributes(g, attributes);
-  Utils.appendChildren(g, children);
   return g;
 };
 

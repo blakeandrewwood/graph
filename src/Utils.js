@@ -64,6 +64,44 @@ Utils.prototype.hideElement = function(element) {
 };
 
 /**
+ * Build or Update 
+ *
+ */
+Utils.prototype.buildOrUpdate = function(attributes, drawFunction) {
+  var element = document.getElementById(attributes.id);
+  if(!element) {
+    element = drawFunction(attributes);
+  } else {
+    this.setElementAttributes(element, attributes);
+  }
+  return element;
+};
+
+Utils.prototype.buildOrUpdateGroup = function(attributes, children, drawFunction) {
+  var element = this.buildOrUpdate(attributes, drawFunction);
+  var exists = document.getElementById(attributes.id);
+  if(!exists) {
+    this.appendChildren(element, children);
+  }
+  return element;
+};
+
+Utils.prototype.buildOrUpdateGroupConcat = function(array, group, id, x, y, drawFunction) {
+  var children = array;
+  var transform = 'translate(' + x + ', ' + y + ')';
+  var attributes = {
+    id: id,
+    transform: transform
+  };
+  var group = this.buildOrUpdateGroup(attributes, group, drawFunction);
+  var exists = document.getElementById(attributes.id);
+  if(!exists) {
+    children.push(group);
+  }
+  return children;
+};
+
+/**
  * Data 
  *
  */
