@@ -1,7 +1,6 @@
 var colors = ['#2388F2', '#F65237', '#0DEFA5', '#9B7CF3'];
 var seriesLabels = ['scan', 'delete', 'upload'];
 
-/*
 var labelsLine = ['1 dec', '2 dec', '3 dec', '4 dec', '5 dec', '6 dec', '7 dec'];
 var pointsLine = [
   [2000, 5500, 4500, 5400, 3600, 4400, 4000],
@@ -26,10 +25,11 @@ graphLine.render();
 
 window.addEventListener('resize', handleResize);
 function handleResize() {
-  graphLine.setSize(window.outerWidth, window.outerHeight);
+  graphLine.setSize(window.innerWidth - 200, window.innerHeight - 200);
   graphLine.render();
 }
 
+/*
 var labelsBar = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 var pointsBar = [[1], [2], [3], [4], [3], [6], [4], [3], [5], [6], [4], [3]];
 var graphBar = new Graph('GraphBar');
@@ -44,7 +44,10 @@ graphBar.setShadow(false);
 graphBar.setGraphLines(true);
 graphBar.setPadding(100, 120);
 graphBar.render();
+*/
 
+
+/*
 var labelsBarMulti = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
 var pointsBarMulti = [
   [1350, [1000, 800]],
@@ -147,7 +150,6 @@ graphDoughnut.setLabels(labelsDoughnut);
 graphDoughnut.setPoints(pointsDoughnut);
 graphDoughnut.setColors(['#1CB8F1', '#08ECEF', '#6CF1B2', '#2388F2']);
 graphDoughnut.render();
-*/
 
 var labelsDial = [];
 var pointsDial = [[75, 100]];
@@ -161,3 +163,4 @@ graphDial.setLabels(labelsDial);
 graphDial.setPoints(pointsDial);
 graphDial.setColors(['#1CB8F1', '#08ECEF', '#6CF1B2', '#2388F2']);
 graphDial.render();
+*/

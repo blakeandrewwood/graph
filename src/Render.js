@@ -50,7 +50,7 @@ Render.prototype.rowLabelText = function(containerId, positions, labels, suffix,
 
   // Text
   labels.forEach(function(label, index) {
-    var id = containerId + '-column-label-' + index;
+    var id = containerId + '-row-label-' + index;
     var x = 0;
     var y = positions[index] + (font.size / 2);
     var attributes = {
