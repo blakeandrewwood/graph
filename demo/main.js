@@ -111,7 +111,6 @@ graphBarMultiStackHorizontal.setGraphLines(true);
 graphBarMultiStackHorizontal.setPadding(100, 120);
 graphBarMultiStackHorizontal.render();
 
-/*
 var labelsPie = ['Oracle', 'Azure', 'Joyent', 'IBM'];
 var pointsPie = [
   [700],
@@ -160,4 +159,3 @@ graphDial.setLabels(labelsDial);
 graphDial.setPoints(pointsDial);
 graphDial.setColors(['#1CB8F1', '#08ECEF', '#6CF1B2', '#2388F2']);
 graphDial.render();
-*/

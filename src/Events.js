@@ -37,7 +37,7 @@ Events.prototype.onMouseOverLine = function(evt, application, i, rowMax) {
   // Calculate difference
   var nx = (evt.clientX - svgOffset.left) - (padding.x/2);
   var ny = (evt.clientY - svgOffset.top) - (padding.y/2); 
-  var d = application.labels.positions.column.length - 1;
+  var d = application.columnPositions.length - 1;
   // Percent between two nodes
   var p = nx/(application.size.width/d);
   // Index
@@ -89,10 +89,12 @@ Events.prototype.createTooltip = function(container, id, fontFamily) {
 };
 
 Events.prototype.updateTooltip = function(svg, x, y, color, value) {
-  Utils.showElement(svg.tooltip);
-  svg.tooltip.style.background = color;
-  svg.tooltipText.innerHTML = value;
-  Utils.setDivPosition(svg.tooltip, x + 10, y + 10);
+  if(svg.tooltip) {
+    Utils.showElement(svg.tooltip);
+    svg.tooltip.style.background = color;
+    svg.tooltipText.innerHTML = value;
+    Utils.setDivPosition(svg.tooltip, x + 10, y + 10);
+  }
 };
 
 Events.prototype.onMouseOut = function(evt, application) {

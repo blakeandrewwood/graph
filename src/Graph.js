@@ -52,7 +52,10 @@ function Graph(application) {
  */
 Graph.prototype.makeLineBarCalculations = function() {
   this.range = Utils.getMinMax(this.points);
-  this.labels.row = Utils.getPointIncrements(this.range.max, this.labels.increment);
+  this.labels.row = Utils.getPointIncrements(
+    this.range.max,
+    this.labels.increment
+  );
 };
 
 Graph.prototype.makePieDoughnutCalculations = function() {
@@ -72,7 +75,6 @@ Graph.prototype.makeDialCalculations = function() {
  *
  */
 Graph.prototype.lineBuildSvg = function() {
-
   // Calculation
   this.makeLineBarCalculations();
   this.rowPositions = Utils.calculateRowPositions(
@@ -181,7 +183,7 @@ Graph.prototype.barBuildSvg = function() {
   );
   var columnLabelText = Render.columnLabelText(
     this.columnPositions,
-    this.labels.column,
+    columnLabels,
     '',
     '',
     this.font,
@@ -189,7 +191,7 @@ Graph.prototype.barBuildSvg = function() {
   );
   var rowLabelText = Render.rowLabelText(
     this.rowPositions,
-    this.labels.row,
+    rowLabels,
     this.labels.suffix,
     this.labels.prefix,
     this.font,
@@ -242,40 +244,85 @@ Graph.prototype.barBuildSvg = function() {
   Utils.appendChild(this.svg, g);
 };
 
-/*
 Graph.prototype.pieBuildSvg = function() {
   // Calculation
   this.makePieDoughnutCalculations();
+
   // Render
-  var bottomLeftLabelText = Render.bottomLeftLabelText(this.labels.column, this.font, this.size, this.colors);
-  var sets = Render.pieSets(this, this.degrees, this.size, this.colors, this.shadow);
+  var bottomLeftLabelText = Render.bottomLeftLabelText(
+    this.labels.column,
+    this.font,
+    this.size,
+    this.colors
+  );
+  var sets = Render.pieSets(
+    this,
+    this.degrees,
+    this.size,
+    this.colors,
+    this.shadow
+  );
+
   // Group
   var children = [];
-  var g1 = Draw.group({ transform: 'translate('+0+','+this.heightOffset+')' }, bottomLeftLabelText);
-  var g2 = Draw.group({ transform: 'translate('+this.widthOffset/2+','+this.heightOffset/2+')' }, sets);
+  var g1 = Draw.group({
+    transform: 'translate('+0+','+this.heightOffset+')'
+  }, bottomLeftLabelText);
+  var g2 = Draw.group({
+    transform: 'translate('+this.widthOffset/2+','+this.heightOffset/2+')'
+  }, sets);
   children.push(g1);
   children.push(g2);
   var g = Draw.group({}, children);
+
   // Return
-  this.svg = Render.svg(this.container, this.font.size, this.size, this.padding);
+  this.svg = Render.svg(
+    this.container,
+    this.font.size,
+    this.size,
+    this.padding
+  );
   Utils.appendChild(this.svg, g);
 };
 
 Graph.prototype.doughnutBuildSvg = function() {
   // Calculation
   this.makePieDoughnutCalculations();
+
   // Render
-  var bottomLeftLabelText = Render.bottomLeftLabelText(this.labels.column, this.font, this.size, this.colors);
-  var centerLabelText = Render.centerLabelText('50', this.font, this.size, '#000');
-  var sets = Render.doughnutSets(this, this.degrees, this.size, this.colors, this.shadow);
+  var bottomLeftLabelText = Render.bottomLeftLabelText(
+    this.labels.column,
+    this.font,
+    this.size,
+    this.colors
+  );
+  var centerLabelText = Render.centerLabelText(
+    '50',
+    this.font,
+    this.size,
+    '#000'
+  );
+  var sets = Render.doughnutSets(
+    this,
+    this.degrees,
+    this.size,
+    this.colors,
+    this.shadow
+  );
+
   // Group
   var children = [];
-  var g1 = Draw.group({ transform: 'translate('+0+','+this.heightOffset+')' }, bottomLeftLabelText);
-  var g2 = Draw.group({ transform: 'translate('+this.widthOffset/2+','+this.heightOffset/2+')' }, sets);
-  var g3 = Draw.group({ transform: 'translate('+this.widthOffset/2+','+this.heightOffset/2+')' }, centerLabelText);
+  var g1 = Draw.group({
+    transform: 'translate('+0+','+this.heightOffset+')'
+  }, bottomLeftLabelText);
+  var g2 = Draw.group({
+    transform: 'translate('+this.widthOffset/2+','+this.heightOffset/2+')'
+  }, sets);
+  var g3 = Draw.group({
+    transform: 'translate('+this.widthOffset/2+','+this.heightOffset/2+')'
+  }, centerLabelText);
   children.push(g1);
   children.push(g2);
-
   // TODO: Finish
   // children.push(g3);
 
@@ -288,24 +335,48 @@ Graph.prototype.doughnutBuildSvg = function() {
 Graph.prototype.dialBuildSvg = function() {
   // Calculation
   this.makeDialCalculations();
+
   // Render
-  var centerLabelText = Render.centerLabelText((this.percentages[0] * 100), this.font, this.size, '#fff');
-  var bottomCenterLabelText = Render.bottomCenterLabelText(this.points[0][0] + '/' + this.points[0][1], this.font, this.size, '#000');
-  var sets = Render.dialSets(this.degrees, this.percentages, this.size, this.colors, this.shadow);
+  var centerLabelText = Render.centerLabelText(
+    (this.percentages[0] * 100),
+    this.font,
+    this.size,
+    '#fff'
+  );
+  var bottomCenterLabelText = Render.bottomCenterLabelText(
+    this.points[0][0] + '/' + this.points[0][1],
+    this.font,
+    this.size,
+    '#000'
+  );
+  var sets = Render.dialSets(
+    this.degrees,
+    this.percentages,
+    this.size,
+    this.colors,
+    this.shadow
+  );
+
   // Group
   var children = [];
-  var g1 = Draw.group({ transform: 'translate('+this.widthOffset/2+','+this.heightOffset/2+')' }, sets);
-  var g2 = Draw.group({ transform: 'translate('+this.widthOffset/2+','+this.heightOffset/2+')' }, centerLabelText);
-  var g3 = Draw.group({ transform: 'translate('+this.widthOffset/2+','+this.heightOffset+')' }, bottomCenterLabelText);
+  var g1 = Draw.group({
+    transform: 'translate('+this.widthOffset/2+','+this.heightOffset/2+')'
+  }, sets);
+  var g2 = Draw.group({
+    transform: 'translate('+this.widthOffset/2+','+this.heightOffset/2+')'
+  }, centerLabelText);
+  var g3 = Draw.group({
+    transform: 'translate('+this.widthOffset/2+','+this.heightOffset+')'
+  }, bottomCenterLabelText);
   children.push(g1);
   children.push(g2);
   children.push(g3);
   var g = Draw.group({}, children);
+  
   // Return 
   this.svg = Render.svg(children, this.font.size, this.size, this.padding);
   Utils.appendChild(this.svg, g);
 };
-*/
 
 /**
  * Main Render 
@@ -321,7 +392,6 @@ Graph.prototype.render = function() {
     case 'bar':
       this.barBuildSvg();
       break;
-    /*
     case 'pie':
       this.pieBuildSvg();
       break;
@@ -331,7 +401,6 @@ Graph.prototype.render = function() {
     case 'dial':
       this.dialBuildSvg();
       break;
-    */
   }
   Utils.appendChild(this.container, this.svg);
 };
