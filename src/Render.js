@@ -457,16 +457,19 @@ Render.prototype.pieSets = function(application, containerId, sets, size, colors
     slicesAttributes.push(attributes);
   });
 
+
+  //
+  // TODO: Refactor & Cleanup
+  //
+
   // Build or Update
   var elements = [];
-
   // Normal
   var groupAttributes = { id: containerId + '-pie-0' };
   var group = Utils.buildOrUpdate(groupAttributes, Draw.group);
   // Shadow
   var shadowGroupAttributes = { id: containerId + '-pie-shadow-0' };
   var shadowGroup = Utils.buildOrUpdate(shadowGroupAttributes, Draw.group);
-
   slicesAttributes.map(function(attributes) {
     // Normal
     var element = Utils.buildOrUpdate(attributes, Draw.path);
@@ -488,7 +491,6 @@ Render.prototype.pieSets = function(application, containerId, sets, size, colors
       Utils.appendChild(shadowGroup, shadowElement);
     }
   });
-
   // Build or Update Shadow
   var defs = Draw.defs();
   var shadowId = containerId + '-pie-shadow-0';
@@ -500,14 +502,16 @@ Render.prototype.pieSets = function(application, containerId, sets, size, colors
     elements.push(defs);
     elements.push(shadow.element);
   } 
-
   // Group
   var groupExists = document.getElementById(groupAttributes.id);
   if(!groupExists) {
     elements.push(group);
   }
-
   return elements;
+
+  //
+  //
+  //
 };
 
 Render.prototype.doughnutSets = function(application, containerId, sets, size, colors, shadow) {
@@ -538,22 +542,24 @@ Render.prototype.doughnutSets = function(application, containerId, sets, size, c
     {type: '', values: [x3, y3]},
     {type: 'Z'},
   ];
+
+  //
+  // TODO: Refactor & Cleanup
+  //
+
   // Compose
   var elements = [];
-
   // Clip Path
   var attributes = {
     id: containerId + '-dougnut-clipmask-0',
     d: Utils.buildPathString(vectors)
   };
   var doughnutClip = Utils.buildOrUpdate(attributes, Draw.path);
-
   // Normal group
   var groupAttributes = {
     id: containerId + '-dougnut-group-0',
   }
   var group = Utils.buildOrUpdate(groupAttributes, Draw.group);
-
   // Shadow group
   var shadowGroupAttributes = {
     id: containerId + '-dougnut-shadow-group-0',
@@ -563,16 +569,13 @@ Render.prototype.doughnutSets = function(application, containerId, sets, size, c
   shadowDoughnutAttributes.id = containerId + '-shadow-doughnut-0';
   shadowDoughnutAttributes.fill = 'red';
   var shadowDoughnut = Utils.buildOrUpdate(shadowDoughnutAttributes, Draw.path);
-
   // Pie shape
   var pie = this.pieSets(application, containerId, sets, size, colors, false)[2];
-
   var defsAttributes = {
     id: containerId + '-dougnut-defs-0'
   };
   var defs = Utils.buildOrUpdate(defsAttributes, Draw.defs);
   var defsExists = document.getElementById(defsAttributes.id);
-
   if(!defsExists) {
     var clipPath = Draw.clipPath('doughnut-clip', doughnutClip);
     Utils.appendChild(defs, clipPath);
@@ -581,7 +584,6 @@ Render.prototype.doughnutSets = function(application, containerId, sets, size, c
     elements.push(defs);
     Utils.appendChild(shadowGroup, shadowDoughnut);
   }
-
   // Shadow
   var shadowId = containerId + '-doughnut-shadow-0';
   var shadowAttributes = { id: shadowId, opacity: 0.15 };
@@ -591,9 +593,12 @@ Render.prototype.doughnutSets = function(application, containerId, sets, size, c
     Utils.appendChild(defs, shadow.def);
     elements.push(shadow.element);
   }
-
   elements.push(group);
   return elements;
+
+  //
+  //
+  //
 };
 
 Render.prototype.dialSets = function(containerId, sets, percentage, size, colors, shadow) {
@@ -633,6 +638,10 @@ Render.prototype.dialSets = function(containerId, sets, percentage, size, colors
     dashAttributes.push(attributes);
   }
 
+  //
+  // TODO: Refactor & Cleanup
+  //
+
   // Build or Update
   var elements = [];
   dashAttributes.map(function(attributes) {
@@ -642,8 +651,6 @@ Render.prototype.dialSets = function(containerId, sets, percentage, size, colors
       elements.push(element);
     }
   });
-
-
   // Dial
   var dialAttributes = {
     id: containerId + '-dial-0',
@@ -653,18 +660,15 @@ Render.prototype.dialSets = function(containerId, sets, percentage, size, colors
     fill: colors[0] 
   };
   var dial = Utils.buildOrUpdate(dialAttributes, Draw.circle);
-  
   var shadowGroupAttributes = {
     id: containerId + '-dial-shadow-group-0'
   };
   var shadowGroup = Utils.buildOrUpdate(shadowGroupAttributes, Draw.group);
   var shadowGroupExists = document.getElementById(shadowGroupAttributes.id);
-
   // Shadow
   var shadowElementAttributes = dialAttributes;
   shadowElementAttributes.id = containerId + '-dial-shadow-element-0';
   var shadowElement = Utils.buildOrUpdate(shadowElementAttributes, Draw.circle);
-
   // Defs
   var defsAttributes = { id: containerId + '-defs-0' };
   var defs = Utils.buildOrUpdate(defsAttributes, Draw.defs);
@@ -673,7 +677,6 @@ Render.prototype.dialSets = function(containerId, sets, percentage, size, colors
     elements.push(defs);
     Utils.appendChild(shadowGroup, shadowElement);
   }
-
   // Shadow
   var shadowId = containerId + '-dial-shadow-0';
   var shadowAttributes = {id: shadowId, opacity: 0.15};
@@ -683,13 +686,11 @@ Render.prototype.dialSets = function(containerId, sets, percentage, size, colors
     Utils.appendChild(defs, shadow.def);
     elements.push(shadow.element);
   } 
-
   // Dial
   var dialExists = document.getElementById(dialAttributes.id);
   if(!dialExists) {
     elements.push(dial);
   }
-
   // Dot
   var dotAttributes = {
     id: containerId + '-dial-dot-0',
@@ -703,8 +704,11 @@ Render.prototype.dialSets = function(containerId, sets, percentage, size, colors
   if(!dotExists) {
     elements.push(dot);
   }
-
   return elements;
+
+  //
+  //
+  //
 };
 
 Render.prototype.tooltip = function(id, fontFamily) {
