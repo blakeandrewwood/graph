@@ -19,9 +19,15 @@ graphLine.setPrefix('$');
 graphLine.setPoints(pointsLine);
 graphLine.setSeriesLabels(seriesLabels);
 graphLine.setColors(colors);
-graphLine.setGraphLines(false);
+graphLine.setGraphLines(true);
 graphLine.setPadding(120, 120);
 graphLine.render();
+
+
+window.addEventListener('resize', handleResize);
+function handleResize() {
+  console.log('resize');
+}
 
 var labelsBar = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 var pointsBar = [[1], [2], [3], [4], [3], [6], [4], [3], [5], [6], [4], [3]];
@@ -34,7 +40,7 @@ graphBar.setLabels(labelsBar);
 graphBar.setIncrement(2);
 graphBar.setPoints(pointsBar);
 graphBar.setShadow(false);
-graphBar.setGraphLines(false);
+graphBar.setGraphLines(true);
 graphBar.setPadding(100, 120);
 graphBar.render();
 
@@ -56,7 +62,7 @@ graphBarMulti.setIncrement(500);
 graphBarMulti.setPoints(pointsBarMulti);
 graphBarMulti.setSeriesLabels(seriesLabels);
 graphBarMulti.setColors(colors);
-graphBarMulti.setGraphLines(false);
+graphBarMulti.setGraphLines(true);
 graphBarMulti.setPadding(140, 120);
 graphBarMulti.render();
 
@@ -78,7 +84,7 @@ graphBarMultiStack.setIncrement(500);
 graphBarMultiStack.setPoints(pointsBarMultiStack);
 graphBarMultiStack.setSeriesLabels(seriesLabels);
 graphBarMultiStack.setColors(colors);
-graphBarMultiStack.setGraphLines(false);
+graphBarMultiStack.setGraphLines(true);
 graphBarMultiStack.setPadding(140, 120);
 graphBarMultiStack.render();
 
@@ -101,10 +107,11 @@ graphBarMultiStackHorizontal.setIncrement(400);
 graphBarMultiStackHorizontal.setPoints(pointsBarMultiStackHorizontal);
 graphBarMultiStackHorizontal.setSeriesLabels(seriesLabelsLineBarMultiStackHorizontal);
 graphBarMultiStackHorizontal.setColors(colors);
-graphBarMultiStackHorizontal.setGraphLines(false);
+graphBarMultiStackHorizontal.setGraphLines(true);
 graphBarMultiStackHorizontal.setPadding(100, 120);
 graphBarMultiStackHorizontal.render();
 
+/*
 var labelsPie = ['Oracle', 'Azure', 'Joyent', 'IBM'];
 var pointsPie = [
   [700],
@@ -153,3 +160,4 @@ graphDial.setLabels(labelsDial);
 graphDial.setPoints(pointsDial);
 graphDial.setColors(['#1CB8F1', '#08ECEF', '#6CF1B2', '#2388F2']);
 graphDial.render();
+*/

@@ -8,10 +8,10 @@ function Render() {}
  * Text
  *
  */
-Render.prototype.columnLabelText = function(labels, columnLabels, font, size) {
+Render.prototype.columnLabelText = function(positions, labels, suffix, prefix, font, size) {
   var elements = [];
-  columnLabels.forEach(function(label, index, array) {
-    var x = labels.positions.column[index];
+  labels.forEach(function(label, index, array) {
+    var x = positions[index];
     var textSvg = Draw.text({
       x: x,
       y: (size.height + (font.size*2.6)),
@@ -20,17 +20,17 @@ Render.prototype.columnLabelText = function(labels, columnLabels, font, size) {
       fontFamily: font.family,
       textAnchor: 'middle'
     });
-    var text = document.createTextNode(label);
+    var text = document.createTextNode(prefix + label + suffix);
     textSvg.appendChild(text);
     elements.push(textSvg);
   });
   return elements;
 };
 
-Render.prototype.rowLabelText = function(labels, rowLabels, font, size) {
+Render.prototype.rowLabelText = function(positions, labels, suffix, prefix, font, size) {
   var elements = [];
-  rowLabels.forEach(function(label, index, array) {
-    var y = labels.positions.row[index] + (font.size / 2);
+  labels.forEach(function(label, index, array) {
+    var y = positions[index] + (font.size / 2);
     var textSvg = Draw.text({
       x: 0,
       y: y,
@@ -38,7 +38,7 @@ Render.prototype.rowLabelText = function(labels, rowLabels, font, size) {
       fontSize: font.size,
       fontFamily: font.family,
     });
-    var text = document.createTextNode(labels.prefix + label + labels.suffix);
+    var text = document.createTextNode(prefix + label + suffix);
     textSvg.appendChild(text);
     elements.push(textSvg);
   });
@@ -56,7 +56,7 @@ Render.prototype.seriesLabelText = function(labels, font, size, colors) {
     fontFamily: font.family,
     textAnchor: 'end'
   });
-  labels.series.forEach(function(label, index, array) {
+  labels.forEach(function(label, index, array) {
     var tspanText = Draw.tspan({ dx: dx, fill: colors[index] });
     tspanText.appendChild(document.createTextNode(label));
     textSvg.appendChild(tspanText);
@@ -161,7 +161,7 @@ Render.prototype.lineSets = function(application, columnPositions, rowMax, sets,
   return elements;
 };
 
-Render.prototype.barSets = function(application, labels, sets, size, horizontal, colors, shadow) {
+Render.prototype.barSets = function(application, columnPositions, rowPositions, labels, sets, size, horizontal, colors, shadow) {
   var elements = [];
   sets.forEach(function(set, i, array) {
     var index = 0;
@@ -190,15 +190,15 @@ Render.prototype.barSets = function(application, labels, sets, size, horizontal,
         var newSet = [];
         if(!horizontal) { 
           shadowAttributes.transform = 'translate(' + shadowOffset + ', 0)';
-          max = labels.row[0];
-          var x = (labels.positions.column[i] + (j * (strokeWidth + gutter))) - offset;
+          max = labels[0];
+          var x = (columnPositions[i] + (j * (strokeWidth + gutter))) - offset;
           newSet.push({type: 'M', values: [x, Utils.calculateY(0, max, size.height)]});
           newSet.push({type: '', values: [x, Utils.calculateY(point, max, size.height) + (strokeWidth / 2)]});
         } 
         else {
           shadowAttributes.transform = 'translate(' + -shadowOffset + ', 0)';
-          max = labels.row[labels.row.length - 1];
-          var y = (labels.positions.row[i] + (j * (strokeWidth + gutter))) - offset;
+          max = labels[labels.length - 1];
+          var y = (rowPositions[i] + (j * (strokeWidth + gutter))) - offset;
           newSet.push({ type: 'M', values: [Utils.calculateX(0, max, size.width), y] });
           newSet.push({ type: '', values: [Utils.calculateX(point, max, size.width) - (strokeWidth / 2), y] });
         }
@@ -232,15 +232,15 @@ Render.prototype.barSets = function(application, labels, sets, size, horizontal,
           var newSet = [];
           if(!horizontal) { 
             shadowAttributes.transform = 'translate(' + shadowOffset + ', 0)';
-            max = labels.row[0];
-            var x = (labels.positions.column[i] + (j * (strokeWidth + gutter))) - offset;
+            max = labels[0];
+            var x = (columnPositions[i] + (j * (strokeWidth + gutter))) - offset;
             newSet.push({ type: 'M', values: [x, Utils.calculateY(0, max, size.height)] });
             newSet.push({ type: '', values: [x, Utils.calculateY(y1, max, size.height) + (strokeWidth / 2)] });
           } 
           else {
             shadowAttributes.transform = 'translate(' + (-shadowOffset) + ', 0)';
-            max = labels.row[labels.row.length - 1];
-            var y = (labels.positions.row[i] + (j * (strokeWidth + gutter))) - offset;
+            max = labels[labels.length - 1];
+            var y = (rowPositions[i] + (j * (strokeWidth + gutter))) - offset;
             newSet.push({ type: 'M', values: [Utils.calculateX(0, max, size.width), y] });
             newSet.push({ type: '', values: [Utils.calculateX(y1, max, size.width) - (strokeWidth / 2), y] });
           }
@@ -442,9 +442,9 @@ Render.prototype.tooltip = function(id, fontFamily) {
   return element;
 };
 
-Render.prototype.graphLines = function(labels, size) {
+Render.prototype.graphLines = function(columnPositions, rowPositions, size) {
   var elements = [];
-  labels.positions.column.map(function(x) {
+  columnPositions.map(function(x) {
     var line = Draw.line({
       x1: x,
       y1: 0,
@@ -455,7 +455,7 @@ Render.prototype.graphLines = function(labels, size) {
     });
     elements.push(line);
   });
-  labels.positions.row.map(function(y) {
+  rowPositions.map(function(y) {
     var line = Draw.line({
       x1: 0,
       y1: y,

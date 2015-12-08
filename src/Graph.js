@@ -21,15 +21,12 @@ function Graph(application) {
     row: [],
     column: [],
     series: [],
-    positions: {
-      row: [],
-      column: [],
-      series: []
-    },
     increment: 10,
     prefix: '',
     suffix: ''
   }
+  this.rowPositions = [];
+  this.columnPositions = [];
   this.font = {
     family: 'monospace',
     size: 12
@@ -75,29 +72,80 @@ Graph.prototype.makeDialCalculations = function() {
  *
  */
 Graph.prototype.lineBuildSvg = function() {
+
   // Calculation
   this.makeLineBarCalculations();
-  this.labels.positions.row = Utils.calculateRowPositions(this.labels.row, this.size.height);
-  this.labels.positions.column = Utils.calculateColumnPositions(this.labels.column, this.size.width);
+  this.rowPositions = Utils.calculateRowPositions(
+    this.labels.row,
+    this.size.height
+  );
+  this.columnPositions = Utils.calculateColumnPositions(
+    this.labels.column,
+    this.size.width
+  );
+
   // Render
-  var graphLines = Render.graphLines(this.labels, this.size);
-  var columnLabelText = Render.columnLabelText(this.labels, this.labels.column, this.font, this.size);
-  var rowLabelText = Render.rowLabelText(this.labels, this.labels.row, this.font, this.size);
-  var seriesLabelText = Render.seriesLabelText(this.labels, this.font, this.size, this.colors);
-  var sets = Render.lineSets(this, this.labels.positions.column, this.labels.row[0], this.points, this.range, this.size, this.colors);
+  var graphLines = Render.graphLines(
+    this.columnPositions,
+    this.rowPositions,
+    this.size
+  );
+  var columnLabelText = Render.columnLabelText(
+    this.columnPositions,
+    this.labels.column,
+    '',
+    '',
+    this.font,
+    this.size
+  );
+  var rowLabelText = Render.rowLabelText(
+    this.rowPositions,
+    this.labels.row,
+    this.labels.suffix,
+    this.labels.prefix,
+    this.font,
+    this.size
+  );
+  var seriesLabelText = Render.seriesLabelText(
+    this.labels.series,
+    this.font,
+    this.size,
+    this.colors
+  );
+  var sets = Render.lineSets(
+    this,
+    this.columnPositions,
+    this.labels.row[0],
+    this.points,
+    this.range,
+    this.size,
+    this.colors
+  );
+
   // Group
   var children = [];
-  var g1 = Draw.group({ transform: 'translate('+this.widthOffset/2+','+this.heightOffset/2+')' }, graphLines);
-  var g2 = Draw.group({ transform: 'translate('+this.widthOffset/2+','+this.heightOffset/2+')' }, sets);
-  var g3 = Draw.group({ transform: 'translate('+this.widthOffset/2+','+this.heightOffset/2+')' }, columnLabelText);
-  var g4 = Draw.group({ transform: 'translate('+this.widthOffset+','+this.heightOffset+')' }, seriesLabelText);
-  var g5 = Draw.group({ transform: 'translate('+0+','+this.heightOffset/2+')' }, rowLabelText);
+  var g1 = Draw.group({
+    transform: 'translate('+this.widthOffset/2+','+this.heightOffset/2+')'
+  }, graphLines);
+  var g2 = Draw.group({
+    transform: 'translate('+this.widthOffset/2+','+this.heightOffset/2+')'
+  }, columnLabelText);
+  var g3 = Draw.group({
+    transform: 'translate('+0+','+this.heightOffset/2+')'
+  }, rowLabelText);
+  var g4 = Draw.group({
+    transform: 'translate('+this.widthOffset+','+this.heightOffset+')'
+  }, seriesLabelText);
+  var g5 = Draw.group({
+    transform: 'translate('+this.widthOffset/2+','+this.heightOffset/2+')'
+  }, sets);
   if(this.showGraphLines) children.push(g1);
   children.push(g2);
   children.push(g3);
   children.push(g4);
   children.push(g5);
   var g = Draw.group({}, children);
+
   // Return
   this.svg = Render.svg(this.container, this.font.size, this.size, this.padding);
   Utils.appendChild(this.svg, g);
@@ -108,38 +156,93 @@ Graph.prototype.barBuildSvg = function() {
   this.makeLineBarCalculations();
   var columnLabels = this.labels.column;
   var rowLabels = this.labels.row;
+
   // Calculation Vertical
   if(this.horizontal) {
     columnLabels = this.labels.row;
     rowLabels = this.labels.column;
     this.labels.row.reverse();
   }
-  this.labels.positions.column = Utils.calculateColumnPositions(columnLabels, this.size.width);
-  this.labels.positions.row = Utils.calculateRowPositions(rowLabels, this.size.height);
+
+  this.rowPositions = Utils.calculateRowPositions(
+    rowLabels,
+    this.size.height
+  );
+  this.columnPositions = Utils.calculateColumnPositions(
+    columnLabels,
+    this.size.width
+  );
+
   // Render
-  var graphLines = Render.graphLines(this.labels, this.size);
-  var columnLabelText = Render.columnLabelText(this.labels, columnLabels, this.font, this.size);
-  var rowLabelText = Render.rowLabelText(this.labels, rowLabels, this.font, this.size);
-  var seriesLabelText = Render.seriesLabelText(this.labels, this.font, this.size, this.colors);
-  var sets = Render.barSets(this, this.labels, this.points, this.size, this.horizontal, this.colors, this.shadow);
+  var graphLines = Render.graphLines(
+    this.columnPositions,
+    this.rowPositions,
+    this.size
+  );
+  var columnLabelText = Render.columnLabelText(
+    this.columnPositions,
+    this.labels.column,
+    '',
+    '',
+    this.font,
+    this.size
+  );
+  var rowLabelText = Render.rowLabelText(
+    this.rowPositions,
+    this.labels.row,
+    this.labels.suffix,
+    this.labels.prefix,
+    this.font,
+    this.size
+  );
+  var seriesLabelText = Render.seriesLabelText(
+    this.labels.series,
+    this.font,
+    this.size,
+    this.colors
+  );
+  var sets = Render.barSets(
+    this,
+    this.columnPositions,
+    this.rowPositions,
+    this.labels.row,
+    this.points,
+    this.size,
+    this.horizontal,
+    this.colors,
+    this.shadow
+  );
+
   // Group
   var children = [];
-  var g1 = Draw.group({ transform: 'translate('+this.widthOffset/2+','+this.heightOffset/2+')' }, graphLines);
-  var g2 = Draw.group({ transform: 'translate('+this.widthOffset/2+','+this.heightOffset/2+')' }, sets);
-  var g3 = Draw.group({ transform: 'translate('+this.widthOffset/2+','+this.heightOffset/2+')' }, columnLabelText);
-  var g4 = Draw.group({ transform: 'translate('+this.widthOffset+','+this.heightOffset+')' }, seriesLabelText);
-  var g5 = Draw.group({ transform: 'translate('+0+','+this.heightOffset/2+')' }, rowLabelText);
+  var g1 = Draw.group({
+    transform: 'translate('+this.widthOffset/2+','+this.heightOffset/2+')'
+  }, graphLines);
+  var g2 = Draw.group({
+    transform: 'translate('+this.widthOffset/2+','+this.heightOffset/2+')'
+  }, columnLabelText);
+  var g3 = Draw.group({
+    transform: 'translate('+0+','+this.heightOffset/2+')'
+  }, rowLabelText);
+  var g4 = Draw.group({
+    transform: 'translate('+this.widthOffset+','+this.heightOffset+')'
+  }, seriesLabelText);
+  var g5 = Draw.group({
+    transform: 'translate('+this.widthOffset/2+','+this.heightOffset/2+')'
+  }, sets);
   if(this.showGraphLines) children.push(g1);
   children.push(g2);
   children.push(g3);
   children.push(g4);
   children.push(g5);
   var g = Draw.group({}, children);
+
   // Return
   this.svg = Render.svg(this.container, this.font.size, this.size, this.padding);
   Utils.appendChild(this.svg, g);
 };
 
+/*
 Graph.prototype.pieBuildSvg = function() {
   // Calculation
   this.makePieDoughnutCalculations();
@@ -202,6 +305,7 @@ Graph.prototype.dialBuildSvg = function() {
   this.svg = Render.svg(children, this.font.size, this.size, this.padding);
   Utils.appendChild(this.svg, g);
 };
+*/
 
 /**
  * Main Render 
@@ -217,6 +321,7 @@ Graph.prototype.render = function() {
     case 'bar':
       this.barBuildSvg();
       break;
+    /*
     case 'pie':
       this.pieBuildSvg();
       break;
@@ -226,6 +331,7 @@ Graph.prototype.render = function() {
     case 'dial':
       this.dialBuildSvg();
       break;
+    */
   }
   Utils.appendChild(this.container, this.svg);
 };
