@@ -77,6 +77,17 @@ Utils.prototype.buildOrUpdate = function(attributes, drawFunction) {
   return element;
 };
 
+Utils.prototype.buildOrUpdateShadow = function(attributes, id, stdDeviation, group, drawFunction, drawFilterFunction) {
+  var shadow = {};
+  shadow.element = document.getElementById(attributes.id);
+  if(!shadow.element) {
+    shadow = drawFunction(attributes, id, stdDeviation, group, drawFilterFunction);
+  } else {
+    this.setElementAttributes(shadow.element, attributes);
+  }
+  return shadow;
+};
+
 Utils.prototype.buildOrUpdateGroup = function(attributes, children, drawFunction) {
   var element = this.buildOrUpdate(attributes, drawFunction);
   var exists = document.getElementById(attributes.id);

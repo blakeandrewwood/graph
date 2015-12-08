@@ -83,8 +83,6 @@ Render.prototype.rowLabelText = function(containerId, positions, labels, suffix,
 };
 
 Render.prototype.seriesLabelText = function(containerId, labels, font, size, colors) {
-  var textAttributes = [];
-
   // Text
   var id = containerId + '-series-label-0';
   var dx = 10;
@@ -99,7 +97,6 @@ Render.prototype.seriesLabelText = function(containerId, labels, font, size, col
     fontFamily: font.family,
     textAnchor: 'end'
   };
-  textAttributes.push(attributes);
 
   // Build or Update
   var elements = [];
@@ -118,9 +115,12 @@ Render.prototype.seriesLabelText = function(containerId, labels, font, size, col
   return elements;
 };
 
-Render.prototype.bottomLeftLabelText = function(labels, font, size, colors) {
-  var elements = []; 
-  labels.forEach(function(label, index, array) {
+Render.prototype.bottomLeftLabelText = function(containerId, labels, font, size, colors) {
+  var textAttributes = [];
+
+  // Text
+  labels.forEach(function(label, index) {
+    var id = containerId + '-series-label-' + index;
     // Flip text
     var a = (font.size * 1.4);
     var b = (labels.length - 1);
@@ -128,54 +128,90 @@ Render.prototype.bottomLeftLabelText = function(labels, font, size, colors) {
     // Reverse y position
     var x = 0;
     var y = Utils.reversePosY(c, 0, size.height);
-    var textSvg = Draw.text({
+    var attributes = {
+      id: id,
       x: x,
       y: y,
       fill: colors[index],
       fontSize: font.size,
       fontFamily: font.family,
-      textAnchor: 'right'
-    });
-    var text = document.createTextNode(label);
-    textSvg.appendChild(text);
-    elements.push(textSvg);
+      textAnchor: 'start',
+      dataText: label
+    };
+    textAttributes.push(attributes);
   });
+
+  // Build or Update
+  var elements = [];
+  textAttributes.map(function(attributes) {
+    var element = Utils.buildOrUpdate(attributes, Draw.text);
+    var exists = document.getElementById(attributes.id);
+    if(!exists) {
+      var text = document.createTextNode(attributes.dataText);
+      element.appendChild(text);
+      elements.push(element);
+    }
+  });
+
+  // Return
   return elements;
 };
 
-Render.prototype.bottomCenterLabelText = function(text, font, size, color) {
-  var elements = []; 
+Render.prototype.bottomCenterLabelText = function(containerId, text, font, size, color) {
+  // Text
+  var id = containerId + '-bottom-center-label-0';
   var x = size.width / 2;
   var y = Utils.reversePosY(0, 0, size.height);
-  var textSvg = Draw.text({
+  var attributes = {
+    id: id,
     x: x,
     y: y,
     fill: color,
     fontSize: font.size,
     fontFamily: font.family,
     textAnchor: 'middle'
-  });
-  var text = document.createTextNode(text);
-  textSvg.appendChild(text);
-  elements.push(textSvg);
+  };
+
+  // Build or Update
+  var elements = [];
+  var element = Utils.buildOrUpdate(attributes, Draw.text);
+  var exists = document.getElementById(attributes.id);
+  if(!exists) {
+    var text = document.createTextNode(text);
+    element.appendChild(text);
+    elements.push(element);
+  }
+
+  // Return
   return elements;
 };
 
-Render.prototype.centerLabelText = function(text, font, size, color) {
-  var elements = []; 
+Render.prototype.centerLabelText = function(containerId, text, font, size, color) {
+  // Text
+  var id = containerId + '-center-label-0';
   var x = size.width / 2;
   var y = (font.size / 2) + (size.height / 2);
-  var textSvg = Draw.text({
+  var attributes = {
+    id: id,
     x: x,
     y: y,
     fill: color,
     fontSize: font.size,
     fontFamily: font.family,
     textAnchor: 'middle'
-  });
-  var text = document.createTextNode(text);
-  textSvg.appendChild(text);
-  elements.push(textSvg);
+  };
+
+  // Build or Update
+  var elements = [];
+  var element = Utils.buildOrUpdate(attributes, Draw.text);
+  var exists = document.getElementById(attributes.id);
+  if(!exists) {
+    var text = document.createTextNode(text);
+    element.appendChild(text);
+    elements.push(element);
+  }
+
+  // Return
   return elements;
 };
 
@@ -231,32 +267,40 @@ Render.prototype.lineSets = function(application, containerId, columnPositions, 
   return elements;
 };
 
-Render.prototype.barSets = function(application, columnPositions, rowPositions, labels, sets, size, horizontal, colors, shadow) {
-  var elements = [];
+Render.prototype.barSets = function(application, containerId, columnPositions, rowPositions, labels, sets, size, horizontal, colors, shadow) {
+  var barAttributes = [];
+  var barShadowAttributes = [];
+
+  //////////////////////
   sets.forEach(function(set, i, array) {
     var index = 0;
     set.sort(Utils.sortDesc);
     set.forEach(function(point, j, array) {
+
       var strokeWidth = 16;
       var gutter = -(strokeWidth / 4);
       var offset = ((strokeWidth + gutter) * (set.length - 1)) / 2;
       var shadowOffset = -(strokeWidth / 3);
       var max;
-      var attributes = {
-        fill: 'transparent',
-        stroke: colors[index],
-        strokeWidth: strokeWidth,
-        strokeLinecap: 'round'
-      };
-      var shadowAttributes = {
-        opacity: '0.15',
-        fill: 'transparent',
-        stroke: '#000',
-        strokeWidth: strokeWidth,
-        strokeLinecap: 'round'
-      };
+
       // Normal
       if(typeof point === 'number') {
+
+        var attributes = {
+          id: containerId + '-bar-' + j,
+          fill: 'transparent',
+          stroke: colors[index],
+          strokeWidth: strokeWidth,
+          strokeLinecap: 'round'
+        };
+        var shadowAttributes = {
+          opacity: '0.15',
+          fill: 'transparent',
+          stroke: '#000',
+          strokeWidth: strokeWidth,
+          strokeLinecap: 'round'
+        };
+
         var newSet = [];
         if(!horizontal) { 
           shadowAttributes.transform = 'translate(' + shadowOffset + ', 0)';
@@ -266,43 +310,53 @@ Render.prototype.barSets = function(application, columnPositions, rowPositions, 
           newSet.push({type: '', values: [x, Utils.calculateY(point, max, size.height) + (strokeWidth / 2)]});
         } 
         else {
-          shadowAttributes.transform = 'translate(' + -shadowOffset + ', 0)';
+          shadowAttributes.transform = 'translate(' + (-shadowOffset) + ', 0)';
           max = labels[labels.length - 1];
           var y = (rowPositions[i] + (j * (strokeWidth + gutter))) - offset;
           newSet.push({ type: 'M', values: [Utils.calculateX(0, max, size.width), y] });
           newSet.push({ type: '', values: [Utils.calculateX(point, max, size.width) - (strokeWidth / 2), y] });
         }
+
+        // Point
+        attributes.dataPoint = point;
+
         // d
         var d = Utils.buildPathString(newSet);
-        // Shadow
-        if(shadow) { 
-          shadowAttributes.d = d;
-          var shadowPath = Draw.path(shadowAttributes, newSet);
-          elements.push(shadowPath);
-        }
-        // Path
         attributes.d = d;
-        var path = Draw.path(attributes, newSet);
-        elements.push(path);
-        // Events
-        path.addEventListener('mousemove', function(evt) {
-          application.Events.onMouseOverBar(evt, application, 0, point);
-        });
-        path.addEventListener('mouseout', function(evt) {
-          application.Events.onMouseOut(evt, application);
-        });
+        shadowAttributes.d = d;
+
+        // Shadow
+        barAttributes.push(attributes);
+        barShadowAttributes.push(shadowAttributes)
         index++;
       }
+
       // Stacked
       else if(typeof point === 'object') {
         point.sort(Utils.sortDesc);
         point.forEach(function(y1, k, array) {
-          // Update stroke color since index increases
-          attributes.stroke = colors[index];
+
+          var attributes = {
+            id: containerId + '-bar-' + j + '-' + k,
+            fill: 'transparent',
+            stroke: colors[index],
+            strokeWidth: strokeWidth,
+            strokeLinecap: 'round'
+          };
+          var shadowAttributes = {
+            opacity: '0.15',
+            fill: 'transparent',
+            stroke: '#000',
+            strokeWidth: strokeWidth,
+            strokeLinecap: 'round'
+          };
+
           var newSet = [];
           if(!horizontal) { 
             shadowAttributes.transform = 'translate(' + shadowOffset + ', 0)';
+
             max = labels[0];
+
             var x = (columnPositions[i] + (j * (strokeWidth + gutter))) - offset;
             newSet.push({ type: 'M', values: [x, Utils.calculateY(0, max, size.height)] });
             newSet.push({ type: '', values: [x, Utils.calculateY(y1, max, size.height) + (strokeWidth / 2)] });
@@ -314,40 +368,61 @@ Render.prototype.barSets = function(application, columnPositions, rowPositions, 
             newSet.push({ type: 'M', values: [Utils.calculateX(0, max, size.width), y] });
             newSet.push({ type: '', values: [Utils.calculateX(y1, max, size.width) - (strokeWidth / 2), y] });
           }
+
+          // Point
+          attributes.dataPoint = y1;
+
           // d
           var d = Utils.buildPathString(newSet);
-          // Shadow
-          if(shadow) { 
-            shadowAttributes.d = d;
-            var shadowPath = Draw.path(shadowAttributes, newSet);
-            elements.push(shadowPath);
-          }
-          // Path
           attributes.d = d;
-          var path = Draw.path(attributes, newSet);
-          elements.push(path);
-          // Events
-          path.addEventListener('mousemove', function(evt) {
-            application.Events.onMouseOverBar(evt, application, 0, y1);
-          });
-          path.addEventListener('mouseout', function(evt) {
-            application.Events.onMouseOut(evt, application);
-          });
+          shadowAttributes.d = d;
+
+
+          // Shadow
+          barAttributes.push(attributes);
+          barShadowAttributes.push(shadowAttributes)
           index++;
         });
       }
+
     });
   });
+  //////////////////////
+
+  // Build or Update
+  var elements = [];
+  barAttributes.forEach(function(attributes, index) {
+    var element = Utils.buildOrUpdate(attributes, Draw.path);
+    var elementShadow = Utils.buildOrUpdate(barShadowAttributes[index], Draw.path);
+    var exists = document.getElementById(attributes.id);
+    if(!exists) {
+      // Events
+      element.addEventListener('mousemove', function(evt) {
+        application.Events.onMouseOverBar(evt, application, 0, attributes.dataPoint);
+      });
+      element.addEventListener('mouseout', function(evt) {
+        application.Events.onMouseOut(evt, application);
+      });
+      if(shadow) {
+        elements.push(elementShadow);
+      }
+      elements.push(element);
+    }
+  });
+
   return elements;
 };
 
-Render.prototype.pieSets = function(application, sets, size, colors, shadow) {
-  var slices = [];
+Render.prototype.pieSets = function(application, containerId, sets, size, colors, shadow) {
+  var slicesAttributes = [];
   var center = { x: (size.width / 2), y: (size.height / 2) };
   var radius = (size.height / 2);
   var lastEndAngle = 0;
   sets.forEach(function(set, index, array) {
-    var attributes = { fill: colors[index] };
+    var attributes = {
+      id: containerId + '-pie-slice-' + index,
+      fill: colors[index]
+    };
     var sliceOffset = ((index > 0) ? lastEndAngle : 0);
     var rotation = -90 + sliceOffset;
     var startAngle = 0 + rotation;
@@ -373,33 +448,54 @@ Render.prototype.pieSets = function(application, sets, size, colors, shadow) {
       vectors.push({type: '',  values: [x2, y2]});
     });
     vectors.push({type: 'Z'});
+    attributes.dataPoint = y1;
+    attributes.dataIndex = index;
     attributes.d = Utils.buildPathString(vectors);
-    var path = Draw.path(attributes);
-    // Events
-    path.addEventListener('mousemove', function(evt) {
-      application.Events.onMouseOverPie(evt, application, index, y1);
-    });
-    path.addEventListener('mouseout', function(evt) {
-      application.Events.onMouseOut(evt, application);
-    });
-    slices.push(path);
+    slicesAttributes.push(attributes);
   });
-  // Compose
-  var elements = []
-  var group = Draw.group({}, slices);
-  if(shadow) {
-    var defs = Draw.defs();
-    var shadow = Draw.shadow({opacity: 0.15}, 'pie-shadow', 8, group);
+
+  // Build or Update
+  var elements = [];
+  var groupAttributes = { id: containerId + '-pie-0' };
+  var group = Utils.buildOrUpdate(groupAttributes, Draw.group);
+
+  slicesAttributes.map(function(attributes) {
+    var element = Utils.buildOrUpdate(attributes, Draw.path);
+    var exists = document.getElementById(attributes.id);
+    if(!exists) {
+      // Events
+      element.addEventListener('mousemove', function(evt) {
+        application.Events.onMouseOverPie(evt, application, attributes.dataIndex, attributes.dataPoint);
+      });
+      element.addEventListener('mouseout', function(evt) {
+        application.Events.onMouseOut(evt, application);
+      });
+      Utils.appendChild(group, element);
+    }
+  });
+
+  // Build or Update Shadow
+  var defs = Draw.defs();
+  var shadowId = containerId + '-pie-shadow-0';
+  var shadowAttributes = {id: shadowId, opacity: 0.15};
+  var shadow = Utils.buildOrUpdateShadow(shadowAttributes, 'pie-shadow', 8, group, Draw.shadow, Draw.filterShadow);
+  var shadowExists = document.getElementById(shadowAttributes.id);
+  if(!shadowExists && shadow) {
     Utils.appendChild(defs, shadow.def);
     elements.push(defs);
     elements.push(shadow.element);
+  } 
+
+  // Group
+  var groupExists = document.getElementById(groupAttributes.id);
+  if(!groupExists) {
+    elements.push(group);
   }
-  elements.push(group);
-  // Return
+
   return elements;
 };
 
-Render.prototype.doughnutSets = function(application, sets, size, colors, shadow) {
+Render.prototype.doughnutSets = function(application, containerId, sets, size, colors, shadow) {
   // Basic calculation
   var center = { x: (size.width / 2), y: (size.height / 2) };
   var radius1 = (size.height / 2);
@@ -429,30 +525,42 @@ Render.prototype.doughnutSets = function(application, sets, size, colors, shadow
   ];
   // Compose
   var elements = [];
+
+  // Clip Path
   var attributes = {
     d: Utils.buildPathString(vectors)
   };
-  var doughnut = Draw.path(attributes);
-  // Clip path
-  var defs = Draw.defs();
-  var clipPath = Draw.clipPath('doughnut-clip', doughnut);
-  Utils.appendChild(defs, clipPath);
-  var pie = this.pieSets(application, sets, size, colors, false)[0];
-  Utils.setElementAttributes(pie, {clipPath: 'url(#doughnut-clip)'});
-  var group = Draw.group({}, [pie]);
-  // Shadow
-  if(shadow) {
-    var shadow = Draw.shadow({opacity: 0.15}, 'doughnut-shadow', 8, group);
-    Utils.appendChild(defs, shadow.def);
-    elements.push(shadow.element);
+  var doughnutClip = Draw.path(attributes);
+  var defsAttributes = { id: containerId + '-defs-0' };
+  var defs = Utils.buildOrUpdate(defsAttributes, Draw.defs);
+  var defsExists = document.getElementById(defsAttributes.id);
+  if(!defsExists) {
+    var clipPath = Draw.clipPath('doughnut-clip', doughnutClip);
+    Utils.appendChild(defs, clipPath);
+    elements.push(defs);
   }
-  elements.push(defs);
+
+  // Pie
+  var pie = this.pieSets(application, containerId, sets, size, colors, false)[2];
+  Utils.setElementAttributes(pie, {clipPath: 'url(#doughnut-clip)'});
+  var group = Draw.group({});
+  Utils.appendChild(group, pie);
+
+  // Shadow
+  var shadowId = containerId + '-doughnut-shadow-0';
+  var shadowAttributes = {id: shadowId, opacity: 0.15};
+  var shadow = Utils.buildOrUpdateShadow(shadowAttributes, 'dougnut-shadow', 8, group, Draw.shadow, Draw.filterShadow);
+  var shadowExists = document.getElementById(shadowAttributes.id);
+  if(!shadowExists && shadow) {
+    Utils.appendChild(defs, shadow.def);
+    elements.push(defs);
+    elements.push(shadow.element);
+  } 
   elements.push(pie);
-  // Return
   return elements;
 };
 
-Render.prototype.dialSets = function(sets, percentage, size, colors, shadow) {
+Render.prototype.dialSets = function(containerId, sets, percentage, size, colors, shadow) {
   // Basic Calculation
   var center = { x: (size.width / 2), y: (size.height / 2) };
   var radius = (size.height / 3.2);
@@ -462,36 +570,91 @@ Render.prototype.dialSets = function(sets, percentage, size, colors, shadow) {
   var cx = Utils.calculateAngleX(center.x, dotRadius, degree);
   var cy = Utils.calculateAngleY(center.y, dotRadius, degree);
   // Create dash
-  var dashes = [];
   var dashRadius = radius + 15;
   var rotation = -150;
+
+  var dashAttributes = [];
   for(var i = 0; i < 260; i += 20) {
+    var id = containerId + '-dash-' + (i/20);
     var opacity = ((i / 260) > percentage) ? 0.2 : 1.0;
     var x = Utils.calculateAngleX(center.x, dashRadius, i - rotation);
     var y = Utils.calculateAngleY(center.y, dashRadius, i - rotation);
-    var dash = Draw.dash({
+    var attributes = {
+      id: id,
       transform: 'translate(' + x + ', ' + y + ') rotate(' + (i - 120) + ', 0, 0)',
       fill: colors[0],
       opacity: opacity
-    });
-    dashes.push(dash);
+    };
+    var vectors = [
+      {type: 'M', values: [0, 0]},
+      {type: '', values: [-2.6, 0]},
+      {type: '', values: [-3.8, -20]},
+      {type: '', values: [3.8, -20]},
+      {type: '', values: [2.6, 0]},
+      {type: 'Z'},
+    ];
+    attributes.d = Utils.buildPathString(vectors);
+    dashAttributes.push(attributes);
   }
-  // Compose
+
+  // Build or Update
   var elements = [];
-  var group = Draw.group({}, dashes);
-  var dial = Draw.circle({ cx: center.x, cy: center.y, r: radius, fill: colors[0] });
-  var dot = Draw.circle({cx: cx, cy: cy, r: 5, fill: '#fff'});
-  // Shadow
-  if(shadow) {
-    var defs = Draw.defs();
-    var shadow = Draw.shadow({opacity: 0.15}, 'pie-shadow', 8, dial);
-    Utils.appendChild(defs, shadow.def);
+  dashAttributes.map(function(attributes) {
+    var element = Utils.buildOrUpdate(attributes, Draw.path);
+    var exists = document.getElementById(attributes.id);
+    if(!exists) {
+      elements.push(element);
+    }
+  });
+
+  // Defs
+  var defsAttributes = { id: containerId + '-defs-0' };
+  var defs = Utils.buildOrUpdate(defsAttributes, Draw.defs);
+  var defsExists = document.getElementById(defsAttributes.id);
+  if(!defsExists) {
     elements.push(defs);
-    elements.push(shadow.element);
   }
-  elements.push(dial);
-  elements.push(dot);
-  elements.push(group);
+
+  // Dial
+  var dialAttributes = {
+    id: containerId + '-dial-0',
+    cx: center.x,
+    cy: center.y,
+    r: radius,
+    fill: colors[0] 
+  };
+  var dial = Utils.buildOrUpdate(dialAttributes, Draw.circle);
+
+  // Shadow
+  var shadowId = containerId + '-dial-shadow-0';
+  var shadowAttributes = {id: shadowId, opacity: 0.15};
+  var shadow = Utils.buildOrUpdateShadow(shadowAttributes, 'dial-shadow', 8, dial, Draw.shadow, Draw.filterShadow);
+  var shadowExists = document.getElementById(shadowAttributes.id);
+  if(!shadowExists && shadow) {
+    Utils.appendChild(defs, shadow.def);
+    elements.push(shadow.element);
+  } 
+
+  // Dial
+  var dialExists = document.getElementById(dialAttributes.id);
+  if(!dialExists) {
+    elements.push(dial);
+  }
+
+  // Dot
+  var dotAttributes = {
+    id: containerId + '-dial-dot-0',
+    cx: cx,
+    cy: cy,
+    r: 5,
+    fill: '#fff'
+  };
+  var dot = Utils.buildOrUpdate(dotAttributes, Draw.circle);
+  var dotExists = document.getElementById(dotAttributes.id);
+  if(!dotExists) {
+    elements.push(dot);
+  }
+
   return elements;
 };
 

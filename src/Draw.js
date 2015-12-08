@@ -75,26 +75,12 @@ Draw.prototype.p = function(attributes) {
  * Assets 
  *
  */
-Draw.prototype.dash = function(attributes) {
-  var vectors = [
-    {type: 'M', values: [0, 0]},
-    {type: '', values: [-2.6, 0]},
-    {type: '', values: [-3.8, -20]},
-    {type: '', values: [3.8, -20]},
-    {type: '', values: [2.6, 0]},
-    {type: 'Z'},
-  ];
-  attributes.d = Utils.buildPathString(vectors);
-  var dash = this.path(attributes);
-  return dash;
-};
-
-Draw.prototype.shadow = function(attributes, id, stdDeviation, group) {
+Draw.prototype.shadow = function(attributes, id, stdDeviation, group, drawFilterFunction) {
   var object = {
     def: null,
     element: null,
   }
-  object.def = this.filterShadow(id, stdDeviation);
+  object.def = drawFilterFunction(id, stdDeviation);
   var shadowGroup = group.cloneNode(true);
   attributes.filter = 'url(#' + id + ')';
   Utils.setElementAttributes(shadowGroup, attributes);
@@ -106,8 +92,11 @@ Draw.prototype.shadow = function(attributes, id, stdDeviation, group) {
  * Defs 
  *
  */
-Draw.prototype.defs = function() {
+Draw.prototype.defs = function(attributes) {
   var defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+  if(attributes) {
+    Utils.setElementAttributes(defs, attributes);
+  }
   return defs;
 };
 
