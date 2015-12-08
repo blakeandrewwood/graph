@@ -111,7 +111,7 @@ Draw.prototype.filterShadow = function(id, stdDeviation) {
   var filter = document.createElementNS('http://www.w3.org/2000/svg', 'filter');
   var feGaussianBlur = document.createElementNS('http://www.w3.org/2000/svg', 'feGaussianBlur');
   var feBlend = document.createElementNS('http://www.w3.org/2000/svg', 'feBlend');
-  Utils.setElementAttributes(filter, {id: id, width: '200%', height: '200%'});
+  Utils.setElementAttributes(filter, {id: id, width: '150%', height: '150%'});
   Utils.setElementAttributes(feGaussianBlur, {in: 'SourceAlpha', result: 'blurOut'});
   feGaussianBlur.setAttribute('stdDeviation', stdDeviation);
   Utils.setElementAttributes(feBlend, {in: 'blurOut', mode: 'normal'});

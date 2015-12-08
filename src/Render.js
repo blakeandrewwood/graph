@@ -287,13 +287,14 @@ Render.prototype.barSets = function(application, containerId, columnPositions, r
       if(typeof point === 'number') {
 
         var attributes = {
-          id: containerId + '-bar-' + j,
+          id: containerId + '-bar-' + i + '-' + j,
           fill: 'transparent',
           stroke: colors[index],
           strokeWidth: strokeWidth,
           strokeLinecap: 'round'
         };
         var shadowAttributes = {
+          id: containerId + '-bar-shadow-' + i + '-' + j,
           opacity: '0.15',
           fill: 'transparent',
           stroke: '#000',
@@ -337,13 +338,14 @@ Render.prototype.barSets = function(application, containerId, columnPositions, r
         point.forEach(function(y1, k, array) {
 
           var attributes = {
-            id: containerId + '-bar-' + j + '-' + k,
+            id: containerId + '-bar-' + i + '-' + j + '-' + k,
             fill: 'transparent',
             stroke: colors[index],
             strokeWidth: strokeWidth,
             strokeLinecap: 'round'
           };
           var shadowAttributes = {
+            id: containerId + '-bar-shadow-' + i + '-' + j + '-' + k,
             opacity: '0.15',
             fill: 'transparent',
             stroke: '#000',
@@ -435,6 +437,7 @@ Render.prototype.pieSets = function(application, containerId, sets, size, colors
       {type: 'M', values: [center.x, center.y]},
       {type: '',  values: [x1, y1]}
     ];
+
     var angles = [];
     // If angle is larger than 180, add a arch at 180 degrees
     if(set > 180) {
@@ -456,11 +459,22 @@ Render.prototype.pieSets = function(application, containerId, sets, size, colors
 
   // Build or Update
   var elements = [];
+
+  // Normal
   var groupAttributes = { id: containerId + '-pie-0' };
   var group = Utils.buildOrUpdate(groupAttributes, Draw.group);
+  // Shadow
+  var shadowGroupAttributes = { id: containerId + '-pie-shadow-0' };
+  var shadowGroup = Utils.buildOrUpdate(shadowGroupAttributes, Draw.group);
 
   slicesAttributes.map(function(attributes) {
+    // Normal
     var element = Utils.buildOrUpdate(attributes, Draw.path);
+    // Shadow
+    var shadowAttributes = Object.assign({}, attributes);
+    shadowAttributes.id = attributes.id + '-shadow';
+    var shadowElement = Utils.buildOrUpdate(shadowAttributes, Draw.path);
+    // Check if exists
     var exists = document.getElementById(attributes.id);
     if(!exists) {
       // Events
@@ -471,6 +485,7 @@ Render.prototype.pieSets = function(application, containerId, sets, size, colors
         application.Events.onMouseOut(evt, application);
       });
       Utils.appendChild(group, element);
+      Utils.appendChild(shadowGroup, shadowElement);
     }
   });
 
@@ -478,7 +493,7 @@ Render.prototype.pieSets = function(application, containerId, sets, size, colors
   var defs = Draw.defs();
   var shadowId = containerId + '-pie-shadow-0';
   var shadowAttributes = {id: shadowId, opacity: 0.15};
-  var shadow = Utils.buildOrUpdateShadow(shadowAttributes, 'pie-shadow', 8, group, Draw.shadow, Draw.filterShadow);
+  var shadow = Utils.buildOrUpdateShadow(shadowAttributes, 'pie-shadow', 8, shadowGroup, Draw.shadow, Draw.filterShadow);
   var shadowExists = document.getElementById(shadowAttributes.id);
   if(!shadowExists && shadow) {
     Utils.appendChild(defs, shadow.def);
@@ -528,35 +543,56 @@ Render.prototype.doughnutSets = function(application, containerId, sets, size, c
 
   // Clip Path
   var attributes = {
+    id: containerId + '-dougnut-clipmask-0',
     d: Utils.buildPathString(vectors)
   };
-  var doughnutClip = Draw.path(attributes);
-  var defsAttributes = { id: containerId + '-defs-0' };
+  var doughnutClip = Utils.buildOrUpdate(attributes, Draw.path);
+
+  // Normal group
+  var groupAttributes = {
+    id: containerId + '-dougnut-group-0',
+  }
+  var group = Utils.buildOrUpdate(groupAttributes, Draw.group);
+
+  // Shadow group
+  var shadowGroupAttributes = {
+    id: containerId + '-dougnut-shadow-group-0',
+  }
+  var shadowGroup = Utils.buildOrUpdate(shadowGroupAttributes, Draw.group);
+  var shadowDoughnutAttributes = Object.assign({}, attributes);
+  shadowDoughnutAttributes.id = containerId + '-shadow-doughnut-0';
+  shadowDoughnutAttributes.fill = 'red';
+  var shadowDoughnut = Utils.buildOrUpdate(shadowDoughnutAttributes, Draw.path);
+
+  // Pie shape
+  var pie = this.pieSets(application, containerId, sets, size, colors, false)[2];
+
+  var defsAttributes = {
+    id: containerId + '-dougnut-defs-0'
+  };
   var defs = Utils.buildOrUpdate(defsAttributes, Draw.defs);
   var defsExists = document.getElementById(defsAttributes.id);
+
   if(!defsExists) {
     var clipPath = Draw.clipPath('doughnut-clip', doughnutClip);
     Utils.appendChild(defs, clipPath);
+    Utils.setElementAttributes(pie, {clipPath: 'url(#doughnut-clip)'});
+    Utils.appendChild(group, pie)
     elements.push(defs);
+    Utils.appendChild(shadowGroup, shadowDoughnut);
   }
-
-  // Pie
-  var pie = this.pieSets(application, containerId, sets, size, colors, false)[2];
-  Utils.setElementAttributes(pie, {clipPath: 'url(#doughnut-clip)'});
-  var group = Draw.group({});
-  Utils.appendChild(group, pie);
 
   // Shadow
   var shadowId = containerId + '-doughnut-shadow-0';
-  var shadowAttributes = {id: shadowId, opacity: 0.15};
-  var shadow = Utils.buildOrUpdateShadow(shadowAttributes, 'dougnut-shadow', 8, group, Draw.shadow, Draw.filterShadow);
+  var shadowAttributes = { id: shadowId, opacity: 0.15 };
+  var shadow = Utils.buildOrUpdateShadow(shadowAttributes, 'dougnut-shadow', 8, shadowGroup, Draw.shadow, Draw.filterShadow);
   var shadowExists = document.getElementById(shadowAttributes.id);
-  if(!shadowExists && shadow) {
+  if(!shadowExists) {
     Utils.appendChild(defs, shadow.def);
-    elements.push(defs);
     elements.push(shadow.element);
-  } 
-  elements.push(pie);
+  }
+
+  elements.push(group);
   return elements;
 };
 
@@ -607,13 +643,6 @@ Render.prototype.dialSets = function(containerId, sets, percentage, size, colors
     }
   });
 
-  // Defs
-  var defsAttributes = { id: containerId + '-defs-0' };
-  var defs = Utils.buildOrUpdate(defsAttributes, Draw.defs);
-  var defsExists = document.getElementById(defsAttributes.id);
-  if(!defsExists) {
-    elements.push(defs);
-  }
 
   // Dial
   var dialAttributes = {
@@ -624,11 +653,31 @@ Render.prototype.dialSets = function(containerId, sets, percentage, size, colors
     fill: colors[0] 
   };
   var dial = Utils.buildOrUpdate(dialAttributes, Draw.circle);
+  
+  var shadowGroupAttributes = {
+    id: containerId + '-dial-shadow-group-0'
+  };
+  var shadowGroup = Utils.buildOrUpdate(shadowGroupAttributes, Draw.group);
+  var shadowGroupExists = document.getElementById(shadowGroupAttributes.id);
+
+  // Shadow
+  var shadowElementAttributes = Object.assign({}, dialAttributes);
+  shadowElementAttributes.id = containerId + '-dial-shadow-element-0';
+  var shadowElement = Utils.buildOrUpdate(shadowElementAttributes, Draw.circle);
+
+  // Defs
+  var defsAttributes = { id: containerId + '-defs-0' };
+  var defs = Utils.buildOrUpdate(defsAttributes, Draw.defs);
+  var defsExists = document.getElementById(defsAttributes.id);
+  if(!defsExists) {
+    elements.push(defs);
+    Utils.appendChild(shadowGroup, shadowElement);
+  }
 
   // Shadow
   var shadowId = containerId + '-dial-shadow-0';
   var shadowAttributes = {id: shadowId, opacity: 0.15};
-  var shadow = Utils.buildOrUpdateShadow(shadowAttributes, 'dial-shadow', 8, dial, Draw.shadow, Draw.filterShadow);
+  var shadow = Utils.buildOrUpdateShadow(shadowAttributes, 'dial-shadow', 8, shadowGroup, Draw.shadow, Draw.filterShadow);
   var shadowExists = document.getElementById(shadowAttributes.id);
   if(!shadowExists && shadow) {
     Utils.appendChild(defs, shadow.def);
