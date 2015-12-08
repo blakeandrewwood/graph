@@ -471,7 +471,7 @@ Render.prototype.pieSets = function(application, containerId, sets, size, colors
     // Normal
     var element = Utils.buildOrUpdate(attributes, Draw.path);
     // Shadow
-    var shadowAttributes = Object.assign({}, attributes);
+    var shadowAttributes = attributes;
     shadowAttributes.id = attributes.id + '-shadow';
     var shadowElement = Utils.buildOrUpdate(shadowAttributes, Draw.path);
     // Check if exists
@@ -559,7 +559,7 @@ Render.prototype.doughnutSets = function(application, containerId, sets, size, c
     id: containerId + '-dougnut-shadow-group-0',
   }
   var shadowGroup = Utils.buildOrUpdate(shadowGroupAttributes, Draw.group);
-  var shadowDoughnutAttributes = Object.assign({}, attributes);
+  var shadowDoughnutAttributes = attributes;
   shadowDoughnutAttributes.id = containerId + '-shadow-doughnut-0';
   shadowDoughnutAttributes.fill = 'red';
   var shadowDoughnut = Utils.buildOrUpdate(shadowDoughnutAttributes, Draw.path);
@@ -661,7 +661,7 @@ Render.prototype.dialSets = function(containerId, sets, percentage, size, colors
   var shadowGroupExists = document.getElementById(shadowGroupAttributes.id);
 
   // Shadow
-  var shadowElementAttributes = Object.assign({}, dialAttributes);
+  var shadowElementAttributes = dialAttributes;
   shadowElementAttributes.id = containerId + '-dial-shadow-element-0';
   var shadowElement = Utils.buildOrUpdate(shadowElementAttributes, Draw.circle);
 

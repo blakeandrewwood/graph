@@ -1,7 +1,6 @@
 var colors = ['#2388F2', '#F65237', '#0DEFA5', '#9B7CF3'];
 var seriesLabels = ['scan', 'delete', 'upload'];
 
-/*
 var labelsLine = ['1 dec', '2 dec', '3 dec', '4 dec', '5 dec', '6 dec', '7 dec'];
 var pointsLine = [
   [2000, 5500, 4500, 5400, 3600, 4400, 4000],
@@ -21,7 +20,7 @@ graphLine.setPoints(pointsLine);
 graphLine.setSeriesLabels(seriesLabels);
 graphLine.setColors(colors);
 graphLine.setGraphLines(true);
-graphLine.setPadding(120, 120);
+graphLine.setPadding(140, 120);
 graphLine.render();
 
 
@@ -37,7 +36,7 @@ graphBar.setIncrement(2);
 graphBar.setPoints(pointsBar);
 graphBar.setShadow(false);
 graphBar.setGraphLines(true);
-graphBar.setPadding(100, 120);
+graphBar.setPadding(140, 120);
 graphBar.render();
 
 
@@ -111,7 +110,7 @@ graphBarMultiStackHorizontal.setPoints(pointsBarMultiStackHorizontal);
 graphBarMultiStackHorizontal.setSeriesLabels(seriesLabelsLineBarMultiStackHorizontal);
 graphBarMultiStackHorizontal.setColors(colors);
 graphBarMultiStackHorizontal.setGraphLines(true);
-graphBarMultiStackHorizontal.setPadding(100, 120);
+graphBarMultiStackHorizontal.setPadding(140, 120);
 graphBarMultiStackHorizontal.render();
 
 
@@ -150,14 +149,13 @@ graphDoughnut.setLabels(labelsDoughnut);
 graphDoughnut.setPoints(pointsDoughnut);
 graphDoughnut.setColors(['#1CB8F1', '#08ECEF', '#6CF1B2', '#2388F2']);
 graphDoughnut.render();
-*/
 
 var labelsDial = [];
 var pointsDial = [[75, 100]];
 var graphDial = new Graph('GraphDial');
 graphDial.setContainer('graph-dial');
 graphDial.setType('dial');
-graphDial.setSize(150, 150);
+graphDial.setSize(140, 120);
 graphDial.setFontSize(16);
 graphDial.setFontFamily('Open Sans');
 graphDial.setLabels(labelsDial);
@@ -167,6 +165,27 @@ graphDial.render();
 
 window.addEventListener('resize', handleResize);
 function handleResize() {
+  graphLine.setSize(window.innerWidth - 200, window.innerHeight - 200);
+  graphLine.render();
+
+  graphBar.setSize(window.innerWidth - 200, window.innerHeight - 200);
+  graphBar.render();
+
+  graphBarMulti.setSize(window.innerWidth - 200, window.innerHeight - 200);
+  graphBarMulti.render();
+
+  graphBarMultiStack.setSize(window.innerWidth - 200, window.innerHeight - 200);
+  graphBarMultiStack.render();
+
+  graphBarMultiStackHorizontal.setSize(window.innerWidth - 200, window.innerHeight - 200);
+  graphBarMultiStackHorizontal.render();
+
+  graphPie.setSize(window.innerWidth - 200, window.innerHeight - 200);
+  graphPie.render();
+
+  graphDoughnut.setSize(window.innerWidth - 200, window.innerHeight - 200);
+  graphDoughnut.render();
+
   graphDial.setSize(window.innerWidth - 200, window.innerHeight - 200);
   graphDial.render();
 }
