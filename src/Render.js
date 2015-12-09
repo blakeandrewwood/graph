@@ -691,7 +691,7 @@ Render.prototype.tooltip = function(id, fontFamily) {
     position: 'absolute',
     padding: '10px 20px',
     margin: 'none',
-    color: '#fff',
+    color: '#fff !important',
     fontSize: '16px',
     fontFamily: fontFamily,
     boxShadow: '4px 4px 0 rgba(0, 0, 0, 0.2)'
