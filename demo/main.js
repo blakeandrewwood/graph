@@ -13,6 +13,7 @@ graphLine.setContainer('graph-line');
 graphLine.setType('line');
 graphLine.setSize(350, 150);
 graphLine.setFontFamily('Open Sans');
+graphLine.setFontSize(12);
 graphLine.setLabels(labelsLine);
 graphLine.setIncrement(1000);
 graphLine.setPrefix('$');
