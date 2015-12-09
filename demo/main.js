@@ -60,6 +60,7 @@ graphBarMulti.setColors(colors);
 graphBarMulti.setGraphLines(true);
 graphBarMulti.setPadding(140, 120);
 graphBarMulti.render();
+*/
 
 var labelsBarMultiStack = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
 var pointsBarMultiStack = [
@@ -83,6 +84,7 @@ graphBarMultiStack.setGraphLines(true);
 graphBarMultiStack.setPadding(140, 120);
 graphBarMultiStack.render();
 
+/*
 var labelsBarMultiStackHorizontal = ['Tom', 'Kelly', 'Rob', 'Owen'];
 var pointsBarMultiStackHorizontal = [
   [[450, 800, 1100, 200]],
@@ -105,7 +107,6 @@ graphBarMultiStackHorizontal.setColors(colors);
 graphBarMultiStackHorizontal.setGraphLines(true);
 graphBarMultiStackHorizontal.setPadding(140, 120);
 graphBarMultiStackHorizontal.render();
-*/
 
 var labelsPie = ['Oracle', 'Azure', 'Joyent', 'IBM'];
 var pointsPie = [
@@ -144,7 +145,6 @@ graphDoughnut.setPoints(pointsDoughnut);
 graphDoughnut.setColors(['#1CB8F1', '#08ECEF', '#6CF1B2', '#2388F2']);
 graphDoughnut.render();
 
-/*
 var labelsDial = [];
 var pointsDial = [[75, 100]];
 var graphDial = new Graph('GraphDial');

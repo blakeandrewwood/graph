@@ -274,10 +274,6 @@ Render.prototype.barSets = function(application, containerId, columnPositions, r
   //////////////////////
   sets.forEach(function(set, i, array) {
     var index = 0;
-
-    // TODO: Fix design flaw with stacked bars
-    //set.sort(Utils.sortDesc);
-
     set.forEach(function(point, j, array) {
 
       var strokeWidth = 16;
@@ -323,6 +319,7 @@ Render.prototype.barSets = function(application, containerId, columnPositions, r
 
         // Point
         attributes.dataPoint = point;
+        shadowAttributes.dataPoint = point;
 
         // d
         var d = Utils.buildPathString(newSet);
@@ -340,10 +337,6 @@ Render.prototype.barSets = function(application, containerId, columnPositions, r
 
       // Stacked
       else if(typeof point === 'object') {
-
-        // TODO: Fix design flaw with stacked bars
-        //point.sort(Utils.sortDesc);
-
         point.forEach(function(y1, k, array) {
 
           var attributes = {
@@ -382,6 +375,7 @@ Render.prototype.barSets = function(application, containerId, columnPositions, r
 
           // Point
           attributes.dataPoint = y1;
+          shadowAttributes.dataPoint = y1;
 
           // d
           var d = Utils.buildPathString(newSet);
@@ -401,6 +395,11 @@ Render.prototype.barSets = function(application, containerId, columnPositions, r
     });
   });
   //////////////////////
+
+  // Sort bars and shadow by point
+  // for correct display order.
+  barAttributes.sort(Utils.sortByPointDesc);
+  barShadowAttributes.sort(Utils.sortByPointDesc);
 
   // Build or Update
   var elements = [];

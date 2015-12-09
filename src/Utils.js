@@ -254,6 +254,10 @@ Utils.prototype.sortDesc = function(a, b) {
   return b-a;
 }
 
+Utils.prototype.sortByPointDesc = function(a, b) {
+  return b.dataPoint-a.dataPoint;
+}
+
 Array.max = function(array) {
   return Math.max.apply(Math, array);
 };
