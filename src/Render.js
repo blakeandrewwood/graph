@@ -725,7 +725,7 @@ Render.prototype.graphLines = function(containerId, columnPositions, rowPosition
     var id = containerId + '-graph-line-vertical-' + index;
     var lineAttributes = {
       id: id,
-      opacity: (show) ? 0 : 1, 
+      opacity: (show) ? 1 : 0, 
       x1: x,
       y1: 0,
       x2: x,
@@ -741,7 +741,7 @@ Render.prototype.graphLines = function(containerId, columnPositions, rowPosition
     var id = containerId + '-graph-line-horizontal-' + index;
     var lineAttributes = {
       id: id,
-      opacity: (show) ? 0 : 1, 
+      opacity: (show) ? 1 : 0, 
       x1: 0,
       y1: y,
       x2: size.width,
