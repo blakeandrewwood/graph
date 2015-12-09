@@ -10,7 +10,10 @@ Events.prototype.getSvg = function(containerId, fontFamily) {
   var svg = container.getElementsByTagName('svg')[0];
   var tooltipId = containerId + '-tooltip';
   var tooltip = document.getElementById(tooltipId);
-  var tooltipText = document.getElementById(tooltipId + '-text');
+  var tooltipTextLines = [
+    document.getElementById(tooltipId + '-text-line-0'),
+    document.getElementById(tooltipId + '-text-line-1')
+  ]
   if(!tooltip) {
     this.createTooltip(container, tooltipId, fontFamily);
   }
@@ -19,7 +22,7 @@ Events.prototype.getSvg = function(containerId, fontFamily) {
     svg: svg,
     tooltipId: tooltipId,
     tooltip: tooltip,
-    tooltipText: tooltipText,
+    tooltipTextLines: tooltipTextLines,
   }
   return object;
 };
@@ -44,10 +47,10 @@ Events.prototype.onMouseOverLine = function(evt, application, i, rowMax) {
   var index = Math.floor(p);
   var nums = [application.points[i][index], application.points[i][index + 1]];
   var number = Math.floor(((nums[1] - nums[0]) * (p % 1)) + nums[0]);
-  var textFinal = application.labels.prefix + (number.toString()) + application.labels.suffix;
-  if(!isNaN(number)) {
-    this.updateTooltip(svg, x, y, color, textFinal);
-  }
+
+  // Build text
+  var text = this.buildTextLines(application.labels, number, i);
+  this.updateTooltip(svg, x, y, color, text);
 };
 
 Events.prototype.onMouseOverBar = function(evt, application, i, value) {
@@ -61,10 +64,10 @@ Events.prototype.onMouseOverBar = function(evt, application, i, value) {
   var y = evt.clientY - containerOffset.top;
   // Render
   var number = value;
-  var textFinal = application.labels.prefix + (number.toString()) + application.labels.suffix;
-  if(!isNaN(number)) {
-    this.updateTooltip(svg, x, y, color, textFinal);
-  }
+
+  // Build text
+  var text = this.buildTextLines(application.labels, number, i);
+  this.updateTooltip(svg, x, y, color, text);
 };
 
 Events.prototype.onMouseOverPie = function(evt, application, i) {
@@ -77,10 +80,17 @@ Events.prototype.onMouseOverPie = function(evt, application, i) {
   var x = evt.clientX - containerOffset.left;
   var y = evt.clientY - containerOffset.top;
   var number = application.points[i];
-  var textFinal = application.labels.prefix + (number.toString()) + application.labels.suffix;
-  if(!isNaN(number)) {
-    this.updateTooltip(svg, x, y, color, textFinal);
-  }
+
+  // Build text
+  var text = this.buildTextLines(application.labels, number, i);
+  this.updateTooltip(svg, x, y, color, text);
+};
+
+Events.prototype.buildTextLines = function(labels, value, index) {
+  var lines = [];
+  lines[0] = labels.prefix + (value.toString()) + labels.suffix;
+  lines[1] = (labels.series.length) ? labels.series[index] : '';
+  return lines;
 };
 
 Events.prototype.createTooltip = function(container, id, fontFamily) {
@@ -88,12 +98,14 @@ Events.prototype.createTooltip = function(container, id, fontFamily) {
   Utils.appendChild(container, tooltip);
 };
 
-Events.prototype.updateTooltip = function(svg, x, y, color, value) {
+Events.prototype.updateTooltip = function(svg, x, y, color, textLines) {
   if(svg.tooltip) {
-    Utils.showElement(svg.tooltip);
+    for(var i in svg.tooltipTextLines) {
+      svg.tooltipTextLines[i].innerHTML = textLines[i];
+    }
     svg.tooltip.style.background = color;
-    svg.tooltipText.innerHTML = value;
     Utils.setDivPosition(svg.tooltip, x + 10, y + 10);
+    Utils.showElement(svg.tooltip);
   }
 };
 

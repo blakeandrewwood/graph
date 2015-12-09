@@ -274,7 +274,10 @@ Render.prototype.barSets = function(application, containerId, columnPositions, r
   //////////////////////
   sets.forEach(function(set, i, array) {
     var index = 0;
-    set.sort(Utils.sortDesc);
+
+    // TODO: Fix design flaw with stacked bars
+    //set.sort(Utils.sortDesc);
+
     set.forEach(function(point, j, array) {
 
       var strokeWidth = 16;
@@ -329,12 +332,18 @@ Render.prototype.barSets = function(application, containerId, columnPositions, r
         // Shadow
         barAttributes.push(attributes);
         barShadowAttributes.push(shadowAttributes)
+
+        // Index
+        attributes.dataIndex = index;
         index++;
       }
 
       // Stacked
       else if(typeof point === 'object') {
-        point.sort(Utils.sortDesc);
+
+        // TODO: Fix design flaw with stacked bars
+        //point.sort(Utils.sortDesc);
+
         point.forEach(function(y1, k, array) {
 
           var attributes = {
@@ -379,10 +388,12 @@ Render.prototype.barSets = function(application, containerId, columnPositions, r
           attributes.d = d;
           shadowAttributes.d = d;
 
-
           // Shadow
           barAttributes.push(attributes);
           barShadowAttributes.push(shadowAttributes)
+
+          // Index
+          attributes.dataIndex = index;
           index++;
         });
       }
@@ -400,7 +411,7 @@ Render.prototype.barSets = function(application, containerId, columnPositions, r
     if(!exists) {
       // Events
       element.addEventListener('mousemove', function(evt) {
-        application.Events.onMouseOverBar(evt, application, 0, attributes.dataPoint);
+        application.Events.onMouseOverBar(evt, application, attributes.dataIndex, attributes.dataPoint);
       });
       element.addEventListener('mouseout', function(evt) {
         application.Events.onMouseOut(evt, application);
@@ -721,10 +732,24 @@ Render.prototype.tooltip = function(id, fontFamily) {
     fontFamily: fontFamily,
     boxShadow: '4px 4px 0 rgba(0, 0, 0, 0.2)'
   });
-  var pStyle = Utils.styleToString({ padding: '0', margin: '0' });
-  var element = Draw.div({ id: id, style: divStyle });
-  var p = Draw.p({ id: id + '-text', style: pStyle });
-  Utils.appendChild(element, p);
+  var pStyle = Utils.styleToString({
+    padding: '0',
+    margin: '0'
+  });
+  var element = Draw.div({
+    id: id,
+    style: divStyle
+  });
+  var p0 = Draw.p({
+    id: id + '-text-line-0',
+    style: pStyle
+  });
+  var p1 = Draw.p({
+    id: id + '-text-line-1',
+    style: pStyle
+  });
+  Utils.appendChild(element, p0);
+  Utils.appendChild(element, p1);
   return element;
 };
 
