@@ -24,7 +24,6 @@ graphLine.setGraphLines(true);
 graphLine.setPadding(140, 120);
 graphLine.render();
 
-
 var labelsBar = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 var pointsBar = [[1], [2], [3], [4], [3], [6], [4], [3], [5], [6], [4], [3]];
 var graphBar = new Graph('GraphBar');
@@ -39,7 +38,6 @@ graphBar.setShadow(false);
 graphBar.setGraphLines(true);
 graphBar.setPadding(140, 120);
 graphBar.render();
-*/
 
 var labelsBarMulti = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
 var pointsBarMulti = [
@@ -62,13 +60,6 @@ graphBarMulti.setColors(colors);
 graphBarMulti.setGraphLines(true);
 graphBarMulti.setPadding(140, 120);
 graphBarMulti.render();
-
-/*
-window.addEventListener('resize', handleResize);
-function handleResize() {
-  graphBarMulti.setSize(window.innerWidth - 200, window.innerHeight - 200);
-  graphBarMulti.render();
-}
 
 var labelsBarMultiStack = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
 var pointsBarMultiStack = [
@@ -114,7 +105,7 @@ graphBarMultiStackHorizontal.setColors(colors);
 graphBarMultiStackHorizontal.setGraphLines(true);
 graphBarMultiStackHorizontal.setPadding(140, 120);
 graphBarMultiStackHorizontal.render();
-
+*/
 
 var labelsPie = ['Oracle', 'Azure', 'Joyent', 'IBM'];
 var pointsPie = [
@@ -126,10 +117,11 @@ var pointsPie = [
 var graphPie = new Graph('GraphPie');
 graphPie.setContainer('graph-pie');
 graphPie.setType('pie');
+graphPie.setPrefix('$');
 graphPie.setSize(150, 150);
 graphPie.setFontSize(14);
 graphPie.setFontFamily('Open Sans');
-graphPie.setLabels(labelsPie);
+graphPie.setSeriesLabels(labelsPie);
 graphPie.setPoints(pointsPie);
 graphPie.setColors(['#1CB8F1', '#08ECEF', '#6CF1B2', '#2388F2']);
 graphPie.render();
@@ -147,11 +139,12 @@ graphDoughnut.setType('doughnut');
 graphDoughnut.setSize(150, 150);
 graphDoughnut.setFontSize(14);
 graphDoughnut.setFontFamily('Open Sans');
-graphDoughnut.setLabels(labelsDoughnut);
+graphDoughnut.setSeriesLabels(labelsDoughnut);
 graphDoughnut.setPoints(pointsDoughnut);
 graphDoughnut.setColors(['#1CB8F1', '#08ECEF', '#6CF1B2', '#2388F2']);
 graphDoughnut.render();
 
+/*
 var labelsDial = [];
 var pointsDial = [[75, 100]];
 var graphDial = new Graph('GraphDial');
@@ -164,7 +157,9 @@ graphDial.setLabels(labelsDial);
 graphDial.setPoints(pointsDial);
 graphDial.setColors(['#1CB8F1', '#08ECEF', '#6CF1B2', '#2388F2']);
 graphDial.render();
+*/
 
+/*
 window.addEventListener('resize', handleResize);
 function handleResize() {
   graphLine.setSize(window.innerWidth - 200, window.innerHeight - 200);

@@ -319,7 +319,7 @@ Graph.prototype.pieBuildSvg = function() {
   // Render
   var bottomLeftLabelText = Render.bottomLeftLabelText(
     this.containerId,
-    this.labels.column,
+    this.labels.series,
     this.font,
     this.size,
     this.colors
@@ -374,7 +374,7 @@ Graph.prototype.doughnutBuildSvg = function() {
   // Render
   var bottomLeftLabelText = Render.bottomLeftLabelText(
     this.containerId,
-    this.labels.column,
+    this.labels.series,
     this.font,
     this.size,
     this.colors
