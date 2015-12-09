@@ -286,7 +286,6 @@ Render.prototype.barSets = function(application, containerId, columnPositions, r
         // Append 
         barAttributes.push(bar.attributes);
         barShadowAttributes.push(bar.shadowAttributes)
-
         index++;
       }
       // Stacked
