@@ -717,7 +717,7 @@ Render.prototype.tooltip = function(id, fontFamily) {
   return element;
 };
 
-Render.prototype.graphLines = function(containerId, columnPositions, rowPositions, size) {
+Render.prototype.graphLines = function(containerId, columnPositions, rowPositions, size, show) {
   var lines = [];
 
   // Vertical
@@ -725,6 +725,7 @@ Render.prototype.graphLines = function(containerId, columnPositions, rowPosition
     var id = containerId + '-graph-line-vertical-' + index;
     var lineAttributes = {
       id: id,
+      opacity: (show) ? 0 : 1, 
       x1: x,
       y1: 0,
       x2: x,
@@ -740,6 +741,7 @@ Render.prototype.graphLines = function(containerId, columnPositions, rowPosition
     var id = containerId + '-graph-line-horizontal-' + index;
     var lineAttributes = {
       id: id,
+      opacity: (show) ? 0 : 1, 
       x1: 0,
       y1: y,
       x2: size.width,

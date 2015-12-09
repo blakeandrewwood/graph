@@ -93,7 +93,8 @@ Graph.prototype.lineBuildSvg = function() {
     this.containerId,
     this.columnPositions,
     this.rowPositions,
-    this.size
+    this.size,
+    this.showGraphLines
   );
   var columnLabelText = Render.columnLabelText(
     this.containerId,
@@ -134,16 +135,14 @@ Graph.prototype.lineBuildSvg = function() {
   // Group
   var children = [];
 
-  if(this.showGraphLines) {
-    children = Utils.buildOrUpdateGroupConcat(
-      children,
-      graphLines,
-      this.containerId + '-group-0',
-      this.widthOffset,
-      this.heightOffset,
-      Draw.group
-    );
-  }
+  children = Utils.buildOrUpdateGroupConcat(
+    children,
+    graphLines,
+    this.containerId + '-group-0',
+    this.widthOffset,
+    this.heightOffset,
+    Draw.group
+  );
   children = Utils.buildOrUpdateGroupConcat(
     children,
     columnLabelText,
@@ -219,7 +218,8 @@ Graph.prototype.barBuildSvg = function() {
     this.containerId,
     this.columnPositions,
     this.rowPositions,
-    this.size
+    this.size,
+    this.showGraphLines
   );
   var columnLabelText = Render.columnLabelText(
     this.containerId,
@@ -261,16 +261,14 @@ Graph.prototype.barBuildSvg = function() {
 
   // Group
   var children = [];
-  if(this.showGraphLines) {
-    children = Utils.buildOrUpdateGroupConcat(
-      children,
-      graphLines,
-      this.containerId + '-group-0',
-      this.widthOffset,
-      this.heightOffset,
-      Draw.group
-    );
-  }
+  children = Utils.buildOrUpdateGroupConcat(
+    children,
+    graphLines,
+    this.containerId + '-group-0',
+    this.widthOffset,
+    this.heightOffset,
+    Draw.group
+  );
   children = Utils.buildOrUpdateGroupConcat(
     children,
     columnLabelText,
