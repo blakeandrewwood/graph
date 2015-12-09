@@ -268,144 +268,111 @@ Render.prototype.lineSets = function(application, containerId, columnPositions, 
 };
 
 Render.prototype.barSets = function(application, containerId, columnPositions, rowPositions, labels, sets, size, horizontal, colors, shadow) {
+  // Containers
   var barAttributes = [];
   var barShadowAttributes = [];
-
-  //////////////////////
+  var barStackedAttributes = [];
+  var barStackedShadowAttributes = [];
+  var barSetsBuildAttributes = this.barSetsBuildAttributes;
+  // Build sets
   sets.forEach(function(set, i, array) {
     var index = 0;
     set.forEach(function(point, j, array) {
-
-      var strokeWidth = 16;
-      var gutter = -(strokeWidth / 4);
-      var offset = ((strokeWidth + gutter) * (set.length - 1)) / 2;
-      var shadowOffset = -(strokeWidth / 3);
-      var max;
-
       // Normal
       if(typeof point === 'number') {
+        // Build bar
+        var bar = barSetsBuildAttributes(containerId, i, j, null, index, size,
+          labels, colors, horizontal, rowPositions, columnPositions, set, point);
+        // Append 
+        barAttributes.push(bar.attributes);
+        barShadowAttributes.push(bar.shadowAttributes)
 
-        var attributes = {
-          id: containerId + '-bar-' + i + '-' + j,
-          fill: 'transparent',
-          stroke: colors[index],
-          strokeWidth: strokeWidth,
-          strokeLinecap: 'round'
-        };
-        var shadowAttributes = {
-          id: containerId + '-bar-shadow-' + i + '-' + j,
-          opacity: '0.15',
-          fill: 'transparent',
-          stroke: '#000',
-          strokeWidth: strokeWidth,
-          strokeLinecap: 'round'
-        };
-
-        var newSet = [];
-        if(!horizontal) { 
-          shadowAttributes.transform = 'translate(' + shadowOffset + ', 0)';
-          max = labels[0];
-          var x = (columnPositions[i] + (j * (strokeWidth + gutter))) - offset;
-          newSet.push({type: 'M', values: [x, Utils.calculateY(0, max, size.height)]});
-          newSet.push({type: '', values: [x, Utils.calculateY(point, max, size.height) + (strokeWidth / 2)]});
-        } 
-        else {
-          shadowAttributes.transform = 'translate(' + (-shadowOffset) + ', 0)';
-          max = labels[labels.length - 1];
-          var y = (rowPositions[i] + (j * (strokeWidth + gutter))) - offset;
-          newSet.push({ type: 'M', values: [Utils.calculateX(0, max, size.width), y] });
-          newSet.push({ type: '', values: [Utils.calculateX(point, max, size.width) - (strokeWidth / 2), y] });
-        }
-
-        // Point
-        attributes.dataPoint = point;
-        shadowAttributes.dataPoint = point;
-
-        // d
-        var d = Utils.buildPathString(newSet);
-        attributes.d = d;
-        shadowAttributes.d = d;
-
-        // Shadow
-        barAttributes.push(attributes);
-        barShadowAttributes.push(shadowAttributes)
-
-        // Index
-        attributes.dataIndex = index;
         index++;
       }
-
       // Stacked
       else if(typeof point === 'object') {
         point.forEach(function(y1, k, array) {
-
-          var attributes = {
-            id: containerId + '-bar-' + i + '-' + j + '-' + k,
-            fill: 'transparent',
-            stroke: colors[index],
-            strokeWidth: strokeWidth,
-            strokeLinecap: 'round'
-          };
-          var shadowAttributes = {
-            id: containerId + '-bar-shadow-' + i + '-' + j + '-' + k,
-            opacity: '0.15',
-            fill: 'transparent',
-            stroke: '#000',
-            strokeWidth: strokeWidth,
-            strokeLinecap: 'round'
-          };
-
-          var newSet = [];
-          if(!horizontal) { 
-            shadowAttributes.transform = 'translate(' + shadowOffset + ', 0)';
-
-            max = labels[0];
-
-            var x = (columnPositions[i] + (j * (strokeWidth + gutter))) - offset;
-            newSet.push({ type: 'M', values: [x, Utils.calculateY(0, max, size.height)] });
-            newSet.push({ type: '', values: [x, Utils.calculateY(y1, max, size.height) + (strokeWidth / 2)] });
-          } 
-          else {
-            shadowAttributes.transform = 'translate(' + (-shadowOffset) + ', 0)';
-            max = labels[labels.length - 1];
-            var y = (rowPositions[i] + (j * (strokeWidth + gutter))) - offset;
-            newSet.push({ type: 'M', values: [Utils.calculateX(0, max, size.width), y] });
-            newSet.push({ type: '', values: [Utils.calculateX(y1, max, size.width) - (strokeWidth / 2), y] });
-          }
-
-          // Point
-          attributes.dataPoint = y1;
-          shadowAttributes.dataPoint = y1;
-
-          // d
-          var d = Utils.buildPathString(newSet);
-          attributes.d = d;
-          shadowAttributes.d = d;
-
-          // Shadow
-          barAttributes.push(attributes);
-          barShadowAttributes.push(shadowAttributes)
-
-          // Index
-          attributes.dataIndex = index;
+          // Build bar
+          var bar = barSetsBuildAttributes(containerId, i, j, k, index, size,
+            labels, colors, horizontal, rowPositions, columnPositions, set, y1);
+          // Append 
+          barStackedAttributes.push(bar.attributes);
+          barStackedShadowAttributes.push(bar.shadowAttributes)
           index++;
         });
       }
-
     });
   });
-  //////////////////////
-
   // Sort bars and shadow by point
   // for correct display order.
-  barAttributes.sort(Utils.sortByPointDesc);
-  barShadowAttributes.sort(Utils.sortByPointDesc);
-
+  barStackedAttributes.sort(Utils.sortByPointDesc);
+  barStackedShadowAttributes.sort(Utils.sortByPointDesc);
   // Build or Update
   var elements = [];
-  barAttributes.forEach(function(attributes, index) {
+  var bars = this.barSetsBuildOrUpdate(application, barAttributes, barShadowAttributes, shadow);
+  var stackedBars = this.barSetsBuildOrUpdate(application, barStackedAttributes, barStackedShadowAttributes, shadow);
+  elements = elements.concat(bars);
+  elements = elements.concat(stackedBars);
+  return elements;
+};
+
+Render.prototype.barSetsBuildAttributes = function(containerId, i, j, k, index,
+  size, labels, colors, horizontal, rowPositions, columnPositions, set, point) {
+  var strokeWidth = 16;
+  var gutter = -(strokeWidth / 4);
+  var offset = ((strokeWidth + gutter) * (set.length - 1)) / 2;
+  var shadowOffset = -(strokeWidth / 3);
+  var max;
+  var l = (k) ? k : ''; 
+  var id = containerId + '-bar-' + i + '-' + j + l;
+  var idShadow = containerId + '-bar-shadow-' + i + '-' + j + l;
+  var attributes = {
+    id: id, 
+    fill: 'transparent',
+    stroke: colors[index],
+    strokeWidth: strokeWidth,
+    strokeLinecap: 'round',
+    dataIndex: index
+  };
+  var shadowAttributes = {
+    id: idShadow,
+    opacity: '0.15',
+    fill: 'transparent',
+    stroke: '#000',
+    strokeWidth: strokeWidth,
+    strokeLinecap: 'round'
+  };
+  var newSet = [];
+  if(!horizontal) { 
+    shadowAttributes.transform = 'translate(' + shadowOffset + ', 0)';
+    max = labels[0];
+    var x = (columnPositions[i] + (j * (strokeWidth + gutter))) - offset;
+    newSet.push({type: 'M', values: [x, Utils.calculateY(0, max, size.height)]});
+    newSet.push({type: '', values: [x, Utils.calculateY(point, max, size.height) + (strokeWidth / 2)]});
+  } 
+  else {
+    shadowAttributes.transform = 'translate(' + (-shadowOffset) + ', 0)';
+    max = labels[labels.length - 1];
+    var y = (rowPositions[i] + (j * (strokeWidth + gutter))) - offset;
+    newSet.push({ type: 'M', values: [Utils.calculateX(0, max, size.width), y] });
+    newSet.push({ type: '', values: [Utils.calculateX(point, max, size.width) - (strokeWidth / 2), y] });
+  }
+  // Point
+  attributes.dataPoint = point;
+  shadowAttributes.dataPoint = point;
+  // d
+  var d = Utils.buildPathString(newSet);
+  attributes.d = d;
+  shadowAttributes.d = d;
+  return { attributes: attributes, shadowAttributes: shadowAttributes };
+};
+
+// TODO: Move to own class
+Render.prototype.barSetsBuildOrUpdate = function(application, attributes, shadowAttributes, shadow) {
+  var elements = [];
+  attributes.forEach(function(attributes, index) {
     var element = Utils.buildOrUpdate(attributes, Draw.path);
-    var elementShadow = Utils.buildOrUpdate(barShadowAttributes[index], Draw.path);
+    var elementShadow = Utils.buildOrUpdate(shadowAttributes[index], Draw.path);
     var exists = document.getElementById(attributes.id);
     if(!exists) {
       // Events
@@ -421,7 +388,6 @@ Render.prototype.barSets = function(application, containerId, columnPositions, r
       elements.push(element);
     }
   });
-
   return elements;
 };
 

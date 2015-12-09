@@ -38,6 +38,7 @@ graphBar.setShadow(false);
 graphBar.setGraphLines(true);
 graphBar.setPadding(140, 120);
 graphBar.render();
+*/
 
 var labelsBarMulti = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
 var pointsBarMulti = [
@@ -60,7 +61,6 @@ graphBarMulti.setColors(colors);
 graphBarMulti.setGraphLines(true);
 graphBarMulti.setPadding(140, 120);
 graphBarMulti.render();
-*/
 
 var labelsBarMultiStack = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
 var pointsBarMultiStack = [
@@ -84,7 +84,6 @@ graphBarMultiStack.setGraphLines(true);
 graphBarMultiStack.setPadding(140, 120);
 graphBarMultiStack.render();
 
-/*
 var labelsBarMultiStackHorizontal = ['Tom', 'Kelly', 'Rob', 'Owen'];
 var pointsBarMultiStackHorizontal = [
   [[450, 800, 1100, 200]],
@@ -108,6 +107,7 @@ graphBarMultiStackHorizontal.setGraphLines(true);
 graphBarMultiStackHorizontal.setPadding(140, 120);
 graphBarMultiStackHorizontal.render();
 
+/*
 var labelsPie = ['Oracle', 'Azure', 'Joyent', 'IBM'];
 var pointsPie = [
   [700],
