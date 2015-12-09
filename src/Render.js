@@ -335,7 +335,7 @@ Render.prototype.barSetsBuildAttributes = function(containerId, i, j, k, index,
   };
   var shadowAttributes = {
     id: idShadow,
-    opacity: '0.15',
+    opacity: '0.14',
     fill: 'transparent',
     stroke: '#000',
     strokeWidth: strokeWidth,
