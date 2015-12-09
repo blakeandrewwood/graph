@@ -493,7 +493,7 @@ Render.prototype.doughnutSets = function(application, containerId, sets, size, c
   // Basic calculation
   var center = { x: (size.width / 2), y: (size.height / 2) };
   var radius1 = (size.height / 2);
-  var radius2 = radius1 - 40;
+  var radius2 = radius1 - (Math.floor(size.height/4.4));
   var x1 = Utils.calculateAngleX(center.x, radius1, 0);
   var y1 = Utils.calculateAngleY(center.y, radius1, 0);
   var x2 = Utils.calculateAngleX(center.x, radius1, 180);

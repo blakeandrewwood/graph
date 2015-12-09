@@ -51,6 +51,8 @@ function Graph(application) {
  *
  */
 Graph.prototype.makeLineBarCalculations = function() {
+  this.widthOffset = this.padding.x - 20;
+  this.heightOffset = 20;
   this.range = Utils.getMinMax(this.points);
   this.labels.row = Utils.getPointIncrements(
     this.range.max,
@@ -135,16 +137,16 @@ Graph.prototype.lineBuildSvg = function() {
     children,
     graphLines,
     this.containerId + '-group-0',
-    this.padding.x/2,
-    this.padding.y/2,
+    this.widthOffset,
+    this.heightOffset,
     Draw.group
   );
   children = Utils.buildOrUpdateGroupConcat(
     children,
     columnLabelText,
     this.containerId + '-group-1',
-    this.padding.x/2,
-    this.padding.y/2,
+    this.widthOffset,
+    this.heightOffset,
     Draw.group
   );
   children = Utils.buildOrUpdateGroupConcat(
@@ -152,7 +154,7 @@ Graph.prototype.lineBuildSvg = function() {
     rowLabelText,
     this.containerId + '-group-2',
     0,
-    this.padding.y/2,
+    this.heightOffset,
     Draw.group
   );
   children = Utils.buildOrUpdateGroupConcat(
@@ -167,8 +169,8 @@ Graph.prototype.lineBuildSvg = function() {
     children,
     sets,
     this.containerId + '-group-4',
-    this.padding.x/2,
-    this.padding.y/2,
+    this.widthOffset,
+    this.heightOffset,
     Draw.group
   );
 
@@ -260,16 +262,16 @@ Graph.prototype.barBuildSvg = function() {
     children,
     graphLines,
     this.containerId + '-group-0',
-    this.padding.x/2,
-    this.padding.y/2,
+    this.widthOffset,
+    this.heightOffset,
     Draw.group
   );
   children = Utils.buildOrUpdateGroupConcat(
     children,
     columnLabelText,
     this.containerId + '-group-1',
-    this.padding.x/2,
-    this.padding.y/2,
+    this.widthOffset,
+    this.heightOffset,
     Draw.group
   );
   children = Utils.buildOrUpdateGroupConcat(
@@ -277,7 +279,7 @@ Graph.prototype.barBuildSvg = function() {
     rowLabelText,
     this.containerId + '-group-2',
     0,
-    this.padding.y/2,
+    this.heightOffset,
     Draw.group
   );
   children = Utils.buildOrUpdateGroupConcat(
@@ -292,8 +294,8 @@ Graph.prototype.barBuildSvg = function() {
     children,
     sets,
     this.containerId + '-group-4',
-    this.padding.x/2,
-    this.padding.y/2,
+    this.widthOffset,
+    this.heightOffset,
     Draw.group
   );
 
