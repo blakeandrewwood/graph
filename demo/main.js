@@ -20,7 +20,7 @@ graphLine.setPrefix('$');
 graphLine.setPoints(pointsLine);
 graphLine.setSeriesLabels(seriesLabels);
 graphLine.setColors(colors);
-graphLine.setGraphLines(true);
+graphLine.setGraphLines(false);
 graphLine.setPadding(80, 80);
 graphLine.render();
 
@@ -35,7 +35,7 @@ graphBar.setLabels(labelsBar);
 graphBar.setIncrement(2);
 graphBar.setPoints(pointsBar);
 graphBar.setShadow(false);
-graphBar.setGraphLines(true);
+graphBar.setGraphLines(false);
 graphBar.setPadding(60, 80);
 graphBar.render();
 

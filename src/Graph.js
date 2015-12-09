@@ -133,14 +133,17 @@ Graph.prototype.lineBuildSvg = function() {
 
   // Group
   var children = [];
-  children = Utils.buildOrUpdateGroupConcat(
-    children,
-    graphLines,
-    this.containerId + '-group-0',
-    this.widthOffset,
-    this.heightOffset,
-    Draw.group
-  );
+
+  if(this.showGraphLines) {
+    children = Utils.buildOrUpdateGroupConcat(
+      children,
+      graphLines,
+      this.containerId + '-group-0',
+      this.widthOffset,
+      this.heightOffset,
+      Draw.group
+    );
+  }
   children = Utils.buildOrUpdateGroupConcat(
     children,
     columnLabelText,
@@ -258,14 +261,16 @@ Graph.prototype.barBuildSvg = function() {
 
   // Group
   var children = [];
-  children = Utils.buildOrUpdateGroupConcat(
-    children,
-    graphLines,
-    this.containerId + '-group-0',
-    this.widthOffset,
-    this.heightOffset,
-    Draw.group
-  );
+  if(this.showGraphLines) {
+    children = Utils.buildOrUpdateGroupConcat(
+      children,
+      graphLines,
+      this.containerId + '-group-0',
+      this.widthOffset,
+      this.heightOffset,
+      Draw.group
+    );
+  }
   children = Utils.buildOrUpdateGroupConcat(
     children,
     columnLabelText,
