@@ -212,11 +212,17 @@ Utils.prototype.calculateRowPositions = function(labels, height, horizontal, str
   var size =  height / (labels.length - 1);
   labels.forEach(function(label, index, array) {
     var y;
+
+    // If not horizontal bar, span row positions
     if(!horizontal) {
       y = Math.round((size * index));
-    } else {
+    }
+
+    // If horizontal bar, center row positions
+    else {
       y = ((strokeWidth * index) * 2) + ((height/2) - ((strokeWidth * (labels.length - 1))));
     }
+    
     positions.push(y);
   }, this);
   return positions;
