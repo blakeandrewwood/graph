@@ -207,11 +207,16 @@ Utils.prototype.calculateColumnPositions = function(labels, width) {
   return positions;
 };
 
-Utils.prototype.calculateRowPositions = function(labels, height) {
+Utils.prototype.calculateRowPositions = function(labels, height, horizontal, strokeWidth) {
   var positions = [];
   var size =  height / (labels.length - 1);
   labels.forEach(function(label, index, array) {
-    var y = Math.round((size * index));
+    var y;
+    if(!horizontal) {
+      y = Math.round((size * index));
+    } else {
+      y = ((strokeWidth * index) * 2) + ((height/2) - ((strokeWidth * (labels.length - 1))));
+    }
     positions.push(y);
   }, this);
   return positions;

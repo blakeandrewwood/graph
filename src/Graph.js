@@ -34,6 +34,7 @@ function Graph(application) {
   // Pie
   this.percentages = [];
   // Options
+  this.strokeWidth = 16;
   this.colors = ['#2388F2', '#F65237', '#0DEFA5', '#9B7CF3'];
   this.horizontal = false;
   this.shadow = true;
@@ -206,7 +207,9 @@ Graph.prototype.barBuildSvg = function() {
 
   this.rowPositions = Utils.calculateRowPositions(
     rowLabels,
-    this.size.height
+    this.size.height,
+    this.horizontal,
+    this.strokeWidth
   );
   this.columnPositions = Utils.calculateColumnPositions(
     columnLabels,
