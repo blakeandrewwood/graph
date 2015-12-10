@@ -339,7 +339,8 @@ Render.prototype.barSetsBuildAttributes = function(containerId, i, j, k, index,
     fill: 'transparent',
     stroke: '#000',
     strokeWidth: strokeWidth,
-    strokeLinecap: 'round'
+    strokeLinecap: 'round',
+    pointerEvents: 'none'
   };
   var newSet = [];
   if(!horizontal) { 
