@@ -346,16 +346,48 @@ Render.prototype.barSetsBuildAttributes = function(containerId, i, j, k, index,
   if(!horizontal) { 
     shadowAttributes.transform = 'translate(' + shadowOffset + ', 0)';
     max = labels[0];
+
+    // Setup
     var x = (columnPositions[i] + (j * (strokeWidth + gutter))) - offset;
-    newSet.push({type: 'M', values: [x, Utils.calculateY(0, max, size.height)]});
-    newSet.push({type: '', values: [x, Utils.calculateY(point, max, size.height) + (strokeWidth / 2)]});
+    var y1 = Utils.calculateY(0, max, size.height);
+    var y2;
+
+    // Make sure point is above 0, else remove linecap to
+    // prevent line rendering
+    if(point > 0) {
+      y2 = Utils.calculateY(point, max, size.height + (strokeWidth / 2));
+    } else {
+      y2 = Utils.calculateY(0, max, size.height);
+      attributes.strokeLinecap = '';
+      shadowAttributes.strokeLinecap = '';
+    }
+
+    // Push
+    newSet.push({type: 'M', values: [x, y1]});
+    newSet.push({type:  '', values: [x, y2]});
   } 
   else {
     shadowAttributes.transform = 'translate(' + (-shadowOffset) + ', 0)';
     max = labels[labels.length - 1];
+
+    // Setup
     var y = (rowPositions[i] + (j * (strokeWidth + gutter))) - offset;
-    newSet.push({ type: 'M', values: [Utils.calculateX(0, max, size.width), y] });
-    newSet.push({ type: '', values: [Utils.calculateX(point, max, size.width) - (strokeWidth / 2), y] });
+    var x1 = Utils.calculateX(0, max, size.width);
+    var x2;
+
+    // Make sure point is above 0, else remove linecap to
+    // prevent line rendering
+    if(point > 0) {
+      x2 = Utils.calculateX(point, max, size.width) - (strokeWidth / 2);
+    } else {
+      x2 = Utils.calculateX(0, max, size.width);
+      attributes.strokeLinecap = '';
+      shadowAttributes.strokeLinecap = '';
+    }
+
+    // Push
+    newSet.push({ type: 'M', values: [x1, y] });
+    newSet.push({ type:  '', values: [x2, y] });
   }
   // Point
   attributes.dataPoint = point;
