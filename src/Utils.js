@@ -199,17 +199,24 @@ Utils.prototype.getMinMax = function(points) {
  */
 Utils.prototype.calculateColumnPositions = function(labels, width) {
   var positions = [];
-  var size =  width / (labels.length - 1);
-  labels.forEach(function(label, index, array) {
-    var x = Math.round((size * index));
+  if(labels.length > 1) {
+    var size = width / (labels.length - 1);
+    labels.forEach(function(label, index, array) {
+      var x = Math.round((size * index));
+      positions.push(x);
+    });
+  } 
+  else {
+    var size = width / 2;
+    var x = Math.round(size);
     positions.push(x);
-  });
+  }
   return positions;
 };
 
 Utils.prototype.calculateRowPositions = function(labels, height, horizontal, strokeWidth) {
   var positions = [];
-  var size =  height / (labels.length - 1);
+  var size = height / (labels.length - 1);
   labels.forEach(function(label, index, array) {
     var y;
 
