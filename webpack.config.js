@@ -18,7 +18,7 @@ module.exports = {
     }),
     new BrowserSyncPlugin({
       host: 'localhost',
-      port: 3000,
+      port: 3002,
       server: { baseDir: ['demo', 'build'] }
     })
   ]
