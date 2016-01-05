@@ -21,7 +21,6 @@ function Graph(application) {
     row: [],
     column: [],
     series: [],
-    increment: 10,
     prefix: '',
     suffix: ''
   }
@@ -55,10 +54,7 @@ Graph.prototype.makeLineBarCalculations = function() {
   this.widthOffset = this.padding.x - 20;
   this.heightOffset = 20;
   this.range = Utils.getMinMax(this.points);
-  this.labels.row = Utils.getPointIncrements(
-    this.range.max,
-    this.labels.increment
-  );
+  this.labels.row = Utils.getPointIncrements(this.range.max);
 };
 
 Graph.prototype.makePieDoughnutCalculations = function() {
@@ -559,10 +555,6 @@ Graph.prototype.setSeriesLabels = function(labels) {
 
 Graph.prototype.setPoints = function(points) {
   this.points = points;
-};
-
-Graph.prototype.setIncrement = function(increment) {
-  this.labels.increment = increment;
 };
 
 Graph.prototype.setHorizontal = function(bool) {
