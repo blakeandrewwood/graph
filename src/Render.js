@@ -355,7 +355,15 @@ Render.prototype.barSetsBuildAttributes = function(containerId, i, j, k, index,
     // Make sure point is above 0, else remove linecap to
     // prevent line rendering
     if(point > 0) {
-      y2 = Utils.calculateY(point, max, size.height + (strokeWidth / 2));
+
+      // If greater than 10% of max, reduce the height for round linecap
+      // top to meet exact point
+      if((point / max) > 0.1) {
+        y2 = Utils.calculateY(point, max, size.height) + (strokeWidth / 2);
+      } else {
+        y2 = Utils.calculateY(point, max, size.height);
+      }
+
     } else {
       y2 = Utils.calculateY(0, max, size.height);
       attributes.strokeLinecap = '';
