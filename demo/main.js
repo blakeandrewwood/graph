@@ -1,18 +1,17 @@
 var colors = ['#2388F2', '#F65237', '#0DEFA5', '#9B7CF3'];
 var seriesLabels = ['scan', 'delete', 'upload'];
 
-/*
 var labelsLine = ['1 dec', '2 dec', '3 dec', '4 dec', '5 dec', '6 dec', '7 dec'];
 var pointsLine = [
   [2000, 5500, 4500, 5400, 3600, 4400, 4000],
   [1000, 3200, 1600, 3000, 4400, 3800, 6000],
-  [600, 2100, 1500, 3600, 2800, 6000, 7000]
+  [600, 2100, 1500, 7000, 2800, 6000, 7000]
 ];
 
 var graphLine = new Graph('GraphLine');
 graphLine.setContainer('graph-line');
 graphLine.setType('line');
-graphLine.setSize(350, 150);
+graphLine.setSize(500, 200);
 graphLine.setFontFamily('Open Sans');
 graphLine.setFontSize(12);
 graphLine.setLabels(labelsLine);
@@ -37,7 +36,6 @@ graphBar.setShadow(false);
 graphBar.setGraphLines(false);
 graphBar.setPadding(60, 80);
 graphBar.render();
-*/
 
 var labelsBarMulti = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
 var pointsBarMulti = [
@@ -60,7 +58,6 @@ graphBarMulti.setGraphLines(true);
 graphBarMulti.setPadding(80, 80);
 graphBarMulti.render();
 
-/*
 var labelsBarMultiStack = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
 var pointsBarMultiStack = [
   [[500, 1000, 1300]],
@@ -153,7 +150,6 @@ graphDial.setLabels(labelsDial);
 graphDial.setPoints(pointsDial);
 graphDial.setColors(['#1CB8F1', '#08ECEF', '#6CF1B2', '#2388F2']);
 graphDial.render();
-*/
 
 /*
 window.addEventListener('resize', handleResize);

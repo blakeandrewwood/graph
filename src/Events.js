@@ -35,11 +35,11 @@ Events.prototype.onMouseOverLine = function(evt, application, i, rowMax) {
   var svgOffset = Utils.getElementOffset(svg.svg);
   // Make calculations
   var padding = application.padding;
-  var x = evt.clientX - containerOffset.left;
-  var y = evt.clientY - containerOffset.top;
+  var x = (evt.clientX - (svgOffset.left - 20));
+  var y = (evt.clientY - (svgOffset.top - 20));
   // Calculate difference
-  var nx = (evt.clientX - svgOffset.left) - (padding.x/2);
-  var ny = (evt.clientY - svgOffset.top) - (padding.y/2); 
+  var nx = (evt.clientX - svgOffset.left) - application.widthOffset;
+  var ny = (evt.clientY - svgOffset.top) - application.heightOffset; 
   var d = application.columnPositions.length - 1;
   // Percent between two nodes
   var p = nx/(application.size.width/d);
@@ -47,7 +47,6 @@ Events.prototype.onMouseOverLine = function(evt, application, i, rowMax) {
   var index = Math.floor(p);
   var nums = [application.points[i][index], application.points[i][index + 1]];
   var number = Math.floor(((nums[1] - nums[0]) * (p % 1)) + nums[0]);
-
   // Build text
   var text = this.buildTextLines(application.labels, number, i);
   this.updateTooltip(svg, x, y, color, text);
