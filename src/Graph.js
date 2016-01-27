@@ -435,7 +435,7 @@ Graph.prototype.dialBuildSvg = function() {
   */
   var centerLabelText = Render.centerLabelText(
     this.containerId,
-    (this.percentages[0] * 100),
+    Math.round(this.percentages[0] * 100) + '%',
     this.font,
     this.size,
     '#fff'

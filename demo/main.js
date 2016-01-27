@@ -139,7 +139,7 @@ graphDoughnut.setColors(['#1CB8F1', '#08ECEF', '#6CF1B2', '#2388F2']);
 graphDoughnut.render();
 
 var labelsDial = [];
-var pointsDial = [[75, 100]];
+var pointsDial = [[5146, 11146]];
 var graphDial = new Graph('GraphDial');
 graphDial.setContainer('graph-dial');
 graphDial.setType('dial');
