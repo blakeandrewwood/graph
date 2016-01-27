@@ -149,8 +149,8 @@ Utils.prototype.flattenPoints = function(points) {
 };
 
 Utils.prototype.getPointIncrements = function(yMax) {
-  var increment = Math.floor(yMax / 5);
-  var numItems = Math.ceil(yMax / increment) + 1;
+  var increment = Math.floor(yMax / 4);
+  var numItems = 5;
   var items = [];
   for(var i = 0; i < numItems; i++) {
     items.push(i * increment);

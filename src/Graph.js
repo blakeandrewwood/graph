@@ -55,6 +55,7 @@ Graph.prototype.makeLineBarCalculations = function() {
   this.heightOffset = 20;
   this.range = Utils.getMinMax(this.points);
   this.labels.row = Utils.getPointIncrements(this.range.max);
+  console.log(this.labels.row);
 };
 
 Graph.prototype.makePieDoughnutCalculations = function() {

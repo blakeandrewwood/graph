@@ -38,6 +38,9 @@ Render.prototype.columnLabelText = function(containerId, positions, labels, suff
       var text = document.createTextNode(attributes.dataText);
       element.appendChild(text);
       elements.push(element);
+    } else {
+      var text = document.createTextNode(attributes.dataText);
+      element.replaceChild(text, element.childNodes[0]);
     }
   });
 
@@ -75,6 +78,9 @@ Render.prototype.rowLabelText = function(containerId, positions, labels, suffix,
       var text = document.createTextNode(attributes.dataText);
       element.appendChild(text);
       elements.push(element);
+    } else {
+      var text = document.createTextNode(attributes.dataText);
+      element.replaceChild(text, element.childNodes[0]);
     }
   });
 

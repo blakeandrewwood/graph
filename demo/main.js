@@ -23,6 +23,25 @@ graphLine.setGraphLines(true);
 graphLine.setPadding(80, 80);
 graphLine.render();
 
+var index = 8;
+setInterval(function() {
+
+  labelsLine = labelsLine.slice(1, labelsLine.length);
+  labelsLine.push(index + ' dec');
+  graphLine.setLabels(labelsLine);
+
+  pointsLine[0] = pointsLine[0].slice(1, pointsLine[0].length);
+  pointsLine[0].push(Math.random() * (4000 - 100) + 100);
+  pointsLine[1] = pointsLine[1].slice(1, pointsLine[1].length);
+  pointsLine[1].push(Math.random() * (4000 - 1000) + 1000);
+  pointsLine[2] = pointsLine[2].slice(1, pointsLine[2].length);
+  pointsLine[2].push(Math.random() * (24000 - 1000) + 1000);
+
+  graphLine.render();
+  index++;
+}, 1000);
+
+/*
 var labelsBar = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 var pointsBar = [[1], [2], [3], [4], [3], [6], [4], [3], [5], [6], [4], [3]];
 var graphBar = new Graph('GraphBar');
@@ -150,6 +169,7 @@ graphDial.setLabels(labelsDial);
 graphDial.setPoints(pointsDial);
 graphDial.setColors(['#1CB8F1', '#08ECEF', '#6CF1B2', '#2388F2']);
 graphDial.render();
+*/
 
 /*
 window.addEventListener('resize', handleResize);
