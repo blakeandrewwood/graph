@@ -1,593 +1,224 @@
-"use strict";
-var Utils = require('./Utils');
-var Draw = require('./Draw');
-var Render = require('./Render');
-var Events = require('./Events');
+'use strict';
+var ErrorHandling = require('./ErrorHandling'); 
+var DOM = require('./DOM'); 
+var cMath = require('./Math');
+var Bar = require('./render/Bar');
+var Line = require('./render/Line');
+var Pie = require('./render/Pie');
+var Doughnut = require('./render/Doughnut');
 
-var Application = function(application) {
-  window[application] = new Graph(application);
-  return window[application];
-};
+function Graph(config) {
 
-function Graph(application) {
-  this.application = application;
-  // Parameters
-  this.type = 'line';
-  this.size = { width: 400, height: 400 };
-  this.padding = { x: 100, y: 120 };
-  this.range = { min: 0, max: 0 };
-  this.points = [];
-  this.labels = {
-    row: [],
-    column: [],
-    series: [],
-    prefix: '',
-    suffix: ''
+  ErrorHandling.validateConfig(config);
+
+  // Settings
+  this.settings = {
+    container: null,
+    type: null,
+    colors: [],
+    orientation: null,
+    strokeWidth: 4
+  };
+
+  // Data
+  this.data = {
+    axisLabels: {
+      x: [],
+      y: []
+    },
+    seriesLabels: [],
+    series: []
   }
-  this.rowPositions = [];
-  this.columnPositions = [];
-  this.font = {
-    family: 'monospace',
-    size: 12
-  }
-  // Pie
-  this.percentages = [];
-  // Options
-  this.strokeWidth = 16;
-  this.colors = ['#2388F2', '#F65237', '#0DEFA5', '#9B7CF3'];
-  this.horizontal = false;
-  this.shadow = true;
-  this.prefix = '';
-  this.containerId;
-  this.container;
-  this.showGraphLines = true;
-  this.svg;
 
-  this.Events = new Events();
+  // Positions
+  this.positions = {
+    size: {
+      x: 0,
+      y: 0
+    },
+    padding: {
+      x: 0,
+      y: 0
+    },
+    axis: {
+      x: [],
+      y: []
+    },
+    seriesLabels: [],
+    series: []
+  };
+
+  // Dom
+  this.DOM = new DOM();
+
+  //
+  //
+  this.render(config);
 }
 
-/**
- * Calculation 
- *
- */
-Graph.prototype.makeLineBarCalculations = function() {
-  this.widthOffset = this.padding.x - 20;
-  this.heightOffset = 20;
-  this.range = Utils.getMinMax(this.points);
-  this.labels.row = Utils.getPointIncrements(this.range.max);
-  console.log(this.labels.row);
-};
+Graph.prototype.setup = function(config) {
 
-Graph.prototype.makePieDoughnutCalculations = function() {
-  this.range = Utils.getMinMax(this.points);
-  this.percentages = Utils.getSetPercentages(this.points);
-  this.degrees = Utils.getDegrees(this.percentages, 360);
-};
+  //
+  //
+  if(config.container)
+    this.settings.container = config.container;
 
-Graph.prototype.makeDialCalculations = function() {
-  this.range = Utils.getMinMax(this.points);
-  this.percentages = Utils.getPercentages(this.points);
-  this.degrees = Utils.getDegrees(this.percentages, 260);
-};
+  //
+  //
+  if(config.type)
+    this.settings.type = config.type;
+  if(config.colors)
+    this.settings.colors = config.colors;
+  if(config.orientation)
+    this.settings.orientation = config.orientation;
 
-/**
- * Build
- *
- */
-Graph.prototype.lineBuildSvg = function() {
-  // Calculation
-  this.makeLineBarCalculations();
-  this.rowPositions = Utils.calculateRowPositions(
-    this.labels.row,
-    this.size.height
-  );
-  this.columnPositions = Utils.calculateColumnPositions(
-    this.labels.column,
-    this.size.width
-  );
-
-  // Render
-  var graphLines = Render.graphLines(
-    this.containerId,
-    this.columnPositions,
-    this.rowPositions,
-    this.size,
-    this.showGraphLines
-  );
-  var columnLabelText = Render.columnLabelText(
-    this.containerId,
-    this.columnPositions,
-    this.labels.column,
-    '',
-    '',
-    this.font,
-    this.size
-  );
-  var rowLabelText = Render.rowLabelText(
-    this.containerId,
-    this.rowPositions,
-    this.labels.row,
-    this.labels.suffix,
-    this.labels.prefix,
-    this.font,
-    this.size
-  );
-  var seriesLabelText = Render.seriesLabelText(
-    this.containerId,
-    this.labels.series,
-    this.font,
-    this.size,
-    this.colors
-  );
-  var sets = Render.lineSets(
-    this,
-    this.containerId,
-    this.columnPositions,
-    this.labels.row[0],
-    this.points,
-    this.range,
-    this.size,
-    this.colors
-  );
-
-  // Group
-  var children = [];
-
-  children = Utils.buildOrUpdateGroupConcat(
-    children,
-    graphLines,
-    this.containerId + '-group-0',
-    this.widthOffset,
-    this.heightOffset,
-    Draw.group
-  );
-  children = Utils.buildOrUpdateGroupConcat(
-    children,
-    columnLabelText,
-    this.containerId + '-group-1',
-    this.widthOffset,
-    this.heightOffset,
-    Draw.group
-  );
-  children = Utils.buildOrUpdateGroupConcat(
-    children,
-    rowLabelText,
-    this.containerId + '-group-2',
-    0,
-    this.heightOffset,
-    Draw.group
-  );
-  children = Utils.buildOrUpdateGroupConcat(
-    children,
-    seriesLabelText,
-    this.containerId + '-group-3',
-    this.padding.x,
-    this.padding.y,
-    Draw.group
-  );
-  children = Utils.buildOrUpdateGroupConcat(
-    children,
-    sets,
-    this.containerId + '-group-4',
-    this.widthOffset,
-    this.heightOffset,
-    Draw.group
-  );
-
-  // Return
-  this.svg = Render.svg(
-    this.containerId,
-    this.container,
-    this.font.size,
-    this.size,
-    this.padding
-  );
-
-  // Add children
-  if(children.length) {
-    Utils.appendChildren(this.svg, children);
-  }
-};
-
-Graph.prototype.barBuildSvg = function() {
-  // Calculation
-  this.makeLineBarCalculations();
-  var columnLabels = this.labels.column;
-  var rowLabels = this.labels.row;
-
-  // Calculation Vertical
-  if(this.horizontal) {
-    columnLabels = this.labels.row;
-    rowLabels = this.labels.column;
-    this.labels.row.reverse();
+  //
+  //
+  if(config.padding){
+    if(config.padding.x)
+      this.positions.padding.x = config.padding.x;
+    if(config.padding.y)
+      this.positions.padding.y = config.padding.y;
   }
 
-  this.rowPositions = Utils.calculateRowPositions(
-    rowLabels,
-    this.size.height,
-    this.horizontal,
-    this.strokeWidth
-  );
-  this.columnPositions = Utils.calculateColumnPositions(
-    columnLabels,
-    this.size.width
-  );
+  //
+  //
+  if(config.width)
+    this.positions.size.x = config.width;
+  if(config.height)
+    this.positions.size.y = config.height;
 
-  // Render
-  var graphLines = Render.graphLines(
-    this.containerId,
-    this.columnPositions,
-    this.rowPositions,
-    this.size,
-    this.showGraphLines
-  );
-  var columnLabelText = Render.columnLabelText(
-    this.containerId,
-    this.columnPositions,
-    columnLabels,
-    '',
-    '',
-    this.font,
-    this.size
-  );
-  var rowLabelText = Render.rowLabelText(
-    this.containerId,
-    this.rowPositions,
-    rowLabels,
-    this.labels.suffix,
-    this.labels.prefix,
-    this.font,
-    this.size
-  );
-  var seriesLabelText = Render.seriesLabelText(
-    this.containerId,
-    this.labels.series,
-    this.font,
-    this.size,
-    this.colors
-  );
-  var sets = Render.barSets(
-    this,
-    this.containerId,
-    this.columnPositions,
-    this.rowPositions,
-    this.labels.row,
-    this.points,
-    this.size,
-    this.horizontal,
-    this.colors,
-    this.shadow
-  );
-
-  // Group
-  var children = [];
-  children = Utils.buildOrUpdateGroupConcat(
-    children,
-    graphLines,
-    this.containerId + '-group-0',
-    this.widthOffset,
-    this.heightOffset,
-    Draw.group
-  );
-  children = Utils.buildOrUpdateGroupConcat(
-    children,
-    columnLabelText,
-    this.containerId + '-group-1',
-    this.widthOffset,
-    this.heightOffset,
-    Draw.group
-  );
-  children = Utils.buildOrUpdateGroupConcat(
-    children,
-    rowLabelText,
-    this.containerId + '-group-2',
-    0,
-    this.heightOffset,
-    Draw.group
-  );
-  children = Utils.buildOrUpdateGroupConcat(
-    children,
-    seriesLabelText,
-    this.containerId + '-group-3',
-    this.padding.x,
-    this.padding.y,
-    Draw.group
-  );
-  children = Utils.buildOrUpdateGroupConcat(
-    children,
-    sets,
-    this.containerId + '-group-4',
-    this.widthOffset,
-    this.heightOffset,
-    Draw.group
-  );
-
-  // Return
-  this.svg = Render.svg(
-    this.containerId,
-    this.container,
-    this.font.size,
-    this.size,
-    this.padding
-  );
-
-  // Add children
-  if(children.length) {
-    Utils.appendChildren(this.svg, children);
+  //
+  // Set series 
+  if(config.series) {
+    this.data.series = config.series;
   }
-};
 
-Graph.prototype.pieBuildSvg = function() {
-  // Calculation
-  this.makePieDoughnutCalculations();
+  // ---Calculate
+  // Get min max values
+  var minMax = Math.getMinMax(this.data.series);
+  this.data.min = minMax.min;
+  this.data.max = minMax.max;
 
-  // Render
-  var bottomLeftLabelText = Render.bottomLeftLabelText(
-    this.containerId,
-    this.labels.series,
-    this.font,
-    this.size,
-    this.colors
-  );
-  var sets = Render.pieSets(
-    this,
-    this.containerId,
-    this.degrees,
-    this.size,
-    this.colors,
-    this.shadow
-  );
+  // ---Calculate
+  // Set range
+  this.data.range = Math.getRange({
+    min: this.data.min,
+    max: this.data.max
+  }); 
 
-  // Group
-  var children = [];
-  children = Utils.buildOrUpdateGroupConcat(
-    children,
-    bottomLeftLabelText,
-    this.containerId + '-group-0',
-    0,
-    this.padding.y,
-    Draw.group
-  );
-  children = Utils.buildOrUpdateGroupConcat(
-    children,
-    sets,
-    this.containerId + '-group-1',
-    this.padding.x/2,
-    this.padding.y/2,
-    Draw.group
-  );
+  //
+  // Set orientation settings 
+  if(config.axisLabels) {
 
-  // Return
-  this.svg = Render.svg(
-    this.containerId,
-    this.container,
-    this.font.size,
-    this.size,
-    this.padding
-  );
-
-  // Add children
-  if(children.length) {
-    Utils.appendChildren(this.svg, children);
+    // Set axisLabels to appropriate axis 
+    if(this.settings.type === 'bar' && this.settings.orientation == 'horizontal') {
+      this.data.axisLabels.x = this.data.range;
+      this.data.axisLabels.y = config.axisLabels;
+    } else {
+      this.data.axisLabels.x = config.axisLabels;
+      this.data.axisLabels.y = this.data.range;
+    }
+    
   }
-};
 
-Graph.prototype.doughnutBuildSvg = function() {
-  // Calculation
-  this.makePieDoughnutCalculations();
+  // ---Calculate
+  // Calculate axis positions
+  this.positions.axis.x = Math.calculateAxisXPositions({
+    labels: this.data.axisLabels.x,
+    width: this.positions.size.x
+  });
+  this.positions.axis.y = Math.calculateAxisYPositions({
+    labels: this.data.axisLabels.y,
+    height: this.positions.size.y
+  });
 
-  // Render
-  var bottomLeftLabelText = Render.bottomLeftLabelText(
-    this.containerId,
-    this.labels.series,
-    this.font,
-    this.size,
-    this.colors
-  );
-  var sets = Render.doughnutSets(
-    this,
-    this.containerId,
-    this.degrees,
-    this.size,
-    this.colors,
-    this.shadow
-  );
+  // ---Calculate
+  // Calculate series positions 
+  this.positions.series = [];
 
-  // Group
-  var children = [];
-  children = Utils.buildOrUpdateGroupConcat(
-    children,
-    bottomLeftLabelText,
-    this.containerId + '-group-0',
-    0,
-    this.padding.y,
-    Draw.group
-  );
-  children = Utils.buildOrUpdateGroupConcat(
-    children,
-    sets,
-    this.containerId + '-group-1',
-    this.padding.x/2,
-    this.padding.y/2,
-    Draw.group
-  );
-
-  // Return
-  this.svg = Render.svg(
-    this.containerId,
-    this.container,
-    this.font.size,
-    this.size,
-    this.padding
-  );
-
-  // Add children
-  if(children.length) {
-    Utils.appendChildren(this.svg, children);
-  }
-};
-
-Graph.prototype.dialBuildSvg = function() {
-  // Calculation
-  this.makeDialCalculations();
-
-  // Render
   /*
+  this.positions.series = Bar.calculate({
+    settings: this.settings,
+    data: this.data,
+    positions: this.positions
+  });
+
+  this.positions.series = Line.calculate({
+    settings: this.settings,
+    data: this.data,
+    positions: this.positions
+  });
+
+  this.positions.series = Pie.calculate({
+    settings: this.settings,
+    data: this.data,
+    positions: this.positions
+  });
   */
-  var centerLabelText = Render.centerLabelText(
-    this.containerId,
-    Math.round(this.percentages[0] * 100) + '%',
-    this.font,
-    this.size,
-    '#fff'
-  );
-  var sets = Render.dialSets(
-    this.containerId,
-    this.degrees,
-    this.percentages,
-    this.size,
-    this.colors,
-    this.shadow
-  );
-  var bottomCenterLabelText = Render.bottomCenterLabelText(
-    this.containerId,
-    this.points[0][0] + '/' + this.points[0][1],
-    this.font,
-    this.size,
-    '#000'
-  );
 
-  // Group
-  var children = [];
-  children = Utils.buildOrUpdateGroupConcat(
-    children,
-    sets,
-    this.containerId + '-group-0',
-    this.padding.x/2,
-    this.padding.y/2,
-    Draw.group
-  );
-  children = Utils.buildOrUpdateGroupConcat(
-    children,
-    centerLabelText,
-    this.containerId + '-group-1',
-    this.padding.x/2,
-    this.padding.y/2,
-    Draw.group
-  );
-  children = Utils.buildOrUpdateGroupConcat(
-    children,
-    bottomCenterLabelText,
-    this.containerId + '-group-2',
-    this.padding.x/2,
-    this.padding.y,
-    Draw.group
-  );
+  this.positions.series = Doughnut.calculate({
+    settings: this.settings,
+    data: this.data,
+    positions: this.positions
+  });
 
-  // Return
-  this.svg = Render.svg(
-    this.containerId,
-    this.container,
-    this.font.size,
-    this.size,
-    this.padding
-  );
+  //
+  //
+  if(config.seriesLabels)
+    this.data.seriesLabels = config.seriesLabels;
 
-  // Add children
-  if(children.length) {
-    Utils.appendChildren(this.svg, children);
-  }
 };
 
-/**
- * Main Render 
- *
- */
-Graph.prototype.render = function() {
-  switch(this.type) {
-    case 'line':
-      this.lineBuildSvg();
-      break;
-    case 'bar':
-      this.barBuildSvg();
-      break;
-    case 'pie':
-      this.pieBuildSvg();
-      break;
-    case 'doughnut':
-      this.doughnutBuildSvg();
-      break;
-    case 'dial':
-      this.dialBuildSvg();
-      break;
-  }
-  Utils.appendChild(this.container, this.svg);
+Graph.prototype.render = function(config) {
+  this.setup(config);
+  this.DOM.createSvg({
+    width: this.positions.size.x + this.positions.padding.x,
+    height: this.positions.size.y + this.positions.padding.y 
+  });
+
+  /*
+  this.DOM.createGrid(this.positions);
+  this.DOM.createLabels({
+    positions: this.positions,
+    data: this.data
+  });
+  */
+
+  /*
+  this.DOM.createBars({
+    positions: this.positions,
+    data: this.data,
+    settings: this.settings
+  });
+
+  this.DOM.createLine({
+    positions: this.positions,
+    data: this.data,
+    settings: this.settings
+  });
+
+  this.DOM.createPie({
+    positions: this.positions,
+    data: this.data,
+    settings: this.settings
+  });
+  */
+
+  this.DOM.createDoughnut({
+    positions: this.positions,
+    data: this.data,
+    settings: this.settings
+  });
+
+  this.DOM.render({
+    container: this.settings.container,
+    positions: this.positions
+  });
 };
 
-/**
- * Setters
- *
- */
-Graph.prototype.setContainer = function(container) {
-  this.containerId = container; 
-  this.container = document.getElementById(container);
+Graph.prototype.update = function(config) {
+  this.render(config);
 };
 
-Graph.prototype.setType = function(type) {
-  this.type = type;
-};
-
-Graph.prototype.setSize = function(width, height) {
-  this.size.width = width;
-  this.size.height = height;
-};
-
-Graph.prototype.setPadding = function(x, y) {
-  this.padding = { x: x, y: y };
-};
-
-Graph.prototype.setLabels = function(labels) {
-  this.labels.column = labels;
-};
-
-Graph.prototype.setSeriesLabels = function(labels) {
-  this.labels.series = labels;
-};
-
-Graph.prototype.setPoints = function(points) {
-  this.points = points;
-};
-
-Graph.prototype.setHorizontal = function(bool) {
-  this.horizontal = bool;
-};
-
-Graph.prototype.setShadow = function(bool) {
-  this.shadow = bool;
-};
-
-Graph.prototype.setColors= function(colors) {
-  this.colors = colors;
-};
-
-Graph.prototype.setPrefix = function(prefix) {
-  this.labels.prefix = prefix;
-};
-
-Graph.prototype.setSuffix = function(suffix) {
-  this.labels.suffix = suffix;
-};
-
-Graph.prototype.setFontFamily = function(fontFamily) {
-  this.font.family = fontFamily;
-};
-
-Graph.prototype.setFontSize = function(fontSize) {
-  this.font.size = fontSize;
-};
-
-Graph.prototype.setGraphLines = function(bool) {
-  this.showGraphLines = bool;
-};
-
-module.exports = Application;
+module.exports = Graph;
