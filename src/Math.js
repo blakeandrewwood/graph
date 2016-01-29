@@ -28,7 +28,20 @@ Math.calculateAxisYPositions = function(config) {
   if(config.labels.length > 1) {
     var size = config.height / (config.labels.length - 1);
     config.labels.forEach(function(label, index) {
-      positions.push(Math.round((size * index)));
+      
+      //
+      //
+      var y;
+      // If horizontal bar, center row positions
+      if(config.type === 'bar' && config.orientation === 'horizontal') {
+        y = ((config.strokeWidth * index) * 2.5) + (config.strokeWidth * (config.labels.length - 1));
+      }
+      // If not horizontal bar, span row positions
+      else {
+        y = Math.round((size * index));
+      }
+      positions.push(y);
+
     });
   } 
   else {
@@ -100,6 +113,10 @@ Array.min = function(array) {
 
 Math.sortByPointAsc = function(a, b) {
   return a.dataPoint-b.dataPoint;
+};
+
+Math.sortByPointDesc = function(a, b) {
+  return b.dataPoint-a.dataPoint;
 };
 
 Math.calculateAngleX = function(rx, radius, angle) {

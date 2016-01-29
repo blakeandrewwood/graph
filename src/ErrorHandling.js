@@ -31,7 +31,7 @@ ErrorHandling.validateConfig = function(config){
     }
     case 'bar': {
       // Check if orientaion is set
-      switch(config.orientaion) {
+      switch(config.orientation) {
         case 'vertical':
         case 'horizontal':
           break;

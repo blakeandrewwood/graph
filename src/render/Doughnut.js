@@ -2,6 +2,9 @@
 var Pie = require('./Pie');
 var Math = require('../Math');
 var Utils = require('../Utils');
+var Draw = require('../Draw'); 
+var Render = require('./Render'); 
+var Defs = require('./Defs'); 
 
 function Doughnut() {}
 
@@ -50,8 +53,36 @@ Doughnut.createShape = function(config) {
 
 Doughnut.create = function(config) {
   var doughnutAttributes = this.createShape(config);
-  var pieAttributes = Pie.create(config);
-  return [doughnutAttributes];
+  var defsAttributes = [Defs.createClipPath(doughnutAttributes)];
+
+  //
+  // Container
+  var container = {
+    defs: [],
+    elements: []
+  };
+
+  //
+  // Elements 
+  Render.renderClipPath(defsAttributes, container.defs, Draw.element);
+  var pieContainer = Pie.create(config);
+  var doughnut = Draw.element('g', {
+    clipPath: 'url(#clip)'
+  });
+  Utils.appendChildren(doughnut, pieContainer.elements);
+  container.defs = container.defs.concat(pieContainer.defs);
+
+  // Group
+  var group = Draw.element('g', {
+    filter: 'url(#shadow)'
+  });
+  Utils.appendChild(group, doughnut);
+
+  container.elements.push(group);
+
+  //
+  // Return
+  return container;
 };
 
 module.exports = Doughnut;

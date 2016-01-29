@@ -1,4 +1,6 @@
 'use strict';
+var Draw = require('../Draw'); 
+var Render = require('./Render'); 
 
 function Grid() {}
 
@@ -34,12 +36,29 @@ Grid.createY = function(positions) {
   return lines;
 };
 
-Grid.create = function(positions) {
+Grid.create = function(config) {
   var attributes = {
-    x: this.createX(positions),
-    y: this.createY(positions)
+    x: this.createX(config.positions),
+    y: this.createY(config.positions)
   }
-  return attributes;
+
+  //
+  // Container
+  var container = {
+    defs: [],
+    elements: []
+  };
+
+  //
+  // Elements
+  var lines = [];
+  Render.renderElements(attributes.x, lines, 'line', Draw.element);
+  Render.renderElements(attributes.y, lines, 'line', Draw.element);
+  container.elements = lines;
+
+  //
+  // Return
+  return container;
 };
 
 module.exports = Grid;

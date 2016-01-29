@@ -1,6 +1,8 @@
 'use strict';
 var Math = require('../Math');
 var Utils = require('../Utils');
+var Draw = require('../Draw'); 
+var Render = require('./Render'); 
 
 function Line() {}
 
@@ -38,13 +40,33 @@ Line.create = function(config) {
     var attribute = {
       d: d,
       stroke: color,
-      fill: 'transparent',
+      fill: 'none',
       strokeWidth: config.settings.strokeWidth,
       strokeLinecap: 'round',
+      dataSeriesIndex: i,
+      dataColor: color
     };
     attributes.push(attribute);
   }, this);
-  return attributes;
+
+  //
+  // Container
+  var container = {
+    defs: [],
+    elements: []
+  };
+
+  //
+  // Elements
+  var lines = [];
+  Render.renderElements(attributes, lines, 'path', Draw.element, config.EventEmitter);
+  var group = Draw.element('g', {});
+  Utils.appendChildren(group, lines);
+  container.elements.push(group);
+
+  //
+  // Return
+  return container;
 };
 
 module.exports = Line;

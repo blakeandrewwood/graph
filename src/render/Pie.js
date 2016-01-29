@@ -1,6 +1,9 @@
 'use strict';
 var Math = require('../Math');
 var Utils = require('../Utils');
+var Draw = require('../Draw'); 
+var Render = require('./Render'); 
+var Defs = require('./Defs'); 
 
 function Pie() {}
 
@@ -11,11 +14,8 @@ Pie.calculate = function(config) {
   return degrees;
 };
 
-Pie.createSliceAttribute = function() {
-};
-
-Pie.create = function(config) {
-  var slicesAttributes = [];
+Pie.createSliceAttributes = function(config) {
+  var slicesAttributes = []
   var center = {
     x: config.positions.size.x/2,
     y: config.positions.size.y/2
@@ -25,7 +25,9 @@ Pie.create = function(config) {
   var colors = config.settings.colors;
   config.positions.series.forEach(function(set, i) {
     var attributes = {
-      fill: colors[i]
+      fill: colors[i],
+      dataSeriesIndex: i,
+      dataColor: colors[i]
     };
     var sliceOffset = ((i > 0) ? lastEndAngle : 0);
     var rotation = -90 + sliceOffset;
@@ -58,6 +60,35 @@ Pie.create = function(config) {
     slicesAttributes.push(attributes);
   });
   return slicesAttributes;
+};
+
+Pie.create = function(config) {
+  var slicesAttributes = this.createSliceAttributes(config);
+
+  //
+  // Container
+  var container = {
+    defs: [],
+    elements: []
+  };
+
+  //
+  // Shadow
+  container.defs = Defs.createShadow();
+
+  //
+  // Elements
+  var pie = Draw.element('g', {
+    filter: 'url(#shadow)'
+  });
+  var slices = [];
+  Render.renderElements(slicesAttributes, slices, 'path', Draw.element, config.EventEmitter);
+  Utils.appendChildren(pie, slices);
+  container.elements.push(pie);
+
+  //
+  // Return
+  return container;
 };
 
 module.exports = Pie;

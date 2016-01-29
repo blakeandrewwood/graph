@@ -6,6 +6,8 @@ var Bar = require('./render/Bar');
 var Line = require('./render/Line');
 var Pie = require('./render/Pie');
 var Doughnut = require('./render/Doughnut');
+var Dial = require('./render/Dial');
+var EventEmitter = require('./EventEmitter'); 
 
 function Graph(config) {
 
@@ -17,7 +19,10 @@ function Graph(config) {
     type: null,
     colors: [],
     orientation: null,
-    strokeWidth: 4
+    strokeWidth: 5, 
+    fontSize: 12,
+    fontFamily: 'Open Sans',
+    shadow: false 
   };
 
   // Data
@@ -48,6 +53,9 @@ function Graph(config) {
     series: []
   };
 
+  // EventEmitter
+  this.EventEmitter = new EventEmitter(this);
+
   // Dom
   this.DOM = new DOM();
 
@@ -62,37 +70,32 @@ Graph.prototype.setup = function(config) {
   //
   if(config.container)
     this.settings.container = config.container;
-
-  //
-  //
   if(config.type)
     this.settings.type = config.type;
   if(config.colors)
     this.settings.colors = config.colors;
+  if(config.shadow)
+    this.settings.shadow = config.shadow;
   if(config.orientation)
     this.settings.orientation = config.orientation;
-
-  //
-  //
-  if(config.padding){
+  if(config.fontFamily)
+    this.settings.fontFamily = config.fontFamily;
+  if(config.fontSize)
+    this.settings.fontSize = config.fontSize;
+  if(config.strokeWidth)
+    this.settings.strokeWidth = config.strokeWidth;
+  if(config.padding) {
     if(config.padding.x)
       this.positions.padding.x = config.padding.x;
     if(config.padding.y)
       this.positions.padding.y = config.padding.y;
   }
-
-  //
-  //
   if(config.width)
     this.positions.size.x = config.width;
   if(config.height)
     this.positions.size.y = config.height;
-
-  //
-  // Set series 
-  if(config.series) {
+  if(config.series)
     this.data.series = config.series;
-  }
 
   // ---Calculate
   // Get min max values
@@ -108,60 +111,81 @@ Graph.prototype.setup = function(config) {
   }); 
 
   //
-  // Set orientation settings 
-  if(config.axisLabels) {
-
-    // Set axisLabels to appropriate axis 
-    if(this.settings.type === 'bar' && this.settings.orientation == 'horizontal') {
-      this.data.axisLabels.x = this.data.range;
-      this.data.axisLabels.y = config.axisLabels;
-    } else {
-      this.data.axisLabels.x = config.axisLabels;
-      this.data.axisLabels.y = this.data.range;
-    }
-    
+  // Set axisLabels to appropriate axis 
+  if(this.settings.type === 'bar' && this.settings.orientation === 'horizontal') {
+    this.data.axisLabels.x = this.data.range;
+    this.data.axisLabels.y = config.axisLabels;
+  } else {
+    this.data.axisLabels.x = config.axisLabels;
+    this.data.axisLabels.y = this.data.range;
+    this.data.axisLabels.y.reverse();
   }
 
   // ---Calculate
   // Calculate axis positions
-  this.positions.axis.x = Math.calculateAxisXPositions({
-    labels: this.data.axisLabels.x,
-    width: this.positions.size.x
-  });
-  this.positions.axis.y = Math.calculateAxisYPositions({
-    labels: this.data.axisLabels.y,
-    height: this.positions.size.y
-  });
+  if(this.settings.type === 'bar' || this.settings.type === 'line') {
+
+    this.positions.axis.x = Math.calculateAxisXPositions({
+      labels: this.data.axisLabels.x,
+      width: this.positions.size.x
+    });
+
+    this.positions.axis.y = Math.calculateAxisYPositions({
+      type: this.settings.type, 
+      orientation: this.settings.orientation, 
+      strokeWidth: this.settings.strokeWidth,
+      labels: this.data.axisLabels.y,
+      height: this.positions.size.y
+    });
+    
+  }
 
   // ---Calculate
   // Calculate series positions 
   this.positions.series = [];
 
-  /*
-  this.positions.series = Bar.calculate({
-    settings: this.settings,
-    data: this.data,
-    positions: this.positions
-  });
-
-  this.positions.series = Line.calculate({
-    settings: this.settings,
-    data: this.data,
-    positions: this.positions
-  });
-
-  this.positions.series = Pie.calculate({
-    settings: this.settings,
-    data: this.data,
-    positions: this.positions
-  });
-  */
-
-  this.positions.series = Doughnut.calculate({
-    settings: this.settings,
-    data: this.data,
-    positions: this.positions
-  });
+  switch(this.settings.type) {
+    case 'bar': {
+      this.positions.series = Bar.calculate({
+        settings: this.settings,
+        data: this.data,
+        positions: this.positions
+      });
+      break;
+    }
+    case 'line': {
+      this.positions.series = Line.calculate({
+        settings: this.settings,
+        data: this.data,
+        positions: this.positions
+      });
+      break;
+    }
+    case 'pie': {
+      this.positions.series = Pie.calculate({
+        settings: this.settings,
+        data: this.data,
+        positions: this.positions
+      });
+      break;
+    }
+    case 'doughnut': {
+      this.positions.series = Doughnut.calculate({
+        settings: this.settings,
+        data: this.data,
+        positions: this.positions
+      });
+      break;
+    }
+    case 'dial': {
+      this.positions.series = Dial.calculate({
+        settings: this.settings,
+        data: this.data,
+        positions: this.positions
+      });
+      break;
+    }
+  }
 
   //
   //
@@ -172,47 +196,87 @@ Graph.prototype.setup = function(config) {
 
 Graph.prototype.render = function(config) {
   this.setup(config);
-  this.DOM.createSvg({
+  this.DOM.createSvg(config, {
     width: this.positions.size.x + this.positions.padding.x,
     height: this.positions.size.y + this.positions.padding.y 
   });
 
-  /*
-  this.DOM.createGrid(this.positions);
-  this.DOM.createLabels({
-    positions: this.positions,
-    data: this.data
-  });
-  */
+  if(this.settings.type === 'line' || this.settings.type === 'bar' ) {
+    this.DOM.createGrid({
+      positions: this.positions
+    });
+    this.DOM.createLabels({
+      settings: this.settings,
+      positions: this.positions,
+      data: this.data
+    });
+  }
 
-  /*
-  this.DOM.createBars({
-    positions: this.positions,
-    data: this.data,
-    settings: this.settings
-  });
+  if(this.settings.type !== 'dial') {
+    this.DOM.createSeriesLabels({
+      settings: this.settings,
+      positions: this.positions,
+      data: this.data
+    });
+  }
 
-  this.DOM.createLine({
-    positions: this.positions,
-    data: this.data,
-    settings: this.settings
-  });
+  if(this.settings.type === 'dial') {
+    this.DOM.createPercentLabels({
+      settings: this.settings,
+      positions: this.positions,
+      data: this.data
+    });
+  }
 
-  this.DOM.createPie({
-    positions: this.positions,
-    data: this.data,
-    settings: this.settings
-  });
-  */
-
-  this.DOM.createDoughnut({
-    positions: this.positions,
-    data: this.data,
-    settings: this.settings
-  });
+  switch(this.settings.type) {
+    case 'bar': {
+      this.DOM.createBars({
+        positions: this.positions,
+        data: this.data,
+        settings: this.settings,
+        EventEmitter: this.EventEmitter
+      });
+      break;
+    }
+    case 'line': {
+      this.DOM.createLine({
+        positions: this.positions,
+        data: this.data,
+        settings: this.settings,
+        EventEmitter: this.EventEmitter
+      });
+      break;
+    }
+    case 'pie': {
+      this.DOM.createPie({
+        positions: this.positions,
+        data: this.data,
+        settings: this.settings,
+        EventEmitter: this.EventEmitter
+      });
+      break;
+    }
+    case 'doughnut': {
+      this.DOM.createDoughnut({
+        positions: this.positions,
+        data: this.data,
+        settings: this.settings,
+        EventEmitter: this.EventEmitter
+      });
+      break;
+    }
+    case 'dial': {
+      this.DOM.createDial({
+        positions: this.positions,
+        data: this.data,
+        settings: this.settings
+      });
+      break;
+    }
+  }
 
   this.DOM.render({
-    container: this.settings.container,
+    settings: this.settings,
     positions: this.positions
   });
 };
