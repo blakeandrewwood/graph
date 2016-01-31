@@ -17,14 +17,37 @@ var graph = new Graph({
   axisLabels: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri'],
   seriesLabels: ['Capture', 'Upload', 'Delete'],
   series: [
-    [10, 20, 23, 60, 53, 68],
-    [12, 23, 40, 34, 30, 29],
-    [20, 20, 10, 33, 42, 42],
+    [1, 200, 2, 600, 530, 680],
+    [120, 230, 400, 340, 300, 290],
+    [200, 200, 100, 330, 420, 420],
   ]
 });
 
 var graph = new Graph({
   container: 'graph-1',
+  type: 'pie',
+  width: 200,
+  height: 100,
+  shadow: true,
+  padding: {
+    x: 80,
+    y: 80
+  },
+  colors: colors,
+  fontFamily: 'Open Sans',
+  fontSize: 10,
+  strokeWidth: 12,
+  axisLabels: [],
+  seriesLabels: ['Capture', 'Upload', 'Delete'],
+  series: [
+    [10],
+    [12],
+    [20]
+  ]
+});
+
+var graph = new Graph({
+  container: 'graph-2',
   type: 'bar',
   orientation: 'vertical',
   width: 200,
@@ -41,32 +64,9 @@ var graph = new Graph({
   axisLabels: ['Sun', 'Mon', 'Tue'],
   seriesLabels: ['Capture', 'Upload', 'Delete'],
   series: [
-    [[10, 20], 23],
-    [12, 23, 40],
-    [20, 20, 10]
-  ]
-});
-
-var graph = new Graph({
-  container: 'graph-2',
-  type: 'pie',
-  width: 200,
-  height: 100,
-  shadow: true,
-  padding: {
-    x: 80,
-    y: 80
-  },
-  colors: colors,
-  fontFamily: 'Open Sans',
-  fontSize: 10,
-  strokeWidth: 12,
-  axisLabels: ['Sun', 'Mon', 'Tue'],
-  seriesLabels: ['Capture', 'Upload', 'Delete'],
-  series: [
-    [10],
-    [12],
-    [20]
+    [[100, 200], 230],
+    [1, 230, 400],
+    [200, 2, 1]
   ]
 });
 

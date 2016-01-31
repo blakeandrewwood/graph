@@ -51,8 +51,14 @@ DOM.prototype.createSvg = function(config, attributes) {
   if(!this.elements.svg) {
     this.elements.svg = Draw.element('svg', attributes);
     Utils.appendChild(this.container, this.elements.svg);
+    //
+    // Make tooltip
     this.elements.tooltip = Tooltip.create(config).elements[0];
-    this.elements.lineBulb = Draw.element('circle', {});
+    //
+    // Make bulb
+    this.elements.lineBulb = Draw.element('circle', {
+      style: 'pointer-events: none;'
+    });
     this.container.appendChild(this.elements.tooltip);
   }
   else {
@@ -165,7 +171,7 @@ DOM.prototype.renderGroups = function(config) {
         transform: 'translate(' + offsetX + ', ' + offsetY + ')'
       });
       var g1 = Draw.element('g', {
-        transform: 'translate(' + offsetX + ', ' + (offsetY + 20) + ')'
+        transform: 'translate(' + offsetX + ', ' + (+offsetY + 20) + ')'
       });
       var g2 = Draw.element('g', {
         transform: 'translate(' + config.settings.fontSize + ', ' + offsetY + ')'
@@ -245,15 +251,6 @@ DOM.prototype.renderGroups = function(config) {
   }
 
   //
-  // Groups
-
-  //
-  //
-
-  //Utils.appendChildren(g1, this.elements.axisLabels.x);
-  //Utils.appendChildren(g2, this.elements.axisLabels.y);
-
-  //
   // Push all groups
   groups.map(function(group) {
     this.elements.groups.push(group);
@@ -270,6 +267,8 @@ DOM.prototype.render = function(config) {
   // Add to svg
   Utils.appendChildren(this.elements.svg, this.elements.defs);
   Utils.appendChildren(this.elements.svg, this.elements.groups);
+
+  console.log(this.elements.svg);
 };
 
 module.exports = DOM;

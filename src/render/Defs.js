@@ -33,7 +33,7 @@ Defs.createShadow = function() {
   var feComponentTransfer = Draw.element('feComponentTransfer', {});
   var feFuncA = Draw.element('feFuncA', {
     type: 'linear',
-    slope: '0.4'
+    slope: '0.3'
   });
   var feMerge = Draw.element('feMerge', {});
   var feMergeNode1 = Draw.element('feMergeNode', {});

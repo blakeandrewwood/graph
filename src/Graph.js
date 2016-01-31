@@ -22,7 +22,8 @@ function Graph(config) {
     strokeWidth: 5, 
     fontSize: 12,
     fontFamily: 'Open Sans',
-    shadow: false 
+    shadow: false,
+    showAxis: true 
   };
 
   // Data
@@ -74,6 +75,8 @@ Graph.prototype.setup = function(config) {
     this.settings.type = config.type;
   if(config.colors)
     this.settings.colors = config.colors;
+  if(config.showAxis)
+    this.settings.showAxis = config.showAxis;
   if(config.shadow)
     this.settings.shadow = config.shadow;
   if(config.orientation)
@@ -202,9 +205,11 @@ Graph.prototype.render = function(config) {
   });
 
   if(this.settings.type === 'line' || this.settings.type === 'bar' ) {
-    this.DOM.createGrid({
-      positions: this.positions
-    });
+    if(this.settings.showAxis) {
+      this.DOM.createGrid({
+        positions: this.positions
+      });
+    }
     this.DOM.createLabels({
       settings: this.settings,
       positions: this.positions,

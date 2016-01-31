@@ -6,51 +6,70 @@ var Render = require('./Render');
 
 function Bar() {}
 
+Bar.calculatePoint = function(config) {
+  var p;
+  if(config.point > 0) {
+    //
+    // Calculate normalized y
+    p = (config.orientation === 'vertical') 
+    ? Math.round(Math.calculateY(config.point, config.max, config.size.y))
+    : Math.round(Math.calculateX(config.point, config.max, config.size.x));
+    // If greater than 10% of max, reduce the height for round linecap
+    // top to meet exact point
+    if((config.point / config.max) > 0.1) {
+      p = p + (config.strokeWidth / 2);
+    }
+  } else {
+    //
+    //
+    p = (config.orientation === 'vertical')
+    ? Math.calculateY(0, config.max, config.size.y)
+    : Math.calculateX(0, config.max, config.size.y);
+  }
+  return p;
+}
+
 Bar.calculate = function(config) {
   var positionSeries = [];
   config.data.series.forEach(function(set, i) {
     var positionSet = [];
     set.forEach(function(point, j) {
-
       //
       // [[0, 1], 0, 1, 2]
       if(typeof point.length === 'number') {
         var pointSet = [];
         point.map(function(subPoint) {
-          var p;
-          if(config.settings.orientation === 'vertical') {
-            p = Math.calculateY(subPoint, config.data.max, config.positions.size.y);
-            p = Math.round(p);
-            p = p + (config.settings.strokeWidth/2);
-          } else {
-            p = Math.calculateX(subPoint, config.data.max, config.positions.size.x);
-            p = Math.round(p);
-            p = p - (config.settings.strokeWidth/2);
-          }
+          //
+          // Calculate
+          var p = this.calculatePoint({
+            point: subPoint,
+            max: config.data.max,
+            strokeWidth: config.settings.strokeWidth,
+            size: config.positions.size,
+            orientation: config.settings.orientation 
+          });
           pointSet.push(p);
+
         }, this);
         positionSet.push(pointSet);
       } 
       //
       // [0, 1, 0, 1, 2]
       else {
-        
-        var p;
-        if(config.settings.orientation === 'vertical') {
-          p = Math.calculateY(point, config.data.max, config.positions.size.y);
-          p = Math.round(p);
-          p = p + (config.settings.strokeWidth/2);
-        } else {
-          p = Math.calculateX(point, config.data.max, config.positions.size.x);
-          p = Math.round(p);
-          p = p - (config.settings.strokeWidth/2);
-        }
+        //
+        // Calculate
+        var p = this.calculatePoint({
+          point: point,
+          max: config.data.max,
+          strokeWidth: config.settings.strokeWidth,
+          size: config.positions.size,
+          orientation: config.settings.orientation 
+        });
         positionSet.push(p);
-
       }
-    });
+    }, this);
     positionSeries.push(positionSet);
-  });
+  }, this);
   return positionSeries;
 };
 
@@ -112,7 +131,6 @@ Bar.create = function(config) {
         var shadowSubAttributes = [];
         y.forEach(function(y1, k) {
 
-
           var xN = this.calculateX(config, i, false, j, set.length);
           var attributeN = this.createAttribute(
             config,
@@ -137,7 +155,7 @@ Bar.create = function(config) {
             xS,
             y1,
             i, j, k,
-            'rgba(0, 0, 0, 0.3)',
+            'rgba(0, 0, 0, 0.2)',
             true
           );
           shadowSubAttributes.push(attributeS);
