@@ -267,8 +267,6 @@ DOM.prototype.render = function(config) {
   // Add to svg
   Utils.appendChildren(this.elements.svg, this.elements.defs);
   Utils.appendChildren(this.elements.svg, this.elements.groups);
-
-  console.log(this.elements.svg);
 };
 
 module.exports = DOM;
