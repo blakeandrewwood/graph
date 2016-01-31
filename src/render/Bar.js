@@ -208,7 +208,7 @@ Bar.create = function(config) {
           xS,
           y,
           i, j, null,
-          'rgba(0, 0, 0, 0.3)',
+          'rgba(0, 0, 0, 0.2)',
           false,
           set.length
         );

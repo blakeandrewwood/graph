@@ -77,6 +77,10 @@ SeriesLabels.create = function(config) {
   var textContainer = Draw.element('text', textAttribute);
   labelsSeries.forEach(function(label, index) {
     var text = config.data.seriesLabels[index];
+    // Cut the string if long
+    if(text.length > 8) {
+      text = text.substring(0, 8) + '...';
+    }
     Utils.appendChild(label, document.createTextNode(text));
     Utils.appendChild(textContainer, label);
   });

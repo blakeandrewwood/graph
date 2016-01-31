@@ -115,24 +115,24 @@ Graph.prototype.setup = function(config) {
 
   //
   // Set axisLabels to appropriate axis 
-  if(this.settings.type === 'bar' && this.settings.orientation === 'horizontal') {
-    this.data.axisLabels.x = this.data.range;
-    this.data.axisLabels.y = config.axisLabels;
-  } else {
-    this.data.axisLabels.x = config.axisLabels;
-    this.data.axisLabels.y = this.data.range;
-    this.data.axisLabels.y.reverse();
+  if(typeof config.axisLabels !== 'undefined') {
+    if(this.settings.type === 'bar' && this.settings.orientation === 'horizontal') {
+      this.data.axisLabels.x = this.data.range;
+      this.data.axisLabels.y = config.axisLabels;
+    } else {
+      this.data.axisLabels.x = config.axisLabels;
+      this.data.axisLabels.y = this.data.range;
+      this.data.axisLabels.y.reverse();
+    }
   }
 
   // ---Calculate
   // Calculate axis positions
   if(this.settings.type === 'bar' || this.settings.type === 'line') {
-
     this.positions.axis.x = Math.calculateAxisXPositions({
       labels: this.data.axisLabels.x,
       width: this.positions.size.x
     });
-
     this.positions.axis.y = Math.calculateAxisYPositions({
       type: this.settings.type, 
       orientation: this.settings.orientation, 
@@ -140,7 +140,6 @@ Graph.prototype.setup = function(config) {
       labels: this.data.axisLabels.y,
       height: this.positions.size.y
     });
-    
   }
 
   // ---Calculate

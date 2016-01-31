@@ -34,7 +34,7 @@ Math.calculateAxisYPositions = function(config) {
       var y;
       // If horizontal bar, center row positions
       if(config.type === 'bar' && config.orientation === 'horizontal') {
-        y = ((config.strokeWidth * index) * 2.5) + (config.strokeWidth * (config.labels.length - 1));
+        y = ((config.strokeWidth * index) * 2.5);
       }
       // If not horizontal bar, span row positions
       else {

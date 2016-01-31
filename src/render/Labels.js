@@ -66,6 +66,10 @@ Labels.create = function(config) {
   Render.renderElements(attributes.y, labelsAxisY, 'text', Draw.element);
   labelsAxisY.forEach(function(label, index) {
     var text = config.data.axisLabels.y[index];
+    // Cut the string if long
+    if(text.length > 8) {
+      text = text.substring(0, 8) + '...';
+    }
     Utils.appendChild(label, document.createTextNode(text));
   });
 
