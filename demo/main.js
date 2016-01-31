@@ -4,6 +4,7 @@ var colors = ['#2388F2', '#F65237', '#0DEFA5', '#9B7CF3'];
 var graph = new Graph({
   container: 'graph-0',
   type: 'line',
+  showAxis: false,
   width: 200,
   height: 100,
   padding: {

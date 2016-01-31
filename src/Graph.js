@@ -69,35 +69,35 @@ Graph.prototype.setup = function(config) {
 
   //
   //
-  if(config.container)
+  if(typeof config.container !== 'undefined')
     this.settings.container = config.container;
-  if(config.type)
+  if(typeof config.type !== 'undefined')
     this.settings.type = config.type;
-  if(config.colors)
+  if(typeof config.colors !== 'undefined')
     this.settings.colors = config.colors;
-  if(config.showAxis)
+  if(typeof config.showAxis !== 'undefined')
     this.settings.showAxis = config.showAxis;
-  if(config.shadow)
+  if(typeof config.showAxis !== 'undefined')
     this.settings.shadow = config.shadow;
-  if(config.orientation)
+  if(typeof config.orientation !== 'undefined')
     this.settings.orientation = config.orientation;
-  if(config.fontFamily)
+  if(typeof config.fontFamily !== 'undefined')
     this.settings.fontFamily = config.fontFamily;
-  if(config.fontSize)
+  if(typeof config.fontSize !== 'undefined')
     this.settings.fontSize = config.fontSize;
-  if(config.strokeWidth)
+  if(typeof config.strokeWidth !== 'undefined')
     this.settings.strokeWidth = config.strokeWidth;
-  if(config.padding) {
-    if(config.padding.x)
+  if(typeof config.padding !== 'undefined') {
+    if(typeof config.padding.x !== 'undefined')
       this.positions.padding.x = config.padding.x;
-    if(config.padding.y)
+    if(typeof config.padding.y !== 'undefined')
       this.positions.padding.y = config.padding.y;
   }
-  if(config.width)
+  if(typeof config.width !== 'undefined')
     this.positions.size.x = config.width;
-  if(config.height)
+  if(typeof config.height !== 'undefined')
     this.positions.size.y = config.height;
-  if(config.series)
+  if(typeof config.series !== 'undefined')
     this.data.series = config.series;
 
   // ---Calculate
